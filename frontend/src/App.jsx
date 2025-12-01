@@ -15,6 +15,13 @@ import ResetPassword from "./pages/portal/ResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Employees from "./pages/admin/Employees";
 import KYCReview from "./pages/admin/KYCReview";
+import AdminPatients from "./pages/admin/Patients";
+import AdminDoctors from "./pages/admin/Doctors";
+import AdminAppointments from "./pages/admin/Appointments";
+import Attendance from "./pages/admin/Attendance";
+import Reports from "./pages/admin/Reports";
+import Notifications from "./pages/admin/Notifications";
+import Settings from "./pages/admin/Settings";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
@@ -28,6 +35,11 @@ import KYCDocuments from "./pages/patient/KYCDocuments";
 
 // Staff Pages
 import StaffDashboard from "./pages/staff/StaffDashboard";
+import Tasks from "./pages/staff/Tasks";
+import StaffAttendance from "./pages/staff/Attendance";
+import KYCAssistance from "./pages/staff/KYCAssistance";
+import StaffAppointments from "./pages/staff/Appointments";
+import StaffNotifications from "./pages/staff/Notifications";
 // Import Service Pages
 import FamilyMedicine from './pages/services/FamilyMedicine';
 import PediatricCare from './pages/services/PediatricCare';
@@ -83,14 +95,14 @@ function App() {
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/employees" element={<Employees />} />
-      <Route path="/admin/patients" element={<AdminDashboard />} />
-      <Route path="/admin/doctors" element={<AdminDashboard />} />
-      <Route path="/admin/appointments" element={<AdminDashboard />} />
+      <Route path="/admin/patients" element={<AdminPatients />} />
+      <Route path="/admin/doctors" element={<AdminDoctors />} />
+      <Route path="/admin/appointments" element={<AdminAppointments />} />
       <Route path="/admin/kyc-review" element={<KYCReview />} />
-      <Route path="/admin/attendance" element={<AdminDashboard />} />
-      <Route path="/admin/reports" element={<AdminDashboard />} />
-      <Route path="/admin/notifications" element={<AdminDashboard />} />
-      <Route path="/admin/settings" element={<AdminDashboard />} />
+      <Route path="/admin/attendance" element={<Attendance />} />
+      <Route path="/admin/reports" element={<Reports />} />
+      <Route path="/admin/notifications" element={<Notifications />} />
+      <Route path="/admin/settings" element={<Settings />} />
 
       {/* Doctor Routes */}
       <Route path="/doctor" element={<DoctorDashboard />} />
@@ -111,11 +123,11 @@ function App() {
 
       {/* Staff Routes */}
       <Route path="/staff" element={<StaffDashboard />} />
-      <Route path="/staff/tasks" element={<StaffDashboard />} />
-      <Route path="/staff/attendance" element={<StaffDashboard />} />
-      <Route path="/staff/kyc-assistance" element={<StaffDashboard />} />
-      <Route path="/staff/appointments" element={<StaffDashboard />} />
-      <Route path="/staff/notifications" element={<StaffDashboard />} />
+      <Route path="/staff/tasks" element={<Tasks />} />
+      <Route path="/staff/attendance" element={<StaffAttendance />} />
+      <Route path="/staff/kyc-assistance" element={<KYCAssistance />} />
+      <Route path="/staff/appointments" element={<StaffAppointments />} />
+      <Route path="/staff/notifications" element={<StaffNotifications />} />
     </Routes>
   );
 }

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/portal/DashboardLayout';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Badge from '../../components/shared/Badge';
+import Modal from '../../components/shared/Modal';
+import toast from 'react-hot-toast';
+import { useConfirm } from '../../hooks/useConfirm';
+import * as staffService from '../../services/staffService';
 import { 
   FaClock, 
   FaCheckCircle, 
@@ -12,13 +16,24 @@ import {
   FaUserClock,
   FaCalendarAlt,
   FaExclamationTriangle,
-  FaUsers
+  FaUsers,
+  FaSpinner,
+  FaPhone,
+  FaEnvelope,
+  FaIdCard,
+  FaCalendar,
+  FaFileAlt,
+  FaPlay,
+  FaStop
 } from 'react-icons/fa';
 
 const StaffDashboard = () => {
+  const navigate = useNavigate();
+  const { confirm } = useConfirm();
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [tasks, setTasks] = useState([]);
   const [kycAssistance, setKycAssistance] = useState([]);
   const [stats, setStats] = useState({
@@ -26,47 +41,156 @@ const StaffDashboard = () => {
     tasksPending: 5,
     kycPending: 3
   });
+  const [loading, setLoading] = useState(true);
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedKYC, setSelectedKYC] = useState(null);
+  const [isKYCModalOpen, setIsKYCModalOpen] = useState(false);
+  const [assistingKYC, setAssistingKYC] = useState(false);
 
   useEffect(() => {
-    // Check if already checked in today
-    const todayCheckIn = localStorage.getItem('checkInTime');
-    if (todayCheckIn) {
-      setCheckedIn(true);
-      setCheckInTime(todayCheckIn);
-    }
+    fetchDashboardData();
+    fetchAttendanceStatus();
+    
+    // Update clock every second
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
 
-    // Load tasks
-    setTasks([
-      { id: 1, title: 'Assist with KYC uploads', count: 3, priority: 'high', status: 'pending' },
-      { id: 2, title: 'Schedule appointments', count: 5, priority: 'medium', status: 'pending' },
-      { id: 3, title: 'Update patient records', count: 2, priority: 'low', status: 'completed' },
-      { id: 4, title: 'Process insurance forms', count: 8, priority: 'high', status: 'pending' }
-    ]);
-
-    // Load KYC assistance requests
-    setKycAssistance([
-      { id: 1, patient: 'Robert Taylor', submitted: '2 days ago', documents: 3, status: 'pending' },
-      { id: 2, patient: 'Emily Davis', submitted: '1 day ago', documents: 2, status: 'pending' },
-      { id: 3, patient: 'David Wilson', submitted: '3 days ago', documents: 4, status: 'in-progress' }
-    ]);
+    return () => clearInterval(clockInterval);
   }, []);
 
-  const handleCheckIn = () => {
-    const now = new Date();
-    const timeString = now.toLocaleString();
-    setCheckInTime(timeString);
-    setCheckedIn(true);
-    localStorage.setItem('checkInTime', timeString);
-    // In production, this would call the API
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [statsData, tasksData, kycData] = await Promise.all([
+        staffService.getStaffDashboardStats(),
+        staffService.getTasks(),
+        staffService.getKYCAssistance()
+      ]);
+      
+      setStats(statsData);
+      setTasks(tasksData.data || []);
+      setKycAssistance(kycData.data || []);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCheckOut = () => {
-    const now = new Date();
-    const timeString = now.toLocaleString();
-    setCheckOutTime(timeString);
-    setCheckedIn(false);
-    localStorage.removeItem('checkInTime');
-    // In production, this would call the API
+  const fetchAttendanceStatus = async () => {
+    try {
+      const status = await staffService.getAttendanceStatus();
+      setCheckedIn(status.checkedIn);
+      setCheckInTime(status.checkInTime);
+      setCheckOutTime(status.checkOutTime);
+    } catch (error) {
+      console.error('Failed to fetch attendance status:', error);
+    }
+  };
+
+  const handleCheckIn = async () => {
+    setCheckingIn(true);
+    try {
+      const result = await staffService.checkIn();
+      setCheckedIn(true);
+      setCheckInTime(result.checkInTime || new Date().toLocaleString());
+      localStorage.setItem('checkInTime', result.checkInTime || new Date().toISOString());
+      toast.success(result.message || 'Checked in successfully!');
+    } catch (error) {
+      console.error('Check-in failed:', error);
+      toast.error('Failed to check in. Please try again.');
+    } finally {
+      setCheckingIn(false);
+    }
+  };
+
+  const handleCheckOut = async () => {
+    confirm(
+      'Are you sure you want to check out?',
+      async () => {
+        setCheckingOut(true);
+        try {
+          const result = await staffService.checkOut();
+          setCheckedIn(false);
+          setCheckOutTime(result.checkOutTime || new Date().toLocaleString());
+          localStorage.removeItem('checkInTime');
+          localStorage.setItem('checkOutTime', result.checkOutTime || new Date().toISOString());
+          toast.success(result.message || `Checked out successfully! You worked ${result.hoursWorked || 8} hours today.`);
+        } catch (error) {
+          console.error('Check-out failed:', error);
+          toast.error('Failed to check out. Please try again.');
+        } finally {
+          setCheckingOut(false);
+        }
+      },
+      () => {
+        // User cancelled
+      }
+    );
+  };
+
+  const handleStartTask = async (task) => {
+    setSelectedTask(task);
+    setIsTaskModalOpen(true);
+  };
+
+  const confirmStartTask = async () => {
+    if (!selectedTask) return;
+    
+    try {
+      const result = await staffService.startTask(selectedTask.id);
+      setTasks(prev => prev.map(t => 
+        t.id === selectedTask.id ? { ...t, status: 'in-progress' } : t
+      ));
+      // Update stats - task moves from pending to in-progress
+      setStats(prev => ({ 
+        ...prev, 
+        tasksPending: Math.max(0, prev.tasksPending - 1)
+      }));
+      toast.success(result.message || 'Task started successfully!');
+      setIsTaskModalOpen(false);
+      setSelectedTask(null);
+      // Refresh dashboard data
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Failed to start task:', error);
+      toast.error('Failed to start task. Please try again.');
+    }
+  };
+
+  const handleAssistKYC = async (kyc) => {
+    setSelectedKYC(kyc);
+    setIsKYCModalOpen(true);
+  };
+
+  const confirmAssistKYC = async () => {
+    if (!selectedKYC) return;
+    
+    setAssistingKYC(true);
+    try {
+      const result = await staffService.assistKYC(selectedKYC.id);
+      setKycAssistance(prev => prev.filter(k => k.id !== selectedKYC.id));
+      setStats(prev => ({ 
+        ...prev, 
+        kycPending: Math.max(0, prev.kycPending - 1),
+        tasksCompleted: prev.tasksCompleted + 1
+      }));
+      toast.success(result.message || 'KYC assistance provided successfully!');
+      setIsKYCModalOpen(false);
+      setSelectedKYC(null);
+      // Refresh dashboard data
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Failed to assist KYC:', error);
+      toast.error('Failed to provide assistance. Please try again.');
+    } finally {
+      setAssistingKYC(false);
+    }
   };
 
   const getPriorityColor = (priority) => {
@@ -76,6 +200,17 @@ const StaffDashboard = () => {
       'low': 'green'
     };
     return colors[priority] || 'gray';
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   };
 
   return (
@@ -111,10 +246,12 @@ const StaffDashboard = () => {
                     variant="secondary" 
                     size="lg"
                     onClick={handleCheckIn}
+                    disabled={checkingIn}
+                    loading={checkingIn}
                     className="bg-white text-primary hover:bg-gray-100"
                   >
-                    <FaCheckCircle className="w-5 h-5 mr-2" />
-                    Check In
+                    {!checkingIn && <FaCheckCircle className="w-5 h-5 mr-2" />}
+                    {checkingIn ? 'Checking In...' : 'Check In'}
                   </Button>
                 </>
               ) : (
@@ -133,18 +270,24 @@ const StaffDashboard = () => {
                     variant="secondary" 
                     size="lg"
                     onClick={handleCheckOut}
+                    disabled={checkingOut}
+                    loading={checkingOut}
                     className="bg-white text-primary hover:bg-gray-100"
                   >
-                    <FaUserClock className="w-5 h-5 mr-2" />
-                    Check Out
+                    {!checkingOut && <FaUserClock className="w-5 h-5 mr-2" />}
+                    {checkingOut ? 'Checking Out...' : 'Check Out'}
                   </Button>
                 </>
               )}
             </div>
             <div className="hidden md:block">
               <div className="text-right">
-                <p className="text-4xl font-bold opacity-90">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
-                <p className="text-sm opacity-80">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p className="text-4xl font-bold opacity-90">
+                  {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </p>
+                <p className="text-sm opacity-80">
+                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
               </div>
             </div>
           </div>
@@ -152,11 +295,11 @@ const StaffDashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/staff/tasks')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Tasks Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.tasksCompleted}</p>
+                <p className="text-3xl font-bold text-gray-900">{loading ? '...' : stats.tasksCompleted}</p>
                 <p className="text-xs text-blue-600 mt-1">Today</p>
               </div>
               <div className="p-3 rounded-xl bg-blue-100">
@@ -165,11 +308,11 @@ const StaffDashboard = () => {
             </div>
           </Card>
           
-          <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+          <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/staff/tasks')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Pending Tasks</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.tasksPending}</p>
+                <p className="text-3xl font-bold text-gray-900">{loading ? '...' : stats.tasksPending}</p>
                 <p className="text-xs text-amber-600 mt-1">Requires attention</p>
               </div>
               <div className="p-3 rounded-xl bg-amber-100">
@@ -178,11 +321,11 @@ const StaffDashboard = () => {
             </div>
           </Card>
           
-          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/staff/kyc-assistance')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">KYC Pending</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.kycPending}</p>
+                <p className="text-3xl font-bold text-gray-900">{loading ? '...' : stats.kycPending}</p>
                 <p className="text-xs text-red-600 mt-1">Needs assistance</p>
               </div>
               <div className="p-3 rounded-xl bg-red-100">
@@ -205,7 +348,15 @@ const StaffDashboard = () => {
             className="h-full"
           >
             <div className="space-y-3">
-              {tasks.map((task) => (
+              {loading ? (
+                <div className="text-center py-8 text-gray-500">
+                  <FaSpinner className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+                  <p>Loading tasks...</p>
+                </div>
+              ) : tasks.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">No tasks available</div>
+              ) : (
+                tasks.map((task) => (
                 <div 
                   key={task.id} 
                   className={`p-4 rounded-lg border-l-4 ${
@@ -230,11 +381,25 @@ const StaffDashboard = () => {
                       <p className="text-sm text-gray-600">{task.count} items</p>
                     </div>
                     {task.status === 'pending' && (
-                      <Button size="sm" variant="ghost">Start</Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => handleStartTask(task)}
+                      >
+                        <FaPlay className="w-3 h-3 mr-1" />
+                        Start
+                      </Button>
+                    )}
+                    {task.status === 'completed' && (
+                      <Badge variant="success" className="flex items-center gap-1">
+                        <FaCheckCircle className="w-3 h-3" />
+                        Done
+                      </Badge>
                     )}
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </div>
           </Card>
 
@@ -249,7 +414,12 @@ const StaffDashboard = () => {
             className="h-full"
           >
             <div className="space-y-3">
-              {kycAssistance.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-8 text-gray-500">
+                  <FaSpinner className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+                  <p>Loading KYC requests...</p>
+                </div>
+              ) : kycAssistance.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">No KYC assistance requests</div>
               ) : (
                 kycAssistance.map((kyc) => (
@@ -267,7 +437,12 @@ const StaffDashboard = () => {
                         <p className="text-sm text-gray-600 mb-1">Submitted {kyc.submitted}</p>
                         <p className="text-xs text-gray-500">{kyc.documents} documents uploaded</p>
                       </div>
-                      <Button size="sm">Assist</Button>
+                      <Button 
+                        size="sm"
+                        onClick={() => handleAssistKYC(kyc)}
+                      >
+                        Assist
+                      </Button>
                     </div>
                   </div>
                 ))
@@ -305,6 +480,150 @@ const StaffDashboard = () => {
             </Link>
           </div>
         </Card>
+
+        {/* Task Details Modal */}
+        <Modal
+          isOpen={isTaskModalOpen}
+          onClose={() => setIsTaskModalOpen(false)}
+          title="Task Details"
+          size="lg"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsTaskModalOpen(false)}>Cancel</Button>
+              {selectedTask && (
+                <Button onClick={confirmStartTask}>
+                  <FaPlay className="w-4 h-4 mr-2" />
+                  Start Task
+                </Button>
+              )}
+            </div>
+          }
+        >
+          {selectedTask && (
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-2">{selectedTask.title}</h4>
+                <p className="text-sm text-gray-600 mb-3">{selectedTask.description || 'No description available'}</p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-500">Priority:</p>
+                    <Badge variant={selectedTask.priority === 'high' ? 'danger' : selectedTask.priority === 'medium' ? 'warning' : 'success'}>
+                      {selectedTask.priority}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Items:</p>
+                    <p className="font-medium text-gray-900">{selectedTask.count} items</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Category:</p>
+                    <p className="font-medium text-gray-900">{selectedTask.category || 'General'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Due Date:</p>
+                    <p className="font-medium text-gray-900">{formatDate(selectedTask.dueDate)}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <FaExclamationTriangle className="w-4 h-4 inline mr-2" />
+                  Starting this task will mark it as in-progress. You can complete it from the Tasks page.
+                </p>
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* KYC Assistance Modal */}
+        <Modal
+          isOpen={isKYCModalOpen}
+          onClose={() => setIsKYCModalOpen(false)}
+          title="KYC Assistance"
+          size="lg"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsKYCModalOpen(false)}>Cancel</Button>
+              {selectedKYC && (
+                <Button 
+                  onClick={confirmAssistKYC}
+                  disabled={assistingKYC}
+                  loading={assistingKYC}
+                >
+                  <FaCheckCircle className="w-4 h-4 mr-2" />
+                  Provide Assistance
+                </Button>
+              )}
+            </div>
+          }
+        >
+          {selectedKYC && (
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FaUsers className="w-4 h-4 text-primary" />
+                  Patient Information
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-500">Name:</p>
+                    <p className="font-medium text-gray-900">{selectedKYC.patient}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Patient ID:</p>
+                    <p className="font-medium text-gray-900">{selectedKYC.patientId}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Phone:</p>
+                    <p className="font-medium text-gray-900">{selectedKYC.patientPhone}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Email:</p>
+                    <p className="font-medium text-gray-900">{selectedKYC.patientEmail}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FaFileMedical className="w-4 h-4 text-amber-600" />
+                  KYC Submission Details
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Submitted:</span>
+                    <span className="font-medium text-gray-900">{selectedKYC.submitted}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Status:</span>
+                    <Badge variant="warning">{selectedKYC.status}</Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Documents:</span>
+                    <span className="font-medium text-gray-900">{selectedKYC.documents} uploaded</span>
+                  </div>
+                  {selectedKYC.documentsList && (
+                    <div className="mt-3">
+                      <p className="text-gray-500 mb-2">Document Types:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedKYC.documentsList.map((doc, idx) => (
+                          <Badge key={idx} variant="info">{doc}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <FaExclamationTriangle className="w-4 h-4 inline mr-2" />
+                  Review the patient's documents and provide assistance as needed. This will mark the request as assisted.
+                </p>
+              </div>
+            </div>
+          )}
+        </Modal>
       </div>
     </DashboardLayout>
   );

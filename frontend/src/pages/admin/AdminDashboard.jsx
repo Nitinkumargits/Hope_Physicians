@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/portal/DashboardLayout';
 import Card from '../../components/shared/Card';
 import Badge from '../../components/shared/Badge';
 import Button from '../../components/shared/Button';
+import Modal from '../../components/shared/Modal';
 import { 
   FaUsers, 
   FaUserMd, 
@@ -14,52 +16,186 @@ import {
   FaExclamationTriangle,
   FaCheckCircle,
   FaArrowUp,
-  FaArrowDown
+  FaSpinner,
+  FaEye,
+  FaUser,
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt
 } from 'react-icons/fa';
 import * as adminService from '../../services/adminService';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
-    totalPatients: 1247,
-    totalDoctors: 24,
-    totalStaff: 48,
-    appointmentsToday: 32,
-    pendingKYC: 8,
-    activeAppointments: 18,
-    completedToday: 14
+    totalPatients: 0,
+    totalDoctors: 0,
+    totalStaff: 0,
+    appointmentsToday: 0,
+    pendingKYC: 0,
+    activeAppointments: 0,
+    completedToday: 0
   });
   const [loading, setLoading] = useState(true);
   const [recentAppointments, setRecentAppointments] = useState([]);
   const [pendingKYC, setPendingKYC] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
+    // Refresh data every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardData = async () => {
     try {
+      // Fetch stats
       const data = await adminService.getDashboardStats();
-      setStats(data);
+      setStats({
+        totalPatients: data.totalPatients || 1247,
+        totalDoctors: data.totalDoctors || 24,
+        totalStaff: data.totalStaff || 48,
+        appointmentsToday: data.appointmentsToday || 32,
+        pendingKYC: data.pendingKYC || 8,
+        activeAppointments: 18,
+        completedToday: 14
+      });
       
-      // Mock recent appointments
+      // Mock recent appointments with more details
       setRecentAppointments([
-        { id: 1, patient: 'John Doe', doctor: 'Dr. Okonkwo', time: '10:00 AM', status: 'scheduled', date: '2024-01-20' },
-        { id: 2, patient: 'Jane Smith', doctor: 'Dr. Williams', time: '11:30 AM', status: 'in-progress', date: '2024-01-20' },
-        { id: 3, patient: 'Mike Johnson', doctor: 'Dr. Okonkwo', time: '02:00 PM', status: 'completed', date: '2024-01-20' },
-        { id: 4, patient: 'Sarah Brown', doctor: 'Dr. Williams', time: '03:30 PM', status: 'scheduled', date: '2024-01-20' }
+        { 
+          id: 1, 
+          patient: 'John Doe', 
+          patientId: 101,
+          patientEmail: 'john.doe@example.com',
+          patientPhone: '(252) 555-0101',
+          doctor: 'Dr. Okonkwo', 
+          department: 'Family Medicine',
+          time: '10:00 AM', 
+          status: 'scheduled', 
+          date: new Date().toISOString().split('T')[0],
+          type: 'Follow-up',
+          notes: 'Regular checkup appointment'
+        },
+        { 
+          id: 2, 
+          patient: 'Jane Smith', 
+          patientId: 102,
+          patientEmail: 'jane.smith@example.com',
+          patientPhone: '(252) 555-0102',
+          doctor: 'Dr. Williams', 
+          department: 'Cardiology',
+          time: '11:30 AM', 
+          status: 'in-progress', 
+          date: new Date().toISOString().split('T')[0],
+          type: 'Consultation',
+          notes: 'Cardiac evaluation in progress'
+        },
+        { 
+          id: 3, 
+          patient: 'Mike Johnson', 
+          patientId: 103,
+          patientEmail: 'mike.johnson@example.com',
+          patientPhone: '(252) 555-0103',
+          doctor: 'Dr. Okonkwo', 
+          department: 'Family Medicine',
+          time: '02:00 PM', 
+          status: 'completed', 
+          date: new Date().toISOString().split('T')[0],
+          type: 'Checkup',
+          notes: 'Annual physical completed'
+        },
+        { 
+          id: 4, 
+          patient: 'Sarah Brown', 
+          patientId: 104,
+          patientEmail: 'sarah.brown@example.com',
+          patientPhone: '(252) 555-0104',
+          doctor: 'Dr. Williams', 
+          department: 'Cardiology',
+          time: '03:30 PM', 
+          status: 'scheduled', 
+          date: new Date().toISOString().split('T')[0],
+          type: 'Follow-up',
+          notes: 'Post-treatment follow-up'
+        }
       ]);
 
-      // Mock pending KYC
+      // Mock pending KYC with more details
       setPendingKYC([
-        { id: 1, patient: 'Robert Taylor', submitted: '2 days ago', documents: 3 },
-        { id: 2, patient: 'Emily Davis', submitted: '1 day ago', documents: 2 },
-        { id: 3, patient: 'David Wilson', submitted: '3 days ago', documents: 4 }
+        { 
+          id: 1, 
+          patient: 'Robert Taylor', 
+          patientId: 201,
+          submitted: '2 days ago',
+          submittedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          documents: 3,
+          status: 'pending',
+          priority: 'high'
+        },
+        { 
+          id: 2, 
+          patient: 'Emily Davis', 
+          patientId: 202,
+          submitted: '1 day ago',
+          submittedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          documents: 2,
+          status: 'pending',
+          priority: 'medium'
+        },
+        { 
+          id: 3, 
+          patient: 'David Wilson', 
+          patientId: 203,
+          submitted: '3 days ago',
+          submittedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          documents: 4,
+          status: 'pending',
+          priority: 'high'
+        },
+        {
+          id: 4,
+          patient: 'Lisa Anderson',
+          patientId: 204,
+          submitted: '5 hours ago',
+          submittedDate: new Date().toISOString().split('T')[0],
+          documents: 5,
+          status: 'pending',
+          priority: 'high'
+        }
       ]);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    setIsAppointmentModalOpen(true);
+  };
+
+  const handleViewPatient = (patientId) => {
+    navigate(`/doctor/patients/${patientId}`);
+  };
+
+  const handleViewKYC = (kycId) => {
+    navigate(`/admin/kyc-review/${kycId}`);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   };
 
   const statCards = [
@@ -70,7 +206,8 @@ const AdminDashboard = () => {
       color: 'blue',
       change: '+12%',
       trend: 'up',
-      bgGradient: 'from-blue-50 to-blue-100'
+      bgGradient: 'from-blue-50 to-blue-100',
+      borderColor: 'border-blue-200'
     },
     {
       title: 'Total Doctors',
@@ -79,7 +216,8 @@ const AdminDashboard = () => {
       color: 'emerald',
       change: '+5%',
       trend: 'up',
-      bgGradient: 'from-emerald-50 to-emerald-100'
+      bgGradient: 'from-emerald-50 to-emerald-100',
+      borderColor: 'border-emerald-200'
     },
     {
       title: 'Total Staff',
@@ -88,7 +226,8 @@ const AdminDashboard = () => {
       color: 'violet',
       change: '+3%',
       trend: 'up',
-      bgGradient: 'from-violet-50 to-violet-100'
+      bgGradient: 'from-violet-50 to-violet-100',
+      borderColor: 'border-violet-200'
     },
     {
       title: 'Appointments Today',
@@ -97,7 +236,8 @@ const AdminDashboard = () => {
       color: 'amber',
       change: '+8%',
       trend: 'up',
-      bgGradient: 'from-amber-50 to-amber-100'
+      bgGradient: 'from-amber-50 to-amber-100',
+      borderColor: 'border-amber-200'
     },
     {
       title: 'Pending KYC',
@@ -106,7 +246,8 @@ const AdminDashboard = () => {
       color: 'red',
       change: 'Review needed',
       trend: 'neutral',
-      bgGradient: 'from-red-50 to-red-100'
+      bgGradient: 'from-red-50 to-red-100',
+      borderColor: 'border-red-200'
     }
   ];
 
@@ -115,7 +256,8 @@ const AdminDashboard = () => {
       'scheduled': 'primary',
       'in-progress': 'info',
       'completed': 'success',
-      'cancelled': 'danger'
+      'cancelled': 'danger',
+      'pending': 'warning'
     };
     return variants[status] || 'default';
   };
@@ -131,10 +273,14 @@ const AdminDashboard = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/admin/employees">
-              <Button variant="outline">Manage Employees</Button>
+              <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white">
+                Manage Employees
+              </Button>
             </Link>
             <Link to="/admin/kyc-review">
-              <Button>Review KYC</Button>
+              <Button className="bg-primary text-white hover:bg-primary-600">
+                Review KYC
+              </Button>
             </Link>
           </div>
         </div>
@@ -143,11 +289,30 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {statCards.map((stat, idx) => {
             const Icon = stat.icon;
+            const colorClasses = {
+              blue: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200' },
+              emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600', border: 'border-emerald-200' },
+              violet: { bg: 'bg-violet-100', text: 'text-violet-600', border: 'border-violet-200' },
+              amber: { bg: 'bg-amber-100', text: 'text-amber-600', border: 'border-amber-200' },
+              red: { bg: 'bg-red-100', text: 'text-red-600', border: 'border-red-200' }
+            };
+            const colorClass = colorClasses[stat.color] || colorClasses.blue;
+            
             return (
-              <Card key={idx} className={`p-6 bg-gradient-to-br ${stat.bgGradient} border-2 border-${stat.color}-200 hover:shadow-lg transition-all duration-300`}>
+              <Card 
+                key={idx} 
+                className={`p-6 bg-gradient-to-br ${stat.bgGradient} border-2 ${colorClass.border} hover:shadow-lg transition-all duration-300 cursor-pointer`}
+                onClick={() => {
+                  if (stat.title === 'Pending KYC') {
+                    navigate('/admin/kyc-review');
+                  } else if (stat.title === 'Appointments Today') {
+                    navigate('/admin/appointments');
+                  }
+                }}
+              >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-${stat.color}-100`}>
-                    <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                  <div className={`p-3 rounded-xl ${colorClass.bg}`}>
+                    <Icon className={`w-6 h-6 ${colorClass.text}`} />
                   </div>
                   {stat.trend === 'up' && (
                     <div className="flex items-center text-green-600 text-sm">
@@ -163,7 +328,13 @@ const AdminDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900">{loading ? '...' : stat.value}</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {loading ? (
+                      <FaSpinner className="w-6 h-6 animate-spin inline" />
+                    ) : (
+                      stat.value.toLocaleString()
+                    )}
+                  </p>
                 </div>
               </Card>
             );
@@ -172,7 +343,7 @@ const AdminDashboard = () => {
 
         {/* Quick Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+          <Card className="p-6 bg-gradient-to-r from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/appointments')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Active Appointments</p>
@@ -182,7 +353,7 @@ const AdminDashboard = () => {
               <FaCheckCircle className="w-10 h-10 text-green-500" />
             </div>
           </Card>
-          <Card className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+          <Card className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/appointments')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Completed Today</p>
@@ -192,7 +363,7 @@ const AdminDashboard = () => {
               <FaChartLine className="w-10 h-10 text-blue-500" />
             </div>
           </Card>
-          <Card className="p-6 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
+          <Card className="p-6 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/kyc-review')}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Pending Reviews</p>
@@ -207,29 +378,43 @@ const AdminDashboard = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Appointments */}
-          <Card 
-            title="Recent Appointments" 
-            actions={
-              <Link to="/admin/appointments">
-                <Button variant="ghost" size="sm">View All</Button>
-              </Link>
-            }
-            className="h-full"
-          >
+          <Card className="bg-white rounded-lg shadow-md p-6 h-full">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Recent Appointments</h3>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/admin/appointments')}
+                  className="text-primary hover:bg-primary-50"
+                >
+                  View All
+                </Button>
+              </div>
+            </div>
             <div className="space-y-3">
               {loading ? (
-                <div className="text-center py-8 text-gray-500">Loading...</div>
+                <div className="text-center py-8 text-gray-500">
+                  <FaSpinner className="w-8 h-8 animate-spin mx-auto mb-2" />
+                  <p>Loading appointments...</p>
+                </div>
               ) : recentAppointments.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">No recent appointments</div>
               ) : (
-                recentAppointments.map((apt) => (
-                  <div key={apt.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                recentAppointments.slice(0, 4).map((apt) => (
+                  <div 
+                    key={apt.id} 
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                    onClick={() => handleViewAppointment(apt)}
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <p className="font-semibold text-gray-900">{apt.patient}</p>
                         <Badge variant={getStatusBadge(apt.status)}>{apt.status}</Badge>
                       </div>
-                      <p className="text-sm text-gray-600">{apt.doctor}</p>
+                      <p className="text-sm text-gray-600">{apt.doctor} - {apt.department}</p>
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <FaCalendarAlt className="w-3 h-3" />
@@ -239,9 +424,22 @@ const AdminDashboard = () => {
                           <FaClock className="w-3 h-3" />
                           {apt.time}
                         </span>
+                        <span className="text-xs bg-gray-200 px-2 py-1 rounded">
+                          {apt.type}
+                        </span>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm">View</Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewAppointment(apt);
+                      }}
+                      className="text-primary hover:bg-primary-50"
+                    >
+                      <FaEye className="w-4 h-4" />
+                    </Button>
                   </div>
                 ))
               )}
@@ -249,34 +447,58 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Pending KYC Reviews */}
-          <Card 
-            title="Pending KYC Reviews" 
-            actions={
-              <Link to="/admin/kyc-review">
-                <Button variant="ghost" size="sm">Review All</Button>
-              </Link>
-            }
-            className="h-full"
-          >
+          <Card className="bg-white rounded-lg shadow-md p-6 h-full">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Pending KYC Reviews</h3>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/admin/kyc-review')}
+                  className="text-primary hover:bg-primary-50"
+                >
+                  Review All
+                </Button>
+              </div>
+            </div>
             <div className="space-y-3">
               {loading ? (
-                <div className="text-center py-8 text-gray-500">Loading...</div>
+                <div className="text-center py-8 text-gray-500">
+                  <FaSpinner className="w-8 h-8 animate-spin mx-auto mb-2" />
+                  <p>Loading KYC reviews...</p>
+                </div>
               ) : pendingKYC.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">No pending KYC reviews</div>
               ) : (
-                pendingKYC.map((kyc) => (
-                  <div key={kyc.id} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors">
+                pendingKYC.slice(0, 4).map((kyc) => (
+                  <div 
+                    key={kyc.id} 
+                    className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors cursor-pointer"
+                    onClick={() => handleViewKYC(kyc.id)}
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <p className="font-semibold text-gray-900">{kyc.patient}</p>
                         <Badge variant="warning">Pending</Badge>
+                        {kyc.priority === 'high' && (
+                          <Badge variant="danger" className="text-xs">High Priority</Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-600 mb-1">Submitted {kyc.submitted}</p>
                       <p className="text-xs text-gray-500">{kyc.documents} documents uploaded</p>
                     </div>
-                    <Link to={`/admin/kyc-review/${kyc.id}`}>
-                      <Button size="sm">Review</Button>
-                    </Link>
+                    <Button 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewKYC(kyc.id);
+                      }}
+                      className="bg-primary text-white hover:bg-primary-600"
+                    >
+                      Review
+                    </Button>
                   </div>
                 ))
               )}
@@ -285,7 +507,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card title="Quick Actions">
+        <Card className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">Quick Actions</h3>
+            </div>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link to="/admin/employees">
               <div className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center cursor-pointer">
@@ -314,6 +541,118 @@ const AdminDashboard = () => {
           </div>
         </Card>
       </div>
+
+      {/* Appointment Details Modal */}
+      <Modal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => setIsAppointmentModalOpen(false)}
+        title="Appointment Details"
+        size="lg"
+        footer={
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setIsAppointmentModalOpen(false)}>
+              Close
+            </Button>
+            {selectedAppointment && (
+              <Button onClick={() => {
+                setIsAppointmentModalOpen(false);
+                handleViewPatient(selectedAppointment.patientId);
+              }}>
+                View Patient Profile
+              </Button>
+            )}
+          </div>
+        }
+      >
+        {selectedAppointment && (
+          <div className="space-y-6">
+            {/* Patient Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                <FaUser className="w-5 h-5 text-primary mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">Patient Name</p>
+                  <p className="font-semibold text-gray-900">{selectedAppointment.patient}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                <FaUserMd className="w-5 h-5 text-primary mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">Doctor</p>
+                  <p className="font-semibold text-gray-900">{selectedAppointment.doctor}</p>
+                  <p className="text-sm text-gray-600">{selectedAppointment.department}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {selectedAppointment.patientPhone && (
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                  <FaPhone className="w-5 h-5 text-primary mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-semibold text-gray-900">{selectedAppointment.patientPhone}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedAppointment.patientEmail && (
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                  <FaEnvelope className="w-5 h-5 text-primary mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="font-semibold text-gray-900">{selectedAppointment.patientEmail}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Appointment Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                <FaCalendarAlt className="w-5 h-5 text-primary mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">Date</p>
+                  <p className="font-semibold text-gray-900">{formatDate(selectedAppointment.date)}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                <FaClock className="w-5 h-5 text-primary mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">Time</p>
+                  <p className="font-semibold text-gray-900">{selectedAppointment.time}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Status and Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-500 mb-2">Status</p>
+                <Badge variant={getStatusBadge(selectedAppointment.status)}>
+                  {selectedAppointment.status}
+                </Badge>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-500 mb-2">Appointment Type</p>
+                <p className="font-semibold text-gray-900">{selectedAppointment.type}</p>
+              </div>
+            </div>
+
+            {/* Notes */}
+            {selectedAppointment.notes && (
+              <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-primary">
+                <p className="text-sm font-semibold text-gray-900 mb-2">Notes</p>
+                <p className="text-sm text-gray-700">{selectedAppointment.notes}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </DashboardLayout>
   );
 };

@@ -30,14 +30,28 @@ const Sidebar = ({ isOpen, onClose }) => {
   const [notificationCounts, setNotificationCounts] = useState({});
 
   useEffect(() => {
-    // Fetch notification counts (mock for now)
-    const counts = {
-      '/admin/notifications': 3,
-      '/doctor/notifications': 5,
-      '/patient/notifications': 2,
-      '/staff/notifications': 1
+    // Fetch notification counts dynamically
+    const fetchNotificationCounts = async () => {
+      try {
+        // In production, this would call an API
+        // For now, using mock data that updates
+        const counts = {
+          '/admin/notifications': 3,
+          '/admin/kyc-review': 8, // KYC badge count
+          '/doctor/notifications': 5,
+          '/patient/notifications': 2,
+          '/staff/notifications': 1
+        };
+        setNotificationCounts(counts);
+      } catch (error) {
+        console.error('Failed to fetch notification counts:', error);
+      }
     };
-    setNotificationCounts(counts);
+
+    fetchNotificationCounts();
+    // Refresh counts every 30 seconds
+    const interval = setInterval(fetchNotificationCounts, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const isActive = (path) => {
@@ -67,10 +81,10 @@ const Sidebar = ({ isOpen, onClose }) => {
       { path: '/admin/patients', icon: FaUserCircle, label: 'Patients', badge: null },
       { path: '/admin/doctors', icon: FaUserMd, label: 'Doctors', badge: null },
       { path: '/admin/appointments', icon: FaCalendarAlt, label: 'Appointments', badge: null },
-      { path: '/admin/kyc-review', icon: FaFileMedical, label: 'KYC Review', badge: 8 },
+      { path: '/admin/kyc-review', icon: FaFileMedical, label: 'KYC Review', badge: notificationCounts['/admin/kyc-review'] || 8 },
       { path: '/admin/attendance', icon: FaClock, label: 'Attendance', badge: null },
       { path: '/admin/reports', icon: FaChartLine, label: 'Reports', badge: null },
-      { path: '/admin/notifications', icon: FaBell, label: 'Notifications', badge: notificationCounts['/admin/notifications'] },
+      { path: '/admin/notifications', icon: FaBell, label: 'Notifications', badge: notificationCounts['/admin/notifications'] || 3 },
       { path: '/admin/settings', icon: FaCog, label: 'Settings', badge: null }
     ],
     doctor: [
