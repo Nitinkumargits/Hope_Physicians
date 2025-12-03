@@ -1,0 +1,411 @@
+// Prisma Schema for Hope Physicians
+// Database: SQLite
+// Location: /prisma/hope_physicians.db
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./hope_physicians.db"
+}
+
+// ============================================
+// CORE USER & AUTHENTICATION MODELS
+// ============================================
+
+model PortalUser {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  passwordHash String
+  role        String   @default("admin") // admin, doctor, patient, staff, hr
+  isActive    Boolean  @default(true)
+  canAccessSystem Boolean @default(true)
+  
+  // Relations to specific user types (unique for one-to-one relations)
+  employeeId  String?  @unique
+  doctorId    String?  @unique
+  patientId   String?  @unique
+  staffId     String?  @unique
+  
+  // Relations
+  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  doctor      Doctor?   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient     Patient?  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  staff       Staff?    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([role])
+}
+
+// ============================================
+// EMPLOYEE MODEL
+// ============================================
+
+model Employee {
+  id            String   @id @default(uuid())
+  empId         String   @unique // Supports both auto-generated ("RST1001") and manual entry
+  firstName     String
+  lastName      String
+  email         String   @unique
+  phone         String?
+  dateOfBirth   DateTime?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String?  @default("USA")
+  
+  // Employment Details
+  designation   String?  // Job title
+  department    String?
+  joiningDate   DateTime?
+  status        String   @default("working") // working, not_working
+  
+  // Soft Delete
+  isActive      Boolean  @default(true)
+  
+  // Relations
+  portalUser    PortalUser?
+  attendance    Attendance[]
+  calendarEvents CalendarEventAssignment[]
+  notifications Notification[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // For audit trail
+  
+  @@index([empId])
+  @@index([email])
+  @@index([isActive])
+  @@index([status])
+}
+
+// ============================================
+// DOCTOR MODEL
+// ============================================
+
+model Doctor {
+  id              String   @id @default(uuid())
+  empId           String   @unique // Employee ID reference
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String?
+  specialization  String
+  licenseNumber   String?  @unique
+  yearsOfExperience Int?
+  bio             String?
+  profileImage    String?
+  
+  // Availability
+  isAvailable     Boolean  @default(true)
+  
+  // Relations
+  portalUser      PortalUser?
+  appointments    Appointment[]
+  calendarEvents  CalendarEventAssignment[]
+  notifications   Notification[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([empId])
+  @@index([email])
+  @@index([specialization])
+}
+
+// ============================================
+// STAFF MODEL
+// ============================================
+
+model Staff {
+  id            String   @id @default(uuid())
+  empId         String   @unique
+  firstName     String
+  lastName      String
+  email         String   @unique
+  phone         String?
+  designation   String?
+  department    String?
+  
+  // Relations
+  portalUser    PortalUser?
+  attendance    Attendance[]
+  tasks         Task[]
+  calendarEvents CalendarEventAssignment[]
+  notifications Notification[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([empId])
+  @@index([email])
+}
+
+// ============================================
+// PATIENT MODEL
+// ============================================
+
+model Patient {
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  emergencyContact String?
+  emergencyPhone  String?
+  insuranceProvider String?
+  insuranceNumber String?
+  
+  // KYC Status
+  kycStatus       String   @default("pending") // pending, submitted, under_review, approved, rejected
+  
+  // Relations
+  portalUser      PortalUser?
+  appointments    Appointment[]
+  kycDocuments    KYCDocument[]
+  notifications   Notification[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([phone])
+  @@index([kycStatus])
+}
+
+// ============================================
+// ATTENDANCE MODEL
+// ============================================
+
+model Attendance {
+  id              String   @id @default(uuid())
+  employeeId      String
+  staffId         String?  // For staff-specific attendance
+  
+  // Check In Details (stored even if no check out)
+  checkInTime     DateTime
+  checkInPhoto    String?  // File path or URL
+  checkInLocation String?  // GPS coordinates or address
+  
+  // Check Out Details
+  checkOutTime    DateTime?
+  checkOutPhoto   String?
+  checkOutLocation String?
+  
+  // Computed Fields (only after check out)
+  workingHours   Float?   // Computed in hours (e.g., 8.5)
+  status         String   @default("present") // present, absent, late, half_day
+  
+  // Relations
+  employee        Employee @relation(fields: [employeeId], references: [id])
+  staff           Staff?   @relation(fields: [staffId], references: [id])
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([employeeId])
+  @@index([staffId])
+  @@index([checkInTime])
+  @@index([status])
+}
+
+// ============================================
+// KYC DOCUMENTS MODEL
+// ============================================
+
+model KYCDocument {
+  id                String   @id @default(uuid())
+  patientId         String
+  
+  // Document Types
+  salarySlip1       String?  // 3 month salary slips
+  salarySlip2       String?
+  salarySlip3       String?
+  cancelledCheque   String?  // Cancelled cheque or passbook
+  passbook          String?
+  aadhaarFront      String?  // Aadhaar front
+  aadhaarBack       String?  // Aadhaar back
+  educationalDoc1  String?  // Educational documents
+  educationalDoc2  String?
+  educationalDoc3  String?
+  
+  // Review Status
+  status            String   @default("pending") // pending, submitted, under_review, approved, rejected
+  reviewedBy        String?   // Employee ID of reviewer
+  reviewedAt        DateTime?
+  rejectionRemarks  String?   // Remarks if rejected
+  resubmissionRequested Boolean @default(false)
+  
+  // Relations
+  patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([patientId])
+  @@index([status])
+  @@index([reviewedBy])
+}
+
+// ============================================
+// APPOINTMENT MODEL
+// ============================================
+
+model Appointment {
+  id              String   @id @default(uuid())
+  patientId       String
+  doctorId        String
+  
+  // Appointment Details
+  date            DateTime
+  time            String   // e.g., "10:00 AM"
+  type            String?  // Consultation, Follow-up, Annual Checkup, etc.
+  status          String   @default("scheduled") // scheduled, confirmed, in_progress, completed, cancelled, rescheduled
+  notes           String?
+  department      String?
+  
+  // Relations
+  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor          Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([date])
+  @@index([status])
+}
+
+// ============================================
+// CALENDAR EVENT MODEL
+// ============================================
+
+model CalendarEvent {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime?
+  location        String?
+  eventType       String   @default("meeting") // meeting, training, holiday, event, reminder, other
+  status          String   @default("upcoming") // upcoming, active, completed, cancelled
+  
+  // Assignment
+  assignedToAll   Boolean  @default(false) // If true, assign to all employees
+  createdBy       String   // Employee ID of creator
+  
+  // Relations
+  assignments     CalendarEventAssignment[]
+  notifications   Notification[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([startDate])
+  @@index([status])
+  @@index([assignedToAll])
+}
+
+// Many-to-Many: Calendar Events to Employees/Doctors/Staff
+model CalendarEventAssignment {
+  id              String   @id @default(uuid())
+  eventId         String
+  employeeId      String?
+  doctorId        String?
+  staffId         String?
+  
+  // Relations
+  event           CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  employee        Employee?      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  doctor          Doctor?        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  staff           Staff?         @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([eventId])
+  @@index([employeeId])
+  @@index([doctorId])
+  @@index([staffId])
+}
+
+// ============================================
+// NOTIFICATION MODEL
+// ============================================
+
+model Notification {
+  id              String   @id @default(uuid())
+  title           String
+  message         String
+  type            String   @default("general") // appointment, kyc, task, event, system, general
+  priority        String   @default("medium") // low, medium, high, urgent
+  status          String   @default("unread") // unread, read, archived
+  
+  // Recipients
+  employeeId      String?
+  doctorId        String?
+  patientId       String?
+  staffId         String?
+  allEmployees    Boolean  @default(false) // Broadcast to all
+  
+  // Related Entities
+  eventId         String?  // If notification is for a calendar event
+  appointmentId   String?
+  kycDocumentId   String?
+  
+  // Relations
+  employee        Employee?      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  doctor          Doctor?        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient         Patient?       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  staff           Staff?         @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  event           CalendarEvent? @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  readAt          DateTime?
+  
+  @@index([employeeId])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([staffId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ============================================
+// TASK MODEL (for Staff)
+// ============================================
+
+model Task {
+  id              String   @id @default(uuid())
+  staffId         String
+  title           String
+  description     String?
+  status          String   @default("pending") // pending, in_progress, completed, cancelled
+  priority        String   @default("medium") // low, medium, high, urgent
+  dueDate         DateTime?
+  completedAt     DateTime?
+  
+  // Relations
+  staff           Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([staffId])
+  @@index([status])
+  @@index([dueDate])
+}
+

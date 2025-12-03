@@ -1,5 +1,22 @@
 {
+  "name": "hope-physicians-backend",
+  "version": "1.0.0",
+  "description": "Hope Physicians Backend API",
+  "main": "server.js",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:server": "nodemon server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset"
+  },
   "dependencies": {
+    "@prisma/client": "^5.20.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.5.0",
     "cors": "^2.8.5",
@@ -9,9 +26,9 @@
     "nodemailer": "^7.0.11"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
-  },
-  "scripts": {
-  "dev": "nodemon server.js"
-}
+    "nodemon": "^3.1.11",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
 }

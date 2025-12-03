@@ -7,6 +7,8 @@ const cors = require('cors');
 // Import routes
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const doctorRoutes = require('./routes/doctorRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -15,8 +17,10 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/doctor', doctorRoutes);
 
 // Root route
 app.get('/', (req, res) => {

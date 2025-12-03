@@ -5,6 +5,9 @@ import Card from '../../components/shared/Card';
 import Badge from '../../components/shared/Badge';
 import Button from '../../components/shared/Button';
 import Modal from '../../components/shared/Modal';
+import { useAuth } from '../../contexts/AuthContext';
+import * as doctorService from '../../services/doctorService';
+import toast from 'react-hot-toast';
 import { 
   FaCalendarAlt, 
   FaUserInjured, 
@@ -26,83 +29,71 @@ import {
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
   const [isAccepting, setIsAccepting] = useState(null);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   const [stats, setStats] = useState({
-    todayAppointments: 8,
-    upcoming: 12,
-    totalPatients: 247,
-    completedToday: 5
+    todayAppointments: 0,
+    upcoming: 0,
+    totalPatients: 0,
+    completedToday: 0
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch appointments
-    setTimeout(() => {
-      setAppointments([
-        { 
-          id: 1, 
-          patientId: 101,
-          patient: 'John Doe', 
-          patientEmail: 'john.doe@example.com',
-          patientPhone: '(252) 555-0101',
-          patientDob: '1985-03-15',
-          patientAddress: '123 Main St, Kinston, NC 28501',
-          time: '10:00 AM', 
-          status: 'scheduled',
-          type: 'Follow-up',
-          notes: 'Regular checkup',
-          date: new Date().toISOString().split('T')[0]
-        },
-        { 
-          id: 2, 
-          patientId: 102,
-          patient: 'Jane Smith', 
-          patientEmail: 'jane.smith@example.com',
-          patientPhone: '(252) 555-0102',
-          patientDob: '1990-07-22',
-          patientAddress: '456 Oak Ave, Kinston, NC 28501',
-          time: '11:00 AM', 
-          status: 'in-progress',
-          type: 'Consultation',
-          notes: 'New patient',
-          date: new Date().toISOString().split('T')[0]
-        },
-        { 
-          id: 3, 
-          patientId: 103,
-          patient: 'Mike Johnson', 
-          patientEmail: 'mike.johnson@example.com',
-          patientPhone: '(252) 555-0103',
-          patientDob: '1978-11-08',
-          patientAddress: '789 Pine Rd, Kinston, NC 28501',
-          time: '02:00 PM', 
-          status: 'scheduled',
-          type: 'Follow-up',
-          notes: 'Post-surgery review',
-          date: new Date().toISOString().split('T')[0]
-        },
-        { 
-          id: 4, 
-          patientId: 104,
-          patient: 'Sarah Brown', 
-          patientEmail: 'sarah.brown@example.com',
-          patientPhone: '(252) 555-0104',
-          patientDob: '1992-05-30',
-          patientAddress: '321 Elm St, Kinston, NC 28501',
-          time: '03:30 PM', 
-          status: 'scheduled',
-          type: 'Consultation',
-          notes: 'Annual physical',
-          date: new Date().toISOString().split('T')[0]
-        }
-      ]);
+    fetchDashboardData();
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    if (!user || !user.doctorId) {
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Fetch today's appointments and stats in parallel
+      const [appointmentsResponse, statsResponse] = await Promise.all([
+        doctorService.getTodayAppointments(user.doctorId),
+        doctorService.getDoctorStats(user.doctorId),
+      ]);
+
+      // Transform appointments data to match expected format
+      const transformedAppointments = (appointmentsResponse.data || []).map(apt => ({
+        id: apt.id,
+        patientId: apt.patient?.id || apt.patientId,
+        patient: apt.patient 
+          ? `${apt.patient.firstName} ${apt.patient.lastName}`
+          : apt.patient || 'Unknown Patient',
+        patientEmail: apt.patient?.email || apt.patientEmail || '',
+        patientPhone: apt.patient?.phone || apt.patientPhone || '',
+        patientDob: apt.patient?.dateOfBirth || apt.patientDob || '',
+        patientAddress: apt.patient?.address || apt.patientAddress || '',
+        time: apt.time,
+        date: apt.date ? (typeof apt.date === 'string' ? apt.date : apt.date.toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+        status: apt.status || 'scheduled',
+        type: apt.type || 'Consultation',
+        notes: apt.notes || '',
+      }));
+
+      setAppointments(transformedAppointments);
+      setStats(statsResponse || {
+        todayAppointments: transformedAppointments.length,
+        upcoming: 0,
+        totalPatients: 0,
+        completedToday: transformedAppointments.filter(a => a.status === 'completed').length,
+      });
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Auto-hide notification after 3 seconds
   useEffect(() => {
@@ -131,12 +122,14 @@ const DoctorDashboard = () => {
   const handleAcceptAppointment = async (id) => {
     setIsAccepting(id);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const result = await doctorService.acceptAppointment(id);
+      
+      // Update appointment status
       setAppointments(prev => 
         prev.map(apt => 
           apt.id === id 
-            ? { ...apt, status: 'in-progress' }
+            ? { ...apt, status: 'confirmed' }
             : apt
         )
       );
@@ -144,12 +137,19 @@ const DoctorDashboard = () => {
       // Update stats
       setStats(prev => ({
         ...prev,
-        todayAppointments: prev.todayAppointments - 1
+        todayAppointments: prev.todayAppointments,
+        completedToday: prev.completedToday + 1
       }));
       
-      setIsAccepting(null);
+      toast.success(result.message || 'Appointment accepted successfully!');
       showNotification('Appointment accepted successfully!', 'success');
-    }, 1000);
+    } catch (error) {
+      console.error('Failed to accept appointment:', error);
+      toast.error('Failed to accept appointment. Please try again.');
+      showNotification('Failed to accept appointment', 'error');
+    } finally {
+      setIsAccepting(null);
+    }
   };
 
   const handleViewPatient = (appointment) => {
@@ -168,6 +168,17 @@ const DoctorDashboard = () => {
     });
     setIsPatientModalOpen(true);
   };
+
+  // Refresh appointments every 30 seconds
+  useEffect(() => {
+    if (!user || !user.doctorId) return;
+    
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleViewAllAppointments = () => {
     navigate('/doctor/appointments');
@@ -239,7 +250,7 @@ const DoctorDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Today's Appointments</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.todayAppointments}</p>
-                <p className="text-xs text-blue-600 mt-1">8 remaining</p>
+                <p className="text-xs text-blue-600 mt-1">{appointments.filter(a => a.status === 'scheduled' || a.status === 'confirmed').length} remaining</p>
               </div>
               <div className="p-3 rounded-xl bg-blue-100">
                 <FaCalendarAlt className="w-8 h-8 text-blue-600" />
