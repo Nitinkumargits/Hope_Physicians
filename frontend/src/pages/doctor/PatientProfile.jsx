@@ -5,6 +5,8 @@ import Card from '../../components/shared/Card';
 import Badge from '../../components/shared/Badge';
 import Button from '../../components/shared/Button';
 import Modal from '../../components/shared/Modal';
+import { getPatientById } from '../../services/patientService';
+import toast from 'react-hot-toast';
 import { 
   FaArrowLeft,
   FaUser,
@@ -24,7 +26,8 @@ import {
   FaHistory,
   FaEdit,
   FaPrint,
-  FaDownload
+  FaDownload,
+  FaSpinner
 } from 'react-icons/fa';
 
 const PatientProfile = () => {
@@ -39,145 +42,90 @@ const PatientProfile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch patient data
-    setTimeout(() => {
-      // Mock patient data based on ID
-      const mockPatients = {
-        101: {
-          id: 101,
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          phone: '(252) 555-0101',
-          dob: '1985-03-15',
-          age: 39,
-          address: '123 Main St, Kinston, NC 28501',
-          gender: 'Male',
-          bloodType: 'O+',
-          allergies: ['Penicillin', 'Peanuts'],
-          emergencyContact: {
-            name: 'Jane Doe',
-            relationship: 'Spouse',
-            phone: '(252) 555-0102'
-          },
-          insurance: {
-            provider: 'Blue Cross Blue Shield',
-            policyNumber: 'BC123456789',
-            groupNumber: 'GRP001'
-          },
-          registrationDate: '2020-01-15'
+    fetchPatientData();
+  }, [id]);
+
+  const fetchPatientData = async () => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      console.log(`🔍 Fetching patient data for ID: ${id}`);
+      const result = await getPatientById(id);
+      
+      if (!result || !result.data) {
+        console.warn('⚠️ No patient data received');
+        setLoading(false);
+        return;
+      }
+
+      const patientData = result.data;
+      
+      // Transform patient data
+      const transformedPatient = {
+        id: patientData.id,
+        name: `${patientData.firstName} ${patientData.lastName}`,
+        firstName: patientData.firstName,
+        lastName: patientData.lastName,
+        email: patientData.email,
+        phone: patientData.phone,
+        dob: patientData.dateOfBirth ? new Date(patientData.dateOfBirth).toISOString().split('T')[0] : null,
+        age: patientData.dateOfBirth 
+          ? Math.floor((new Date() - new Date(patientData.dateOfBirth)) / (365.25 * 24 * 60 * 60 * 1000))
+          : null,
+        address: patientData.address || 'N/A',
+        gender: patientData.gender || 'Not specified',
+        bloodType: 'Not specified', // Not in schema yet
+        allergies: [], // Not in schema yet
+        emergencyContact: {
+          name: patientData.emergencyContact || 'Not provided',
+          relationship: 'Not specified',
+          phone: patientData.emergencyPhone || 'Not provided'
         },
-        102: {
-          id: 102,
-          name: 'Jane Smith',
-          email: 'jane.smith@example.com',
-          phone: '(252) 555-0102',
-          dob: '1990-07-22',
-          age: 34,
-          address: '456 Oak Ave, Kinston, NC 28501',
-          gender: 'Female',
-          bloodType: 'A+',
-          allergies: ['Latex'],
-          emergencyContact: {
-            name: 'John Smith',
-            relationship: 'Husband',
-            phone: '(252) 555-0103'
-          },
-          insurance: {
-            provider: 'Aetna',
-            policyNumber: 'AE987654321',
-            groupNumber: 'GRP002'
-          },
-          registrationDate: '2021-03-20'
-        }
+        insurance: {
+          provider: patientData.insuranceProvider || 'Not provided',
+          policyNumber: patientData.insuranceNumber || 'Not provided',
+          groupNumber: 'Not provided'
+        },
+        registrationDate: patientData.createdAt ? new Date(patientData.createdAt).toISOString().split('T')[0] : null,
+        kycStatus: patientData.kycStatus,
       };
 
-      const patientData = mockPatients[id] || mockPatients[101];
-      setPatient(patientData);
+      setPatient(transformedPatient);
 
-      // Mock appointments
-      setAppointments([
-        {
-          id: 1,
-          date: '2024-01-20',
-          time: '10:00 AM',
-          type: 'Follow-up',
-          status: 'scheduled',
-          doctor: 'Dr. Okonkwo',
-          notes: 'Regular checkup'
-        },
-        {
-          id: 2,
-          date: '2024-01-15',
-          time: '02:00 PM',
-          type: 'Consultation',
-          status: 'completed',
-          doctor: 'Dr. Okonkwo',
-          notes: 'Annual physical examination'
-        },
-        {
-          id: 3,
-          date: '2023-12-10',
-          time: '11:00 AM',
-          type: 'Follow-up',
-          status: 'completed',
-          doctor: 'Dr. Okonkwo',
-          notes: 'Post-surgery review'
-        }
-      ]);
+      // Transform appointments
+      const transformedAppointments = (patientData.appointments || []).map(apt => ({
+        id: apt.id,
+        date: apt.date ? (typeof apt.date === 'string' ? apt.date : apt.date.toISOString().split('T')[0]) : null,
+        time: apt.time || 'N/A',
+        type: apt.type || 'Consultation',
+        status: apt.status || 'scheduled',
+        doctor: apt.doctor ? `Dr. ${apt.doctor.firstName} ${apt.doctor.lastName}` : 'Dr. Okonkwo',
+        notes: apt.notes || '',
+        department: apt.department || '',
+      }));
 
-      // Mock prescriptions
-      setPrescriptions([
-        {
-          id: 1,
-          medication: 'Lisinopril 10mg',
-          dosage: '1 tablet daily',
-          startDate: '2024-01-15',
-          endDate: '2024-04-15',
-          status: 'Active',
-          doctor: 'Dr. Okonkwo'
-        },
-        {
-          id: 2,
-          medication: 'Metformin 500mg',
-          dosage: '2 tablets twice daily',
-          startDate: '2024-01-15',
-          endDate: '2024-04-15',
-          status: 'Active',
-          doctor: 'Dr. Okonkwo'
-        }
-      ]);
+      setAppointments(transformedAppointments);
 
-      // Mock medical history
-      setMedicalHistory([
-        {
-          id: 1,
-          date: '2024-01-15',
-          condition: 'Hypertension',
-          diagnosis: 'Stage 1 Hypertension',
-          treatment: 'Lisinopril 10mg daily',
-          doctor: 'Dr. Okonkwo'
-        },
-        {
-          id: 2,
-          date: '2023-12-10',
-          condition: 'Appendectomy',
-          diagnosis: 'Acute Appendicitis',
-          treatment: 'Laparoscopic Appendectomy',
-          doctor: 'Dr. Williams'
-        },
-        {
-          id: 3,
-          date: '2023-08-20',
-          condition: 'Type 2 Diabetes',
-          diagnosis: 'Type 2 Diabetes Mellitus',
-          treatment: 'Metformin 500mg BID',
-          doctor: 'Dr. Okonkwo'
-        }
-      ]);
+      // Prescriptions and medical history not in schema yet - keep empty or mock
+      setPrescriptions([]);
+      setMedicalHistory([]);
 
+      console.log('✅ Patient data loaded:', {
+        patient: transformedPatient.name,
+        appointments: transformedAppointments.length,
+      });
+
+    } catch (error) {
+      console.error('❌ Failed to fetch patient data:', error);
+      toast.error('Failed to load patient information. Please try again.');
+    } finally {
       setLoading(false);
-    }, 500);
-  }, [id]);
+    }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -206,7 +154,7 @@ const PatientProfile = () => {
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <FaSpinner className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
             <p className="text-gray-600">Loading patient information...</p>
           </div>
         </div>
@@ -273,7 +221,7 @@ const PatientProfile = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Gender</p>
-                <p className="font-semibold text-gray-900">{patient.gender}</p>
+                <p className="font-semibold text-gray-900">{patient.gender || 'Not specified'}</p>
               </div>
             </div>
           </Card>
@@ -285,7 +233,9 @@ const PatientProfile = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Age</p>
-                <p className="font-semibold text-gray-900">{patient.age} years</p>
+                <p className="font-semibold text-gray-900">
+                  {patient.age ? `${patient.age} years` : 'Not specified'}
+                </p>
               </div>
             </div>
           </Card>
@@ -296,8 +246,10 @@ const PatientProfile = () => {
                 <FaHeartbeat className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Blood Type</p>
-                <p className="font-semibold text-gray-900">{patient.bloodType}</p>
+                <p className="text-sm text-gray-500">KYC Status</p>
+                <Badge variant={patient.kycStatus === 'approved' ? 'success' : patient.kycStatus === 'pending' ? 'warning' : 'default'}>
+                  {patient.kycStatus || 'pending'}
+                </Badge>
               </div>
             </div>
           </Card>
@@ -309,7 +261,9 @@ const PatientProfile = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Member Since</p>
-                <p className="font-semibold text-gray-900">{formatDate(patient.registrationDate)}</p>
+                <p className="font-semibold text-gray-900">
+                  {patient.registrationDate ? formatDate(patient.registrationDate) : 'N/A'}
+                </p>
               </div>
             </div>
           </Card>

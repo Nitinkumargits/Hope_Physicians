@@ -200,21 +200,112 @@ const appointmentController = {
       // For development: send to test.nitin.employee@gmail.com
       const recipientEmail = process.env.APPOINTMENT_EMAIL || 'test.nitin.employee@gmail.com';
       
+      // Format appointment date
+      const formattedDate = appointmentDate.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      const doctorName = `Dr. ${doctor.firstName} ${doctor.lastName}`;
+
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: recipientEmail, // Development email: test.nitin.employee@gmail.com
         subject: `New Appointment from ${name}`,
         html: `
-          <h3>New Appointment Details</h3>
-          <p><strong>Patient Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone}</p>
-          <p><strong>Department:</strong> ${department}</p>
-          <p><strong>Date:</strong> ${appointmentDate.toLocaleDateString()}</p>
-          <p><strong>Time:</strong> ${appointmentTime}</p>
-          <p><strong>Assigned Doctor:</strong> ${doctor.firstName} ${doctor.lastName} (${doctor.specialization})</p>
-          <p><strong>Message:</strong> ${message || 'N/A'}</p>
-          <p><strong>Appointment ID:</strong> ${appointment.id}</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+            <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #004aad; margin: 0; font-size: 28px;">Hope Physicians</h1>
+              </div>
+              
+              <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+                <h2 style="color: #1e40af; margin: 0 0 10px 0; font-size: 20px;">📅 New Appointment Details</h2>
+                <p style="color: #1e3a8a; margin: 0; font-size: 14px;">A new appointment request has been received.</p>
+              </div>
+
+              <div style="background-color: #f3f4f6; border-radius: 6px; padding: 20px; margin-bottom: 25px;">
+                <h3 style="color: #111827; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Appointment Information</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 140px;">Patient Name:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${name}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Email:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${email}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Phone:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${phone}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Department:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${department}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Date:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${formattedDate}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Time:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${appointmentTime}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Assigned Doctor:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${doctorName} (${doctor.specialization})</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Appointment ID:</td>
+                    <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 500;">${appointment.id}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Status:</td>
+                    <td style="padding: 8px 0;">
+                      <span style="background-color: #fbbf24; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">Scheduled</span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              ${message ? `
+              <div style="margin-bottom: 25px;">
+                <h3 style="color: #111827; margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">Message:</h3>
+                <p style="color: #374151; font-size: 14px; line-height: 1.6; margin: 0; padding: 12px; background-color: #f9fafb; border-radius: 4px;">
+                  ${message}
+                </p>
+              </div>
+              ` : ''}
+
+              <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+                <p style="color: #92400e; margin: 0; font-size: 14px; line-height: 1.6;">
+                  <strong>Note:</strong> This appointment is pending doctor confirmation. The patient will be notified once the appointment is accepted.
+                </p>
+              </div>
+
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 10px 0;">
+                  For any questions or concerns, please contact us:
+                </p>
+                <p style="color: #374151; font-size: 14px; margin: 5px 0;">
+                  <strong>Phone:</strong> (252) 522-3663
+                </p>
+                <p style="color: #374151; font-size: 14px; margin: 5px 0;">
+                  <strong>Email:</strong> info@hopephysicians.com
+                </p>
+              </div>
+
+              <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                  This is an automated email. Please do not reply to this message.
+                </p>
+                <p style="color: #9ca3af; font-size: 12px; margin: 5px 0 0 0;">
+                  © ${new Date().getFullYear()} Hope Physicians. All rights reserved.
+                </p>
+              </div>
+            </div>
+          </div>
         `
       };
 
