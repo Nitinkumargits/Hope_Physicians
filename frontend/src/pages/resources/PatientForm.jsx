@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import '../../styles/Home.css';
 import '../../styles/Forms.css';
 import heroImg from "../../assets/images/hero2.jpg";
+import patientFormService from '../../services/patientFormService';
 
 const PatientForm = () => {
   const [activeForm, setActiveForm] = useState('patient-info');
   const [activeSubForm, setActiveSubForm] = useState('patient-info-form');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <div className="page">
@@ -123,10 +126,49 @@ const PatientForm = () => {
                   </p>
                   <h3 style={{ textAlign: 'center', marginBottom: '30px' }}>Patient Information</h3>
 
-                  <form className="appointment-form">
+                  <form 
+                    className="appointment-form"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setIsSubmitting(true);
+                      
+                      const formData = new FormData(e.target);
+                      const data = Object.fromEntries(formData.entries());
+                      
+                      // Get radio button values
+                      const maritalStatus = formData.get('maritalStatus');
+                      const migrantWorker = formData.get('migrantWorker');
+                      const race = formData.get('race');
+                      const gender = formData.get('gender');
+                      
+                      const submitData = {
+                        ...data,
+                        maritalStatus,
+                        migrantWorker,
+                        race,
+                        gender,
+                      };
+                      
+                      const result = await patientFormService.submitPatientInfoForm(submitData);
+                      
+                      setIsSubmitting(false);
+                      
+                      if (result.success) {
+                        toast.success('Patient Information form submitted successfully!');
+                        e.target.reset();
+                      } else {
+                        toast.error(result.error || 'Failed to submit form. Please try again.');
+                      }
+                    }}
+                  >
                     <div className="form-group">
                       <label>Pharmacy Name</label>
                       <input type="text" name="pharmacyName" />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Email Address (for patient matching)</label>
+                      <input type="email" name="email" placeholder="example@email.com" />
                     </div>
 
                     <div className="form-group">
@@ -323,7 +365,14 @@ const PatientForm = () => {
                       Serving All of Eastern North Carolina Since 2007
                     </div>
 
-                    <button type="submit" className="form-btn" style={{ marginTop: '30px' }}>Submit Form</button>
+                    <button 
+                      type="submit" 
+                      className="form-btn" 
+                      style={{ marginTop: '30px', opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Form'}
+                    </button>
                   </form>
                 </div>
               )}
@@ -340,7 +389,27 @@ const PatientForm = () => {
                   </p>
                   <h3 style={{ textAlign: 'center', marginBottom: '30px' }}>Privacy Practices Acknowledgement</h3>
 
-                  <form className="appointment-form">
+                  <form 
+                    className="appointment-form"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setIsSubmitting(true);
+                      
+                      const formData = new FormData(e.target);
+                      const data = Object.fromEntries(formData.entries());
+                      
+                      const result = await patientFormService.submitPrivacyForm(data);
+                      
+                      setIsSubmitting(false);
+                      
+                      if (result.success) {
+                        toast.success('Privacy Acknowledgement form submitted successfully!');
+                        e.target.reset();
+                      } else {
+                        toast.error(result.error || 'Failed to submit form. Please try again.');
+                      }
+                    }}
+                  >
                     <div style={{ marginBottom: '30px', padding: '20px', background: '#f6f8fb', borderRadius: '10px' }}>
                       <p style={{ lineHeight: '1.8', fontSize: '14px', color: '#333' }}>
                         I have received and read the notice of privacy practices and I have been provided an opportunity to review it.
@@ -382,7 +451,14 @@ const PatientForm = () => {
                       Serving All of Eastern North Carolina Since 2007
                     </div>
 
-                    <button type="submit" className="form-btn" style={{ marginTop: '30px' }}>Submit Form</button>
+                    <button 
+                      type="submit" 
+                      className="form-btn" 
+                      style={{ marginTop: '30px', opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Form'}
+                    </button>
                   </form>
                 </div>
               )}
@@ -401,7 +477,27 @@ const PatientForm = () => {
               </p>
               <h3 style={{ textAlign: 'center', marginBottom: '30px' }}>Parental Consent Form</h3>
 
-              <form className="appointment-form">
+              <form 
+                className="appointment-form"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setIsSubmitting(true);
+                  
+                  const formData = new FormData(e.target);
+                  const data = Object.fromEntries(formData.entries());
+                  
+                  const result = await patientFormService.submitParentalConsentForm(data);
+                  
+                  setIsSubmitting(false);
+                  
+                  if (result.success) {
+                    toast.success('Parental Consent form submitted successfully!');
+                    e.target.reset();
+                  } else {
+                    toast.error(result.error || 'Failed to submit form. Please try again.');
+                  }
+                }}
+              >
                 <h4 style={{ marginBottom: '20px', color: '#004aad' }}>Patient Information</h4>
                 <div className="form-group">
                   <label>Patient Name *</label>
@@ -508,7 +604,14 @@ const PatientForm = () => {
                   </div>
                 </div>
 
-                <button type="submit" className="form-btn" style={{ marginTop: '30px' }}>Submit Form</button>
+                <button 
+                  type="submit" 
+                  className="form-btn" 
+                  style={{ marginTop: '30px', opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Form'}
+                </button>
               </form>
             </div>
           )}
@@ -525,7 +628,37 @@ const PatientForm = () => {
               </p>
               <h3 style={{ textAlign: 'center', marginBottom: '30px' }}>Authorization for Release of Information</h3>
 
-              <form className="appointment-form">
+              <form 
+                className="appointment-form"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setIsSubmitting(true);
+                  
+                  const formData = new FormData(e.target);
+                  const data = Object.fromEntries(formData.entries());
+                  
+                  // Get checkbox values
+                  const checkboxFields = [
+                    'infoHistory', 'infoProgress', 'infoLab', 'infoXray', 'infoOther', 'infoEntire',
+                    'purposeChanging', 'purposeConsult', 'purposeContinuity', 'purposeOther'
+                  ];
+                  
+                  checkboxFields.forEach(field => {
+                    data[field] = formData.get(field) === 'on' || formData.get(field) === true;
+                  });
+                  
+                  const result = await patientFormService.submitReleaseInfoForm(data);
+                  
+                  setIsSubmitting(false);
+                  
+                  if (result.success) {
+                    toast.success('Release of Information form submitted successfully!');
+                    e.target.reset();
+                  } else {
+                    toast.error(result.error || 'Failed to submit form. Please try again.');
+                  }
+                }}
+              >
                 <div className="form-group">
                   <label>Patient Name *</label>
                   <input type="text" name="patientName" required />
@@ -754,7 +887,14 @@ const PatientForm = () => {
                   </p>
                 </div>
 
-                <button type="submit" className="form-btn" style={{ marginTop: '30px' }}>Submit Form</button>
+                <button 
+                  type="submit" 
+                  className="form-btn" 
+                  style={{ marginTop: '30px', opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Form'}
+                </button>
               </form>
             </div>
           )}

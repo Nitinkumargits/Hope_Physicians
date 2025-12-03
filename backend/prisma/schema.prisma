@@ -176,6 +176,7 @@ model Patient {
   appointments    Appointment[]
   kycDocuments    KYCDocument[]
   notifications   Notification[]
+  formSubmissions PatientFormSubmission[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -407,5 +408,111 @@ model Task {
   @@index([staffId])
   @@index([status])
   @@index([dueDate])
+}
+
+// ============================================
+// PATIENT FORM SUBMISSION MODEL
+// ============================================
+
+model PatientFormSubmission {
+  id                String   @id @default(uuid())
+  formType          String   // patient_info, privacy_ack, parental_consent, release_info
+  patientId         String?  // Link to existing patient if found by email
+  
+  // Patient Information (from Patient Information form)
+  pharmacyName      String?
+  patientName       String?  // Full name
+  firstName         String?
+  lastName          String?
+  dateOfBirth       DateTime?
+  streetAddress     String?
+  city              String?
+  state             String?
+  zipCode           String?
+  ssn               String?
+  phoneHome         String?
+  phoneMobile       String?
+  employerPhone     String?
+  employerAddress   String?
+  employerCity      String?
+  employerState     String?
+  employerZip       String?
+  maritalStatus     String?
+  migrantWorker     String?  // yes, no
+  race              String?
+  gender            String?
+  emergencyContact  String?
+  emergencyPhone    String?
+  responsiblePartyName String?
+  responsiblePartyRelationship String?
+  responsiblePartyPhone String?
+  policyNumber      String?
+  groupNumber       String?
+  signature         String?
+  signatureDate     DateTime?
+  
+  // Privacy Acknowledgement
+  privacyName       String?
+  privacyDob        DateTime?
+  privacySignature String?
+  privacyDate       DateTime?
+  privacyWitness    String?
+  witnessDate       DateTime?
+  
+  // Parental Consent
+  accountNumber     String?
+  authName1         String?
+  authPhone1        String?
+  authRelationship1 String?
+  authName2         String?
+  authPhone2        String?
+  authRelationship2 String?
+  expirationDate    DateTime?
+  guardianName      String?
+  guardianSignature String?
+  consentDate       DateTime?
+  consentWitness    String?
+  consentWitnessDate DateTime?
+  
+  // Release of Information
+  authorizeFrom      String?
+  releaseTo          String?
+  faxAddress         String?
+  infoHistory        Boolean  @default(false)
+  infoProgress       Boolean  @default(false)
+  infoLab            Boolean  @default(false)
+  infoXray           Boolean  @default(false)
+  infoOther          Boolean  @default(false)
+  infoOtherSpecify   String?
+  infoEntire         Boolean  @default(false)
+  purposeChanging    Boolean  @default(false)
+  purposeConsult     Boolean  @default(false)
+  purposeContinuity  Boolean  @default(false)
+  purposeOther       Boolean  @default(false)
+  purposeOtherSpecify String?
+  releaseDate        DateTime?
+  interim            String?
+  insurance          String?
+  releaseExpirationDate DateTime?
+  releasePatientSignature String?
+  releaseSignatureDate DateTime?
+  authorizedAgentSignature String?
+  agentRelationship  String?
+  agentDate          DateTime?
+  releaseWitness     String?
+  releaseWitnessDate DateTime?
+  
+  // Additional form data stored as JSON for flexibility
+  formData          String?  // JSON string for any additional fields
+  
+  // Relations
+  patient           Patient?  @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([patientId])
+  @@index([formType])
+  @@index([createdAt])
 }
 
