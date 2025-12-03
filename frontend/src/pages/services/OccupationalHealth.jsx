@@ -166,7 +166,7 @@ const OccupationalHealth = () => {
             <p style={{ margin: 0, opacity: 0.95 }}>Contact us to learn more about our occupational health services for your business.</p>
           </div>
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <a href="/#appointment-form" className="cta-btn" style={{ 
+            <a href="/appointment" className="cta-btn" style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 

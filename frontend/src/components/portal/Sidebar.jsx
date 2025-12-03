@@ -98,7 +98,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     patient: [
       { path: '/patient', icon: FaHome, label: 'Dashboard', badge: null },
       { path: '/patient/appointments', icon: FaCalendarAlt, label: 'My Appointments', badge: null },
-      { path: '/patient/book-appointment', icon: FaBookMedical, label: 'Book Appointment', badge: null },
+      { path: '/appointment', icon: FaBookMedical, label: 'Book Appointment', badge: null },
       { path: '/patient/profile', icon: FaUserCircle, label: 'Profile', badge: null },
       { path: '/patient/kyc-documents', icon: FaFileUpload, label: 'KYC Documents', badge: null },
       { path: '/patient/notifications', icon: FaBell, label: 'Notifications', badge: notificationCounts['/patient/notifications'] }

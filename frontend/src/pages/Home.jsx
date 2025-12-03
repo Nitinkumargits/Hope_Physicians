@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import AppointmentForm from "../components/AppointmentForm";
 import '../styles/Home.css';
 
 import heroImg from "../assets/images/hero2.jpg";
@@ -116,7 +115,7 @@ const Home = () => {
               </p>
 
               <div className="hero-ctas reveal-on-scroll">
-                <a className="hero-btn" href="#appointment-form">Book Appointment</a>
+                <Link className="hero-btn" to="/appointment">Book Appointment</Link>
                 <a className="hero-ghost" href="/contact">Contact Us</a>
               </div>
             </div>
@@ -423,7 +422,7 @@ const Home = () => {
               </ul>
 
               <div className="specialist-buttons" style={{ marginTop: '30px' }}>
-                <a href="#appointment-form" className="doctor-btn">Book Appointment</a>
+                <Link to="/appointment" className="doctor-btn">Book Appointment</Link>
                 <a href="mailto:doctor@hopephysicians.com" className="icon-btn email" style={{ marginLeft: '10px' }}>📧 Email</a>
                 <a href="#" className="icon-btn linkedin" style={{ marginLeft: '10px' }}>🔗 LinkedIn</a>
               </div>
@@ -470,12 +469,9 @@ const Home = () => {
         <div className="container cta-container">
           <h2>Ready to Book Your Appointment?</h2>
           <p>We make booking simple — choose a time and see a specialist you trust.</p>
-          <a href="#appointment-form" className="cta-btn">Book Appointment</a>
+          <Link to="/appointment" className="cta-btn">Book Appointment</Link>
         </div>
       </section>
-
-      {/* APPOINTMENT FORM */}
-      <AppointmentForm />
 
       {/* DISCLAIMER SECTION */}
       <section className="section" style={{ background: '#f6f8fb', padding: '40px 0' }}>
@@ -501,10 +497,10 @@ const Home = () => {
       </section>
 
       {/* FLOATING BUTTON */}
-      <a href="#appointment-form" className="floating-btn bounce-btn">
+      <Link to="/appointment" className="floating-btn bounce-btn">
         <img src={appointmentIcon} alt="" />
         <span>Book Appointment</span>
-      </a>
+      </Link>
     </>
   );
 };

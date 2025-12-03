@@ -214,7 +214,7 @@ const PatientDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900">Patient Dashboard</h1>
             <p className="text-gray-600 mt-1">Manage your appointments and health records</p>
           </div>
-          <Link to="/patient/book-appointment">
+          <Link to="/appointment">
             <Button className="bg-primary text-white hover:bg-primary-600">
               <FaCalendarCheck className="w-4 h-4 mr-2" />
               Book Appointment
@@ -266,7 +266,7 @@ const PatientDashboard = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link to="/patient/book-appointment">
+          <Link to="/appointment">
             <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-100 rounded-xl">
@@ -337,7 +337,7 @@ const PatientDashboard = () => {
             <div className="text-center py-8">
               <FaCalendarAlt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 mb-4">No upcoming appointments</p>
-              <Link to="/patient/book-appointment">
+              <Link to="/appointment">
                 <Button>Book Your First Appointment</Button>
               </Link>
             </div>

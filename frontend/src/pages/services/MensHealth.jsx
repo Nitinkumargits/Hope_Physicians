@@ -166,7 +166,7 @@ const MensHealth = () => {
             <p style={{ margin: 0, opacity: 0.95 }}>Schedule your men's health screening or consultation with our team.</p>
           </div>
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <a href="/#appointment-form" className="cta-btn" style={{ 
+            <a href="/appointment" className="cta-btn" style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
