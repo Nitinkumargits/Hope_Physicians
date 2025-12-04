@@ -37,9 +37,9 @@ FIREBASE_TOKEN
 *.pem
 *.key
 
-# Firebase configuration (if contains secrets)
-# Note: firebase.json.example is tracked, but firebase.json might contain secrets
-firebase.json
+# Firebase configuration
+# Note: firebase.json is tracked (no secrets, just configuration)
+# firebase.json.example is also tracked
 !firebase.json.example
 
 # Logs
