@@ -198,12 +198,13 @@ jobs:
       - name: Deploy to Firebase
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
+          FIREBASE_FUNCTIONS_REGION: us-central1
         run: |
-          if [ -d "backend/functions" ]; then
+          if [ -d "backend/functions" ] && [ -f "backend/functions/index.js" ]; then
             echo "🚀 Deploying hosting and functions..."
             firebase deploy --only hosting,functions
           else
-            echo "🚀 Deploying hosting only (functions not found)..."
+            echo "🚀 Deploying hosting only (functions not found or not configured)..."
             firebase deploy --only hosting
           fi
 
