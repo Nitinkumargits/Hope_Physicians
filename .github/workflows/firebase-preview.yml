@@ -7,13 +7,13 @@ on:
       - main
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
 
 jobs:
   preview-deploy:
     name: Deploy Preview
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
@@ -38,15 +38,10 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      - name: Setup Firebase CLI
+      - name: Deploy Preview to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
           channelId: pr-${{ github.event.number }}
-
-      - name: Deploy Preview
-        run: |
-          firebase hosting:channel:deploy pr-${{ github.event.number }} --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
-

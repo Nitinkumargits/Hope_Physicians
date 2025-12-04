@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # Allows manual triggering
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
   FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     defaults:
       run:
         working-directory: ./frontend
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
@@ -61,7 +61,7 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,16 +70,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Setup Prisma
-        run: |
-          cd prisma
-          npx prisma generate
+        run: npx prisma generate
 
       - name: Lint functions
         run: |
@@ -104,7 +102,7 @@ jobs:
     needs: [build-frontend, build-backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -137,18 +135,26 @@ jobs:
       - name: Install backend functions dependencies
         run: |
           if [ -d "backend/functions" ]; then
+            echo "📦 Installing backend functions dependencies..."
             cd backend/functions
             npm ci
             # Generate Prisma client if needed
             if [ -d "prisma" ]; then
               npx prisma generate
             fi
+          else
+            echo "⚠️ Warning: backend/functions directory not found - skipping functions deployment"
           fi
-        continue-on-error: true
 
       - name: Deploy to Firebase
         run: |
-          firebase deploy --only hosting,functions --token ${{ secrets.FIREBASE_TOKEN }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
+          if [ -d "backend/functions" ]; then
+            echo "🚀 Deploying hosting and functions..."
+            firebase deploy --only hosting,functions --token ${{ secrets.FIREBASE_TOKEN }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
+          else
+            echo "🚀 Deploying hosting only (functions not found)..."
+            firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
+          fi
 
       - name: Cleanup
         if: always()
@@ -161,4 +167,3 @@ jobs:
           echo "✅ Deployment successful!"
           echo "Frontend: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
           echo "API: https://us-central1-${{ secrets.FIREBASE_PROJECT_ID }}.cloudfunctions.net/api"
-
