@@ -26,6 +26,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle 401 errors - redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login
+      localStorage.removeItem('token');
+      window.location.href = '/portal/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const staffApi = {
   // Dashboard Statistics
   getStats: () => api.get('/staff/stats'),

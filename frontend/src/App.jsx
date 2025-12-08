@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import './styles/Layout.css';
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Departments from "./pages/Departments";
 import Doctors from "./pages/Doctors";
@@ -141,12 +142,12 @@ function App() {
       <Route path="/patient/kyc-documents" element={<PatientLayout><KYCDocuments /></PatientLayout>} />
 
       {/* Staff Routes */}
-      <Route path="/staff" element={<StaffDashboard />} />
-      <Route path="/staff/tasks" element={<Tasks />} />
-      <Route path="/staff/attendance" element={<StaffAttendance />} />
-      <Route path="/staff/kyc-assistance" element={<KYCAssistance />} />
-      <Route path="/staff/appointments" element={<StaffAppointments />} />
-      <Route path="/staff/notifications" element={<StaffNotifications />} />
+      <Route path="/staff" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><StaffDashboard /></ProtectedRoute>} />
+      <Route path="/staff/tasks" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><Tasks /></ProtectedRoute>} />
+      <Route path="/staff/attendance" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><StaffAttendance /></ProtectedRoute>} />
+      <Route path="/staff/kyc-assistance" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><KYCAssistance /></ProtectedRoute>} />
+      <Route path="/staff/appointments" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><StaffAppointments /></ProtectedRoute>} />
+      <Route path="/staff/notifications" element={<ProtectedRoute allowedRoles={['staff', 'admin']}><StaffNotifications /></ProtectedRoute>} />
       </Routes>
     </>
   );

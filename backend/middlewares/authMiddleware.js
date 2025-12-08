@@ -55,6 +55,26 @@ const authenticate = async (req, res, next) => {
       }
     }
     
+    // Fetch employeeId/staffId for staff users
+    if ((decoded.role === 'staff' || decoded.role === 'admin') && !decoded.employeeId && !decoded.staffId) {
+      try {
+        const portalUser = await prisma.portalUser.findUnique({
+          where: { id: decoded.id },
+          select: { employeeId: true, staffId: true }
+        });
+        if (portalUser?.employeeId) {
+          decoded.employeeId = portalUser.employeeId;
+          console.log(`✅ Fetched employeeId ${portalUser.employeeId} for user ${decoded.id}`);
+        }
+        if (portalUser?.staffId) {
+          decoded.staffId = portalUser.staffId;
+          console.log(`✅ Fetched staffId ${portalUser.staffId} for user ${decoded.id}`);
+        }
+      } catch (dbError) {
+        console.error('Error fetching employeeId/staffId from database:', dbError);
+      }
+    }
+    
     req.user = decoded; // Store decoded user info in request
     req.admin = decoded; // Also store as admin for backward compatibility
     
