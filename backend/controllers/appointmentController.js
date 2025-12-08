@@ -344,16 +344,65 @@ const appointmentController = {
   },
 
   // Get all appointments (for admin dashboard)
-  getAllAppointments: (req, res) => {
+  getAllAppointments: async (req, res) => {
     try {
-      const appointments = Appointment.getAll();
+      const { status, date, limit = 100 } = req.query;
+      
+      const where = {};
+      if (status) where.status = status;
+      if (date) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+        where.date = {
+          gte: startOfDay,
+          lte: endOfDay
+        };
+      }
+
+      const appointments = await prisma.appointment.findMany({
+        where,
+        take: parseInt(limit),
+        orderBy: [
+          { date: 'desc' },
+          { time: 'asc' }
+        ],
+        include: {
+          patient: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              phone: true
+            }
+          },
+          doctor: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              specialization: true
+            }
+          }
+        }
+      });
 
       console.log(`📋 Admin fetched all appointments. Total: ${appointments.length}`);
 
-      return res.json({ appointments });
+      return res.json({ 
+        success: true,
+        data: appointments,
+        total: appointments.length
+      });
     } catch (error) {
       console.error('❌ Error fetching appointments:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ 
+        success: false,
+        error: 'Internal server error',
+        message: error.message 
+      });
     }
   }
 };

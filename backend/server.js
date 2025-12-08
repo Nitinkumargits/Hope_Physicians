@@ -20,6 +20,8 @@ const nurseRoutes = require('./routes/staff/nurseRoutes');
 const labRoutes = require('./routes/staff/labRoutes');
 const pharmacyRoutes = require('./routes/staff/pharmacyRoutes');
 const staffManagementRoutes = require('./routes/admin/staffManagementRoutes');
+const kycRoutes = require('./routes/admin/kycRoutes');
+const adminGeneralRoutes = require('./routes/admin/adminRoutes');
 
 // Patient dashboard routes
 const patientAppointmentRoutes = require('./routes/patient/appointmentRoutes');
@@ -55,6 +57,8 @@ app.use('/api/staff/nurse', nurseRoutes);
 app.use('/api/staff/lab', labRoutes);
 app.use('/api/staff/pharmacy', pharmacyRoutes);
 app.use('/api/admin/staff', staffManagementRoutes);
+app.use('/api/admin/kyc', kycRoutes);
+app.use('/api/admin', adminGeneralRoutes);
 
 // Patient dashboard routes
 app.use('/api/patient/appointments', patientAppointmentRoutes);

@@ -23,7 +23,7 @@ import {
   FaEnvelope,
   FaMapMarkerAlt
 } from 'react-icons/fa';
-import * as adminService from '../../services/adminService';
+import { adminApi } from '../../api/admin/adminApi';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -51,121 +51,123 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch stats
-      const data = await adminService.getDashboardStats();
-      setStats({
-        totalPatients: data.totalPatients || 1247,
-        totalDoctors: data.totalDoctors || 24,
-        totalStaff: data.totalStaff || 48,
-        appointmentsToday: data.appointmentsToday || 32,
-        pendingKYC: data.pendingKYC || 8,
-        activeAppointments: 18,
-        completedToday: 14
-      });
+      setLoading(true);
       
-      // Mock recent appointments with more details
-      setRecentAppointments([
-        { 
-          id: 1, 
-          patient: 'John Doe', 
-          patientId: 101,
-          patientEmail: 'john.doe@example.com',
-          patientPhone: '(252) 555-0101',
-          doctor: 'Dr. Okonkwo', 
-          department: 'Family Medicine',
-          time: '10:00 AM', 
-          status: 'scheduled', 
-          date: new Date().toISOString().split('T')[0],
-          type: 'Follow-up',
-          notes: 'Regular checkup appointment'
-        },
-        { 
-          id: 2, 
-          patient: 'Jane Smith', 
-          patientId: 102,
-          patientEmail: 'jane.smith@example.com',
-          patientPhone: '(252) 555-0102',
-          doctor: 'Dr. Williams', 
-          department: 'Cardiology',
-          time: '11:30 AM', 
-          status: 'in-progress', 
-          date: new Date().toISOString().split('T')[0],
-          type: 'Consultation',
-          notes: 'Cardiac evaluation in progress'
-        },
-        { 
-          id: 3, 
-          patient: 'Mike Johnson', 
-          patientId: 103,
-          patientEmail: 'mike.johnson@example.com',
-          patientPhone: '(252) 555-0103',
-          doctor: 'Dr. Okonkwo', 
-          department: 'Family Medicine',
-          time: '02:00 PM', 
-          status: 'completed', 
-          date: new Date().toISOString().split('T')[0],
-          type: 'Checkup',
-          notes: 'Annual physical completed'
-        },
-        { 
-          id: 4, 
-          patient: 'Sarah Brown', 
-          patientId: 104,
-          patientEmail: 'sarah.brown@example.com',
-          patientPhone: '(252) 555-0104',
-          doctor: 'Dr. Williams', 
-          department: 'Cardiology',
-          time: '03:30 PM', 
-          status: 'scheduled', 
-          date: new Date().toISOString().split('T')[0],
-          type: 'Follow-up',
-          notes: 'Post-treatment follow-up'
-        }
+      // Fetch stats, appointments, and KYC in parallel
+      const [statsRes, appointmentsRes, patientsRes, kycRes] = await Promise.all([
+        adminApi.getStats().catch(() => ({ data: { data: {} } })),
+        adminApi.getTodayAppointments().catch(() => ({ data: { data: [] } })),
+        adminApi.getPatients({ limit: 1000 }).catch(() => ({ data: { data: [] } })),
+        adminApi.getKYCDocuments({ status: 'pending' }).catch(() => ({ data: { data: [] } }))
       ]);
 
-      // Mock pending KYC with more details
-      setPendingKYC([
-        { 
-          id: 1, 
-          patient: 'Robert Taylor', 
-          patientId: 201,
-          submitted: '2 days ago',
-          submittedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          documents: 3,
-          status: 'pending',
-          priority: 'high'
-        },
-        { 
-          id: 2, 
-          patient: 'Emily Davis', 
-          patientId: 202,
-          submitted: '1 day ago',
-          submittedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          documents: 2,
-          status: 'pending',
-          priority: 'medium'
-        },
-        { 
-          id: 3, 
-          patient: 'David Wilson', 
-          patientId: 203,
-          submitted: '3 days ago',
-          submittedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          documents: 4,
-          status: 'pending',
-          priority: 'high'
-        },
-        {
-          id: 4,
-          patient: 'Lisa Anderson',
-          patientId: 204,
-          submitted: '5 hours ago',
-          submittedDate: new Date().toISOString().split('T')[0],
-          documents: 5,
-          status: 'pending',
-          priority: 'high'
-        }
-      ]);
+      const statsData = statsRes.data?.data || {};
+      
+      // Handle different response formats for appointments
+      let appointments = [];
+      if (appointmentsRes.data?.data) {
+        appointments = appointmentsRes.data.data;
+      } else if (appointmentsRes.data?.appointments) {
+        appointments = appointmentsRes.data.appointments;
+      } else if (Array.isArray(appointmentsRes.data)) {
+        appointments = appointmentsRes.data;
+      }
+      
+      const patients = patientsRes.data?.data || (Array.isArray(patientsRes.data) ? patientsRes.data : []);
+      const kycDocs = kycRes.data?.data || [];
+
+      // Get today's date for filtering
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      // Filter today's appointments
+      const todayAppointments = appointments.filter(apt => {
+        const aptDate = new Date(apt.date);
+        return aptDate >= today && aptDate < tomorrow;
+      });
+
+      // Count active and completed appointments
+      const activeAppointments = todayAppointments.filter(apt => 
+        ['scheduled', 'confirmed', 'in_progress'].includes(apt.status)
+      ).length;
+      const completedToday = todayAppointments.filter(apt => 
+        apt.status === 'completed'
+      ).length;
+
+      // Get doctors count - try multiple endpoints
+      let doctors = [];
+      try {
+        const doctorsRes = await adminApi.getDoctors();
+        doctors = doctorsRes.data?.data || doctorsRes.data || [];
+      } catch (e) {
+        console.warn('Could not fetch doctors:', e);
+      }
+
+      // Get staff count
+      let staff = [];
+      try {
+        const staffRes = await adminApi.getStaff();
+        staff = staffRes.data?.data || staffRes.data || [];
+      } catch (e) {
+        console.warn('Could not fetch staff:', e);
+      }
+
+      // Set stats
+      setStats({
+        totalPatients: statsData.totalPatients || patients.length,
+        totalDoctors: statsData.totalDoctors || doctors.length,
+        totalStaff: statsData.totalStaff || staff.length,
+        appointmentsToday: todayAppointments.length,
+        pendingKYC: kycDocs.length,
+        activeAppointments,
+        completedToday
+      });
+
+      // Format recent appointments
+      const formattedAppointments = appointments.slice(0, 10).map(apt => ({
+        id: apt.id,
+        patient: `${apt.patient?.firstName || ''} ${apt.patient?.lastName || ''}`.trim(),
+        patientId: apt.patient?.id,
+        patientEmail: apt.patient?.email,
+        patientPhone: apt.patient?.phone,
+        doctor: `Dr. ${apt.doctor?.firstName || ''} ${apt.doctor?.lastName || ''}`.trim(),
+        department: apt.doctor?.specialization || apt.department || 'General',
+        time: apt.time,
+        status: apt.status,
+        date: apt.date,
+        type: apt.type || 'Consultation',
+        notes: apt.notes
+      }));
+      setRecentAppointments(formattedAppointments);
+
+      // Format pending KYC
+      const formattedKYC = kycDocs.map((kyc, index) => {
+        const submittedDate = new Date(kyc.createdAt || kyc.submittedDate);
+        const daysAgo = Math.floor((Date.now() - submittedDate.getTime()) / (1000 * 60 * 60 * 24));
+        const submitted = daysAgo === 0 ? 'today' : daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`;
+        
+        // Count documents
+        const docCount = [
+          kyc.salarySlip1, kyc.salarySlip2, kyc.salarySlip3,
+          kyc.cancelledCheque, kyc.passbook,
+          kyc.aadhaarFront, kyc.aadhaarBack,
+          kyc.educationalDoc1, kyc.educationalDoc2, kyc.educationalDoc3
+        ].filter(Boolean).length;
+
+        return {
+          id: kyc.id,
+          patient: `${kyc.patient?.firstName || ''} ${kyc.patient?.lastName || ''}`.trim(),
+          patientId: kyc.patientId,
+          submitted,
+          submittedDate: submittedDate.toISOString().split('T')[0],
+          documents: docCount,
+          status: kyc.status || 'pending',
+          priority: daysAgo > 2 ? 'high' : 'medium'
+        };
+      });
+      setPendingKYC(formattedKYC);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');

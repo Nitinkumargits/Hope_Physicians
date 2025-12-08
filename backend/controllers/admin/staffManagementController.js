@@ -3,9 +3,8 @@
  * Handles staff CRUD, roles, permissions, attendance, and inventory
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { prisma } = require('../../src/lib/prisma.js');
 const bcrypt = require('bcryptjs');
-const prisma = new PrismaClient();
 
 /**
  * Get all staff members
@@ -619,7 +618,9 @@ const getAdminStats = async (req, res) => {
       totalStaff,
       totalEmployees,
       totalPatients,
+      totalDoctors,
       totalAppointments,
+      todayAppointments,
       totalBilling,
       paidBilling,
       totalInventory
@@ -627,7 +628,16 @@ const getAdminStats = async (req, res) => {
       prisma.staff.count({ where: { portalUser: { isActive: true } } }),
       prisma.employee.count({ where: { isActive: true } }),
       prisma.patient.count(),
+      prisma.doctor.count(),
       prisma.appointment.count(),
+      prisma.appointment.count({
+        where: {
+          date: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            lt: new Date(new Date().setHours(23, 59, 59, 999))
+          }
+        }
+      }),
       prisma.billing.aggregate({ _sum: { totalAmount: true } }),
       prisma.billing.aggregate({
         where: { paymentStatus: 'paid' },
@@ -636,13 +646,25 @@ const getAdminStats = async (req, res) => {
       prisma.inventory.count()
     ]);
 
+    // Count pending KYC
+    const pendingKYC = await prisma.kYCDocument.count({
+      where: {
+        status: {
+          in: ['pending', 'submitted', 'under_review']
+        }
+      }
+    });
+
     res.json({
       success: true,
       data: {
         totalStaff,
         totalEmployees,
         totalPatients,
+        totalDoctors,
         totalAppointments,
+        appointmentsToday: todayAppointments,
+        pendingKYC,
         totalRevenue: totalBilling._sum.totalAmount || 0,
         paidRevenue: paidBilling._sum.paidAmount || 0,
         totalInventory
