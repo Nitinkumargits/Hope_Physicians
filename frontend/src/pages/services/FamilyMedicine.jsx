@@ -203,6 +203,114 @@ const FamilyMedicine = () => {
     },
   ];
 
+  const whyCards = [
+    {
+      key: "emergency",
+      title: "24/7 Emergency Care",
+      copy: "Round-the-clock emergency services with immediate response.",
+      tone: "blue",
+    },
+    {
+      key: "experts",
+      title: "Expert Doctors",
+      copy: "Team of experienced specialists and healthcare professionals.",
+      tone: "blue",
+    },
+    {
+      key: "tech",
+      title: "Advanced Technology",
+      copy: "State-of-the-art medical equipment and facilities.",
+      tone: "blue",
+    },
+    {
+      key: "patient",
+      title: "Patient-Centric",
+      copy: "Focused on providing the best patient care experience.",
+      tone: "rose",
+    },
+  ];
+
+  const whyStats = [
+    { label: "Response", value: "24/7" },
+    { label: "Specialists", value: "Expert-led" },
+    { label: "Experience", value: "Patient-first" },
+  ];
+
+  const renderWhyIcon = (key, tone = "blue") => {
+    const stroke = tone === "rose" ? "#fb7185" : "#93c5fd";
+    switch (key) {
+      case "emergency":
+        return (
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15 14"></polyline>
+          </svg>
+        );
+      case "experts":
+        return (
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M6 20c0-3.333 2.667-5 6-5s6 1.667 6 5"></path>
+          </svg>
+        );
+      case "tech":
+        return (
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true">
+            <path d="M10 3h4"></path>
+            <path d="M12 3v9"></path>
+            <path d="M8 12h8"></path>
+            <path d="M7 19h10"></path>
+            <path d="M9 12v7"></path>
+            <path d="M15 12v7"></path>
+          </svg>
+        );
+      case "patient":
+        return (
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true">
+            <path d="M12 21s-7-4.35-7-10a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.65-7 10-7 10z"></path>
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   const filteredServices = services.filter((s) =>
     s.label.toLowerCase().includes(search.trim().toLowerCase())
   );
@@ -487,139 +595,61 @@ const FamilyMedicine = () => {
       </section>
 
       {/* BENEFITS */}
-      <section className="section" style={{ background: "#f6f8fb" }}>
-        <div className="container">
-          <h2 className="section-title center">
-            Why Choose Our Family Medicine Services?
-          </h2>
-          <div
-            className="about-features"
-            style={{ maxWidth: "800px", margin: "0 auto" }}>
-            <div className="feature-box" style={{ alignItems: "center" }}>
-              <div
-                className="feature-icon"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#004aad"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true">
-                  <path d="M5 21v-3a4 4 0 0 1 4-4h.5" />
-                  <path d="M13.5 14H14a4 4 0 0 1 4 4v3" />
-                  <path d="M12 14v7" />
-                  <circle cx="9" cy="7" r="3" />
-                  <circle cx="15" cy="7" r="3" />
-                </svg>
-              </div>
-              <div>
-                <h3>Whole Family Care</h3>
-                <p>
-                  One physician for your entire family, building lasting
-                  relationships and understanding your family's health history.
-                </p>
-              </div>
-            </div>
-            <div className="feature-box" style={{ alignItems: "center" }}>
-              <div
-                className="feature-icon"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#004aad"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true">
-                  <path d="M12 1v5" />
-                  <path d="M17 5H7a2 2 0 0 0-2 2v11" />
-                  <path d="M7 15h10" />
-                  <path d="M9 19h6" />
-                </svg>
-              </div>
-              <div>
-                <h3>Comprehensive Approach</h3>
-                <p>
-                  We address physical, mental, and emotional health needs for
-                  patients of all ages.
-                </p>
+      <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-slate-50">
+        <div className="pointer-events-none absolute inset-0">
+          <span
+            className="absolute -left-24 top-6 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-indigo-500/18 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute inset-8 rounded-3xl border border-white/5 opacity-40"
+            aria-hidden="true"></span>
+        </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-[1fr,1.3fr] items-start">
+            <div className="space-y-5">
+              <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 text-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+                Trusted by families
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                Why Choose Hope Physicians?
+              </h2>
+              <p className="text-slate-200 text-lg leading-relaxed">
+                Leading the way in medical excellence with cutting-edge
+                technology and compassionate care.
+              </p>
+              <div className="grid grid-cols-3 gap-3">
+                {whyStats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-xl bg-white/5 border border-white/10 p-3">
+                    <div className="text-xs uppercase text-slate-300">
+                      {stat.label}
+                    </div>
+                    <div className="text-lg font-semibold text-blue-100">
+                      {stat.value}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="feature-box" style={{ alignItems: "center" }}>
-              <div
-                className="feature-icon"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#004aad"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <polyline points="12 7 12 12 15 14" />
-                </svg>
-              </div>
-              <div>
-                <h3>Convenient Access</h3>
-                <p>
-                  Easy scheduling, same-day appointments for urgent needs, and
-                  extended hours for your convenience.
-                </p>
-              </div>
-            </div>
-            <div className="feature-box" style={{ alignItems: "center" }}>
-              <div
-                className="feature-icon"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#004aad"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true">
-                  <path d="M12 2 2 7l10 5 10-5-10-5Z" />
-                  <path d="M2 12l10 5 10-5" />
-                  <path d="M2 17l10 5 10-5" />
-                </svg>
-              </div>
-              <div>
-                <h3>Preventive Focus</h3>
-                <p>
-                  Emphasis on preventive care and early detection to maintain
-                  optimal health and prevent complications.
-                </p>
-              </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {whyCards.map((card) => (
+                <div
+                  key={card.key}
+                  className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-5 shadow-xl transition duration-200 hover:-translate-y-1 hover:shadow-2xl">
+                  <div className="flex items-center justify-center mb-3">
+                    {renderWhyIcon(card.key, card.tone)}
+                  </div>
+                  <h3 className="text-lg font-semibold text-white text-center">
+                    {card.title}
+                  </h3>
+                  <p className="text-slate-200 text-center mt-2">{card.copy}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
