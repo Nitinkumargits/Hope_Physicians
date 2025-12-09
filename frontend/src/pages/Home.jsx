@@ -350,7 +350,7 @@ const Home = () => {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[1fr,1.3fr] items-start">
+          <div className="grid gap-10 lg:grid-cols-[1fr,1.25fr] items-start">
             <div className="space-y-5">
               <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 text-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
                 Trusted by families
@@ -363,7 +363,7 @@ const Home = () => {
                 technology and compassionate care.
               </p>
               <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.25)]">
                   <div className="text-xs uppercase text-slate-300">
                     Response
                   </div>
@@ -371,7 +371,7 @@ const Home = () => {
                     24/7
                   </div>
                 </div>
-                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.25)]">
                   <div className="text-xs uppercase text-slate-300">
                     Specialists
                   </div>
@@ -379,7 +379,7 @@ const Home = () => {
                     Expert-led
                   </div>
                 </div>
-                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.25)]">
                   <div className="text-xs uppercase text-slate-300">
                     Experience
                   </div>
@@ -489,6 +489,14 @@ const Home = () => {
                   Focused on providing the best patient care experience
                 </p>
               </div>
+            </div>
+            <div className="lg:col-span-2 flex justify-center">
+              <Link
+                to="/appointment"
+                className="inline-flex items-center gap-2 rounded-xl bg-white text-blue-900 font-semibold text-sm px-5 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(0,0,0,0.22)] transition">
+                <i className="fas fa-calendar-check text-blue-700"></i>
+                Book an appointment
+              </Link>
             </div>
           </div>
         </div>

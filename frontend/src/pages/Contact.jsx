@@ -101,18 +101,164 @@ const Contact = () => {
       </section>
 
       {/* CONTACT FORM */}
-      <section id="contact-form" className="contact-form-section section">
-        <div className="container">
-          <div className="message-card">
-            <h2>Send Us a Message</h2>
-            <p>We respond as quickly as possible.</p>
-            <form className="contact-form">
-              <input type="text" name="name" placeholder="Full Name" required />
-              <input type="email" name="email" placeholder="Email Address" required />
-              <input type="text" name="phone" placeholder="Phone Number" required />
-              <textarea name="message" placeholder="Your Message..." required></textarea>
-              <button type="submit" className="contact-btn">Send Message</button>
-            </form>
+      <section
+        id="contact-form"
+        className="relative overflow-hidden py-16 md:py-20 bg-white text-slate-900">
+        <div className="pointer-events-none absolute inset-0">
+          <span className="absolute -left-24 top-6 h-72 w-72 rounded-full bg-blue-100 blur-3xl" aria-hidden="true"></span>
+          <span className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-indigo-100 blur-3xl" aria-hidden="true"></span>
+          <span className="absolute inset-6 rounded-3xl border border-slate-200/70 opacity-80" aria-hidden="true"></span>
+        </div>
+        <div className="container relative z-10">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr,1fr] items-start">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.1)] p-6 md:p-7">
+              <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700 mb-1">
+                    Quick response
+                  </p>
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
+                    Send Us a Message
+                  </h2>
+                  <p className="text-slate-600 mt-1">
+                    We respond as quickly as possible.
+                  </p>
+                </div>
+                <div className="h-12 px-4 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold flex items-center gap-2">
+                  <i className="fas fa-headset"></i>
+                  Live support
+                </div>
+              </div>
+              <form className="grid gap-4 md:gap-5">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-slate-700 font-semibold">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      placeholder="Jane"
+                      required
+                      className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-slate-700 font-semibold">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      placeholder="Doe"
+                      required
+                      className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-slate-700 font-semibold">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      required
+                      className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-slate-700 font-semibold">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="+234 900 000 0000"
+                      required
+                      className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm text-slate-700 font-semibold">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    name="subject"
+                    placeholder="How can we help you?"
+                    required
+                    className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm text-slate-700 font-semibold">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    rows="5"
+                    placeholder="Your message..."
+                    required
+                    className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70 resize-none"
+                  ></textarea>
+                </div>
+                <div className="grid md:grid-cols-2 gap-3 mt-2">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-4 py-3 transition shadow-[0_14px_30px_rgba(59,130,246,0.25)]">
+                    <i className="fas fa-paper-plane me-2"></i>
+                    Send Message
+                  </button>
+                  <a
+                    href="tel:252-522-3663"
+                    className="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 text-blue-700 font-semibold text-sm px-4 py-3 transition hover:bg-blue-50">
+                    <i className="fas fa-phone-alt me-2"></i>
+                    Call Now
+                  </a>
+                </div>
+              </form>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.1)] overflow-hidden">
+              <div className="h-64 md:h-full w-full">
+                <iframe
+                  title="Hope Physicians Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3272.1234567890123!2d-77.5812!3d35.2627!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDE1JzQ1LjciTiA3N8KwMzQnNTIuMyJX!5e0!3m2!1sen!2sus!4v1234567890!5m2!1sen!2sus"
+                  allowFullScreen
+                  loading="lazy"
+                  className="w-full h-full border-0"
+                ></iframe>
+              </div>
+              <div className="p-5 space-y-3 bg-slate-50 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-semibold text-slate-900 m-0">
+                    Office Hours
+                  </h4>
+                  <span className="inline-flex items-center gap-2 text-xs uppercase font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">
+                    <i className="fas fa-clock"></i>
+                    Updated
+                  </span>
+                </div>
+                <ul className="space-y-2 text-slate-700 text-sm m-0">
+                  <li className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span>Monday - Thursday</span>
+                    <span>8:00 AM - 5:00 PM</span>
+                  </li>
+                  <li className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span>Friday</span>
+                    <span>8:00 AM - 12:00 PM</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>Saturday - Sunday</span>
+                    <span>Closed</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
