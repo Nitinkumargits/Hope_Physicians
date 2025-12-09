@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/Home.css";
 // High-quality image from Unsplash - Family Medicine (Doctor with family)
 const familyImg =
@@ -71,8 +71,18 @@ const serviceImages = {
 };
 
 const FamilyMedicine = () => {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
   const [search, setSearch] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  const handleBook = (serviceLabel) => {
+    navigate(`/appointment?service=${encodeURIComponent(serviceLabel)}`);
+  };
+
+  const handleLearnMore = (serviceLabel) => {
+    navigate(`/contact?topic=${encodeURIComponent(serviceLabel)}`);
+  };
 
   const services = [
     {
@@ -304,21 +314,75 @@ const FamilyMedicine = () => {
               Comprehensive medical care tailored to your family's needs
             </p>
           </div>
-          <div className="d-flex justify-content-center mb-4">
-            <div style={{ width: "100%", maxWidth: "520px" }}>
-              <div className="input-group shadow-sm rounded-3 overflow-hidden">
-                <span className="input-group-text bg-white text-muted border-0">
-                  <i className="fas fa-search" aria-hidden="true"></i>
-                  <span className="visually-hidden">Search services</span>
-                </span>
+          <div className="d-flex justify-content-center mb-5">
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "520px",
+                position: "relative",
+              }}>
+              <div
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "16px",
+                  padding: "4px",
+                  boxShadow: searchFocused
+                    ? "0 6px 24px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.9)"
+                    : "0 4px 20px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+                  border: searchFocused
+                    ? "1px solid rgba(37,99,235,0.3)"
+                    : "1px solid rgba(226,232,240,0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  transition: "all 0.3s ease",
+                }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    paddingLeft: "16px",
+                    flexShrink: 0,
+                  }}>
+                  <i
+                    className="fas fa-search"
+                    style={{
+                      color: "#0f172a",
+                      fontSize: "18px",
+                      fontWeight: 500,
+                    }}
+                    aria-hidden="true"></i>
+                  <span
+                    style={{
+                      color: "#475569",
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                    }}>
+                    Search services
+                  </span>
+                </div>
                 <input
                   type="search"
-                  className="form-control border-0"
-                  placeholder="Search services..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setSearchFocused(false)}
+                  placeholder="Search services..."
                   aria-label="Search services"
-                  style={{ padding: "12px 14px" }}
+                  style={{
+                    flex: 1,
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    padding: "14px 16px 14px 0",
+                    fontSize: "15px",
+                    color: "#0f172a",
+                    fontWeight: 400,
+                  }}
                 />
               </div>
             </div>
@@ -390,10 +454,14 @@ const FamilyMedicine = () => {
                         compassionate support.
                       </p>
                       <div className="mt-3 d-flex align-items-center justify-content-between">
-                        <button className="btn btn-sm btn-primary px-3 fw-semibold">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-primary px-3 fw-semibold"
+                          onClick={() => handleBook(item.label)}>
                           Book
                         </button>
                         <button
+                          type="button"
                           className="btn btn-sm btn-primary rounded-circle d-flex align-items-center justify-content-center"
                           style={{
                             width: 44,
@@ -401,7 +469,9 @@ const FamilyMedicine = () => {
                             boxShadow: "0 10px 26px rgba(37,99,235,0.28)",
                             transition:
                               "transform 0.25s ease, box-shadow 0.25s ease",
-                          }}>
+                          }}
+                          aria-label={`Learn more about ${item.label}`}
+                          onClick={() => handleLearnMore(item.label)}>
                           <i
                             className="fas fa-arrow-right"
                             aria-hidden="true"></i>
