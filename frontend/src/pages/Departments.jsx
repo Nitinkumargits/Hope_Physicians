@@ -259,118 +259,62 @@ const Departments = () => {
       </section>
 
       {/* DEPARTMENTS SECTION */}
-      <section className="section" style={{ background: '#f8f9fa', padding: '60px 0' }}>
-        <div className="container">
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(3, 1fr)', 
-            gap: '30px'
-          }}
-          className="departments-grid"
-          >
+      <section className="relative overflow-hidden py-16 md:py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-slate-50">
+        <div className="pointer-events-none absolute inset-0">
+          <span className="absolute -left-24 top-6 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" aria-hidden="true"></span>
+          <span className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-indigo-500/18 blur-3xl" aria-hidden="true"></span>
+          <span className="absolute inset-8 rounded-3xl border border-white/5 opacity-40" aria-hidden="true"></span>
+        </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-3 mb-10">
+            <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 text-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              Our Departments
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Services We Offer</h2>
+            <p className="text-slate-200 text-lg leading-relaxed max-w-3xl mx-auto">
+              Comprehensive care across every department, delivered with expertise and compassion.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {departments.map((dept, index) => (
-              <div 
+              <div
                 key={index}
-                className="service-card"
-                style={{
-                  background: '#fff',
-                  borderRadius: '15px',
-                  overflow: 'hidden',
-                  boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-                  transition: 'transform 0.3s ease',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{ 
-                  position: 'relative',
-                  width: '100%',
-                  height: '250px',
-                  overflow: 'hidden'
-                }}>
-                  <img 
-                    src={dept.image} 
+                className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-0 shadow-xl transition duration-200 hover:-translate-y-1 hover:shadow-2xl flex flex-col overflow-hidden">
+                <div className="relative h-56 w-full overflow-hidden">
+                  <img
+                    src={dept.image}
                     alt={dept.name}
-                    style={{ 
-                      width: '100%', 
-                      height: '100%', 
-                      objectFit: 'cover',
-                      transition: 'transform 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'scale(1)';
-                    }}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent"></div>
                 </div>
-                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <h4 style={{ 
-                    color: '#333', 
-                    marginBottom: '10px',
-                    fontSize: '24px',
-                    fontWeight: '700'
-                  }}>
-                    {dept.name}
-                  </h4>
-                  <p style={{ 
-                    color: '#004aad', 
-                    fontWeight: '600',
-                    marginBottom: '15px',
-                    fontSize: '16px'
-                  }}>
+
+                <div className="p-5 flex flex-col gap-3 flex-1">
+                  <h4 className="text-white text-xl font-bold leading-tight">{dept.name}</h4>
+                  <p className="text-blue-100 font-semibold text-sm uppercase tracking-wide">
                     {dept.subtitle}
                   </p>
-                  <p style={{ 
-                    marginBottom: '20px',
-                    color: '#666',
-                    lineHeight: '1.6',
-                    flex: 1
-                  }}>
+                  <p className="text-slate-200 text-sm leading-relaxed flex-1">
                     {dept.description}
                   </p>
-                  <ul style={{ 
-                    listStyle: 'none', 
-                    padding: 0, 
-                    marginBottom: '20px'
-                  }}>
+
+                  <ul className="space-y-2 text-slate-200 text-sm">
                     {dept.features.map((feature, idx) => (
-                      <li 
-                        key={idx}
-                        style={{ 
-                          marginBottom: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          fontSize: '14px',
-                          color: '#555'
-                        }}
-                      >
-                        <i className="fas fa-check-circle" style={{ color: '#004aad', marginRight: '8px' }}></i>
-                        {feature}
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="mt-[3px] text-blue-200">
+                          <i className="fas fa-check-circle"></i>
+                        </span>
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <div style={{ marginTop: 'auto' }}>
-                    <Link 
+
+                  <div className="mt-auto pt-2">
+                    <Link
+                      className="inline-flex items-center justify-center w-full rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm px-4 py-3 transition shadow-md"
                       to={dept.path}
-                      className="form-btn"
-                      style={{
-                        display: 'inline-block',
-                        textAlign: 'center',
-                        width: '100%',
-                        padding: '10px 20px',
-                        fontSize: '14px',
-                        textDecoration: 'none'
-                      }}
-                    >
+                      data-discover="true">
                       Learn More
                     </Link>
                   </div>
