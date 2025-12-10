@@ -404,7 +404,58 @@ const appointmentController = {
         message: error.message 
       });
     }
-  }
+  },
+
+  // Get appointment by ID
+  getAppointmentById: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const appointment = await prisma.appointment.findUnique({
+        where: { id },
+        include: {
+          patient: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              phone: true,
+              dateOfBirth: true,
+              address: true,
+            },
+          },
+          doctor: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              specialization: true,
+            },
+          },
+        },
+      });
+
+      if (!appointment) {
+        return res.status(404).json({ 
+          success: false,
+          error: 'Appointment not found' 
+        });
+      }
+
+      return res.json({ 
+        success: true,
+        data: appointment 
+      });
+    } catch (error) {
+      console.error('Error fetching appointment:', error);
+      return res.status(500).json({ 
+        success: false,
+        error: 'Internal server error',
+        message: error.message 
+      });
+    }
+  },
 };
 
 module.exports = appointmentController;

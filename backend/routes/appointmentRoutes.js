@@ -11,4 +11,7 @@ router.post('/', appointmentController.createAppointment);
 // Protected route: get all appointments (admin only)
 router.get('/', authMiddleware.verifyToken, appointmentController.getAllAppointments);
 
+// Get appointment by ID
+router.get('/:id', authMiddleware.authenticate, appointmentController.getAppointmentById);
+
 module.exports = router;

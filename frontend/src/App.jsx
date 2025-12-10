@@ -30,6 +30,8 @@ import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorAppointments from "./pages/doctor/Appointments";
 import DoctorPatients from "./pages/doctor/DoctorPatients";
 import DoctorCalendar from "./pages/doctor/DoctorCalendar";
+import DoctorPrescriptions from "./pages/doctor/DoctorPrescriptions";
+import PrescriptionEditor from "./pages/doctor/PrescriptionEditor";
 import PatientProfile from "./pages/doctor/PatientProfile";
 
 // Patient Pages
@@ -126,7 +128,10 @@ function App() {
       <Route path="/doctor/patients" element={<DoctorPatients />} />
       <Route path="/doctor/patients/:id" element={<PatientProfile />} />
       <Route path="/doctor/calendar" element={<DoctorCalendar />} />
-      <Route path="/doctor/prescriptions" element={<DoctorDashboard />} />
+      <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
+      <Route path="/doctor/prescriptions/new" element={<PrescriptionEditor />} />
+      <Route path="/doctor/prescriptions/new/:appointmentId" element={<PrescriptionEditor />} />
+      <Route path="/doctor/prescriptions/edit/:prescriptionId" element={<PrescriptionEditor />} />
       <Route path="/doctor/notifications" element={<DoctorDashboard />} />
 
       {/* Patient Routes */}

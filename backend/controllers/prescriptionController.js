@@ -139,15 +139,67 @@ const prescriptionController = {
   getDoctorPrescriptions: async (req, res) => {
     try {
       const { doctorId } = req.params;
-      const { status, patientId, startDate, endDate } = req.query;
+      const { status, patientId, startDate, endDate, search } = req.query;
 
-      const where = { doctorId };
+      // Use doctorId from authenticated user, or from params, or fallback
+      let finalDoctorId = null;
+      
+      // Priority 1: Use doctorId from authenticated user (from JWT token)
+      if (req.user && req.user.doctorId) {
+        finalDoctorId = req.user.doctorId;
+      }
+      
+      // Priority 2: Use doctorId from params (for API calls)
+      if (!finalDoctorId && doctorId) {
+        finalDoctorId = doctorId;
+      }
+
+      // Priority 3: Fallback to Dr. Okonkwo Doctor (for backward compatibility)
+      if (!finalDoctorId) {
+        let doctor = await prisma.doctor.findUnique({
+          where: { email: 'doctor@hopephysicians.com' },
+        });
+        if (doctor) {
+          finalDoctorId = doctor.id;
+        } else {
+          doctor = await prisma.doctor.findFirst();
+          if (doctor) {
+            finalDoctorId = doctor.id;
+          }
+        }
+      }
+
+      if (!finalDoctorId) {
+        return res.status(400).json({ error: 'Doctor ID is required' });
+      }
+
+      const where = { doctorId: finalDoctorId };
       if (status) where.status = status;
       if (patientId) where.patientId = patientId;
       if (startDate || endDate) {
         where.issuedDate = {};
-        if (startDate) where.issuedDate.gte = new Date(startDate);
-        if (endDate) where.issuedDate.lte = new Date(endDate);
+        if (startDate) {
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
+          where.issuedDate.gte = start;
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          where.issuedDate.lte = end;
+        }
+      }
+
+      // Add search functionality
+      if (search) {
+        where.OR = [
+          { diagnosis: { contains: search } },
+          { instructions: { contains: search } },
+          { notes: { contains: search } },
+          { patient: { firstName: { contains: search } } },
+          { patient: { lastName: { contains: search } } },
+          { patient: { email: { contains: search } } },
+        ];
       }
 
       const prescriptions = await prisma.prescription.findMany({
@@ -175,8 +227,14 @@ const prescriptionController = {
 
       // Parse medications JSON for each prescription
       prescriptions.forEach(p => {
-        p.medications = JSON.parse(p.medications);
+        try {
+          p.medications = typeof p.medications === 'string' ? JSON.parse(p.medications) : p.medications;
+        } catch (e) {
+          p.medications = [];
+        }
       });
+
+      console.log(`✅ Fetched ${prescriptions.length} prescriptions for doctor ${finalDoctorId}`);
 
       return res.json({ data: prescriptions });
     } catch (error) {

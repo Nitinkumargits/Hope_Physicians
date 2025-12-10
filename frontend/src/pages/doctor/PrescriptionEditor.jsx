@@ -18,7 +18,7 @@ import {
   FaNotesMedical,
 } from 'react-icons/fa';
 import * as prescriptionService from '../../services/prescriptionService';
-import * as appointmentService from '../../services/appointmentApi';
+import axios from 'axios';
 
 const PrescriptionEditor = () => {
   const { appointmentId, prescriptionId } = useParams();
@@ -48,12 +48,25 @@ const PrescriptionEditor = () => {
   }, [appointmentId, prescriptionId]);
 
   const fetchAppointment = async () => {
+    if (!appointmentId) return;
+    
     try {
-      const response = await appointmentService.getAppointment(appointmentId);
-      setAppointment(response.data);
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      
+      const response = await axios.get(`${API_URL}/appointments/${appointmentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      setAppointment(response.data?.data || response.data);
     } catch (error) {
       console.error('Error fetching appointment:', error);
       toast.error('Failed to load appointment details');
+    } finally {
+      setLoading(false);
     }
   };
 
