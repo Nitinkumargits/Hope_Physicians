@@ -74,12 +74,31 @@ const patientController = {
   // Get all patients (for doctor's patient list)
   getAllPatients: async (req, res) => {
     try {
-      const { search, kycStatus } = req.query;
+      const { search, kycStatus, doctorId } = req.query;
 
-      // ALWAYS use Dr. Okonkwo Doctor's ID
-      let doctor = await prisma.doctor.findUnique({
-        where: { email: 'doctor@hopephysicians.com' },
-      });
+      // Use doctorId from query param, or from authenticated user, or fallback to Dr. Okonkwo Doctor
+      let doctor = null;
+      
+      // Priority 1: Use doctorId from query parameter (for API calls)
+      if (doctorId) {
+        doctor = await prisma.doctor.findUnique({
+          where: { id: doctorId },
+        });
+      }
+      
+      // Priority 2: Use doctorId from authenticated user (from JWT token)
+      if (!doctor && req.user && req.user.doctorId) {
+        doctor = await prisma.doctor.findUnique({
+          where: { id: req.user.doctorId },
+        });
+      }
+      
+      // Priority 3: Fallback to Dr. Okonkwo Doctor (for backward compatibility)
+      if (!doctor) {
+        doctor = await prisma.doctor.findUnique({
+          where: { email: 'doctor@hopephysicians.com' },
+        });
+      }
 
       if (!doctor) {
         doctor = await prisma.doctor.findFirst({
@@ -95,10 +114,10 @@ const patientController = {
       }
 
       if (!doctor) {
-        return res.status(404).json({ error: 'Dr. Okonkwo Doctor not found in database' });
+        return res.status(404).json({ error: 'Doctor not found in database' });
       }
 
-      // Get all patients who have appointments with Dr. Okonkwo Doctor
+      // Get all patients who have appointments with this doctor
       const where = {
         appointments: {
           some: {
@@ -108,6 +127,7 @@ const patientController = {
       };
 
       if (search) {
+        const searchLower = search.toLowerCase();
         where.OR = [
           { firstName: { contains: search } },
           { lastName: { contains: search } },
@@ -134,7 +154,7 @@ const patientController = {
         orderBy: { createdAt: 'desc' },
       });
 
-      console.log(`✅ Fetched ${patients.length} patients for Dr. Okonkwo Doctor`);
+      console.log(`✅ Fetched ${patients.length} patients for doctor ${doctor.firstName} ${doctor.lastName} (ID: ${doctor.id})`);
 
       return res.json({ data: patients });
     } catch (error) {

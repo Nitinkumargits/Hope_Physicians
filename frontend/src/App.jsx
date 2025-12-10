@@ -28,6 +28,7 @@ import Settings from "./pages/admin/Settings";
 // Doctor Pages
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorAppointments from "./pages/doctor/Appointments";
+import DoctorPatients from "./pages/doctor/DoctorPatients";
 import PatientProfile from "./pages/doctor/PatientProfile";
 
 // Patient Pages
@@ -121,7 +122,7 @@ function App() {
       {/* Doctor Routes */}
       <Route path="/doctor" element={<DoctorDashboard />} />
       <Route path="/doctor/appointments" element={<DoctorAppointments />} />
-      <Route path="/doctor/patients" element={<DoctorDashboard />} />
+      <Route path="/doctor/patients" element={<DoctorPatients />} />
       <Route path="/doctor/patients/:id" element={<PatientProfile />} />
       <Route path="/doctor/calendar" element={<DoctorDashboard />} />
       <Route path="/doctor/prescriptions" element={<DoctorDashboard />} />

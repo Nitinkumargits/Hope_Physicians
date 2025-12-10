@@ -236,3 +236,24 @@ export const getDashboardAnalytics = async (doctorId, dateRange = {}) => {
   }
 };
 
+/**
+ * Get all patients for a doctor
+ */
+export const getDoctorPatients = async (doctorId, filters = {}) => {
+  try {
+    const response = await axios.get(`${API_BASE}/patients`, {
+      params: { doctorId, ...filters },
+      timeout: 5000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching doctor patients:', error);
+    // Return empty array on network errors
+    if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+      console.warn('API not available, using empty array');
+      return { data: [] };
+    }
+    throw error;
+  }
+};
+
