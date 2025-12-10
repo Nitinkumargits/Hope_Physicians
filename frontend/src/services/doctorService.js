@@ -187,6 +187,30 @@ export const getAllAppointments = async (doctorId, filters = {}) => {
 };
 
 /**
+ * Get appointments by date range for calendar view
+ */
+export const getAppointmentsByDateRange = async (doctorId, startDate, endDate, filters = {}) => {
+  try {
+    const response = await axios.get(`${API_BASE}/doctor/appointments`, {
+      params: { 
+        doctorId, 
+        startDate,
+        endDate,
+        ...filters 
+      },
+      timeout: 5000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching appointments by date range:', error);
+    if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+      return { data: [] };
+    }
+    throw error;
+  }
+};
+
+/**
  * Get patient queue for a doctor
  */
 export const getPatientQueue = async (doctorId) => {

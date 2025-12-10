@@ -380,17 +380,34 @@ const doctorController = {
   },
 
   // Get all appointments for a doctor
-  // ALWAYS returns appointments for Dr. Okonkwo Doctor regardless of doctorId parameter
   getAllAppointments: async (req, res) => {
     try {
-      const { status } = req.query;
+      const { status, startDate, endDate, doctorId } = req.query;
 
-      // ALWAYS use Dr. Okonkwo Doctor's ID
-      let doctor = await prisma.doctor.findUnique({
-        where: { email: 'doctor@hopephysicians.com' },
-      });
+      // Use doctorId from query param, or from authenticated user, or fallback to Dr. Okonkwo Doctor
+      let doctor = null;
+      
+      // Priority 1: Use doctorId from query parameter (for API calls)
+      if (doctorId) {
+        doctor = await prisma.doctor.findUnique({
+          where: { id: doctorId },
+        });
+      }
+      
+      // Priority 2: Use doctorId from authenticated user (from JWT token)
+      if (!doctor && req.user && req.user.doctorId) {
+        doctor = await prisma.doctor.findUnique({
+          where: { id: req.user.doctorId },
+        });
+      }
+      
+      // Priority 3: Fallback to Dr. Okonkwo Doctor (for backward compatibility)
+      if (!doctor) {
+        doctor = await prisma.doctor.findUnique({
+          where: { email: 'doctor@hopephysicians.com' },
+        });
+      }
 
-      // If not found by email, try by name
       if (!doctor) {
         doctor = await prisma.doctor.findFirst({
           where: {
@@ -400,19 +417,32 @@ const doctorController = {
         });
       }
 
-      // If still not found, get the first doctor (fallback)
       if (!doctor) {
         doctor = await prisma.doctor.findFirst();
       }
 
       if (!doctor) {
-        return res.status(404).json({ error: 'Dr. Okonkwo Doctor not found in database' });
+        return res.status(404).json({ error: 'Doctor not found in database' });
       }
 
-      // Build where clause - NO DATE FILTERS, show all appointments
+      // Build where clause
       const where = { doctorId: doctor.id };
       if (status) where.status = status;
-      // Removed date filters - show all appointments regardless of date
+      
+      // Add date range filter if provided
+      if (startDate || endDate) {
+        where.date = {};
+        if (startDate) {
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
+          where.date.gte = start;
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          where.date.lte = end;
+        }
+      }
 
       const appointments = await prisma.appointment.findMany({
         where,
@@ -430,20 +460,12 @@ const doctorController = {
           },
         },
         orderBy: [
-          { date: 'desc' }, // Newest first
+          { date: 'asc' }, // Oldest first for calendar view
           { time: 'asc' },
         ],
       });
 
-      console.log(`✅ Fetched ${appointments.length} appointments for Dr. Okonkwo Doctor (ID: ${doctor.id})`);
-      if (appointments.length > 0) {
-        console.log(`   Appointments:`, appointments.map(apt => ({
-          id: apt.id,
-          patient: `${apt.patient.firstName} ${apt.patient.lastName}`,
-          date: apt.date,
-          status: apt.status
-        })));
-      }
+      console.log(`✅ Fetched ${appointments.length} appointments for doctor ${doctor.firstName} ${doctor.lastName} (ID: ${doctor.id})`);
 
       return res.json({ data: appointments });
     } catch (error) {
