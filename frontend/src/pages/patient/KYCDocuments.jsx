@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import ProtectedRoute from '../../components/ProtectedRoute';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Badge from '../../components/shared/Badge';
@@ -50,9 +48,7 @@ const KYCDocuments = () => {
   ];
 
   return (
-    <ProtectedRoute allowedRoles={['patient']}>
-      <DashboardLayout>
-        <div className="space-y-6">
+    <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">KYC Documents</h1>
             <p className="text-gray-600 mt-1">Upload and manage your identity verification documents</p>
@@ -139,8 +135,6 @@ const KYCDocuments = () => {
             </div>
           </Card>
         </div>
-      </DashboardLayout>
-    </ProtectedRoute>
   );
 };
 

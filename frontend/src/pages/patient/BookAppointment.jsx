@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import ProtectedRoute from '../../components/ProtectedRoute';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Input from '../../components/shared/Input';
@@ -55,24 +53,18 @@ const BookAppointment = () => {
 
   if (success) {
     return (
-      <ProtectedRoute allowedRoles={['patient']}>
-        <DashboardLayout>
-          <Card className="text-center py-12">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">✓</span>
-            </div>
-            <h2 className="text-2xl font-bold mb-2">Appointment Booked!</h2>
-            <p className="text-gray-600">Your appointment request has been submitted successfully.</p>
-          </Card>
-        </DashboardLayout>
-      </ProtectedRoute>
+      <Card className="text-center py-12">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl">✓</span>
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Appointment Booked!</h2>
+        <p className="text-gray-600">Your appointment request has been submitted successfully.</p>
+      </Card>
     );
   }
 
   return (
-    <ProtectedRoute allowedRoles={['patient']}>
-      <DashboardLayout>
-        <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Book Appointment</h1>
             <p className="text-gray-600 mt-1">Schedule your visit with our healthcare professionals</p>
@@ -141,8 +133,6 @@ const BookAppointment = () => {
             </form>
           </Card>
         </div>
-      </DashboardLayout>
-    </ProtectedRoute>
   );
 };
 

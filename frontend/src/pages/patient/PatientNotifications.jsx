@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PatientLayout from '../../components/patient/PatientLayout';
 import Card from '../../components/shared/Card';
 import Badge from '../../components/shared/Badge';
 import Button from '../../components/shared/Button';
@@ -255,8 +254,7 @@ const PatientNotifications = () => {
   };
 
   return (
-    <PatientLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -632,7 +630,6 @@ const PatientNotifications = () => {
           )}
         </Modal>
       </div>
-    </PatientLayout>
   );
 };
 
