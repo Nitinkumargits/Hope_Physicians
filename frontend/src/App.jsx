@@ -48,6 +48,7 @@ import Admission from "./pages/patient/Admission";
 import KYCDocuments from "./pages/patient/KYCDocuments";
 import Profile from "./pages/patient/Profile";
 import AppointmentDetail from "./pages/patient/AppointmentDetail";
+import PatientNotifications from "./pages/patient/PatientNotifications";
 import PatientLayout from "./components/patient/PatientLayout";
 
 // Staff Pages
@@ -146,6 +147,7 @@ function App() {
       <Route path="/patient/insurance" element={<PatientLayout><PatientInsurance /></PatientLayout>} />
       <Route path="/patient/chat" element={<PatientLayout><Chat /></PatientLayout>} />
       <Route path="/patient/admission" element={<PatientLayout><Admission /></PatientLayout>} />
+      <Route path="/patient/notifications" element={<PatientLayout><PatientNotifications /></PatientLayout>} />
       <Route path="/patient/profile" element={<PatientLayout><Profile /></PatientLayout>} />
       <Route path="/patient/kyc-documents" element={<PatientLayout><KYCDocuments /></PatientLayout>} />
 

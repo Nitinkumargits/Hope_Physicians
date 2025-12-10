@@ -344,6 +344,203 @@ const notificationController = {
         message: error.message
       });
     }
+  },
+
+  // Get notifications for the logged-in patient
+  getPatientNotifications: async (req, res) => {
+    try {
+      const { status, type, unreadOnly, search } = req.query;
+      
+      // Get patientId from authenticated user
+      let patientId = null;
+      if (req.user && req.user.patientId) {
+        patientId = req.user.patientId;
+      } else if (req.params.patientId) {
+        patientId = req.params.patientId;
+      }
+
+      if (!patientId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Patient ID is required'
+        });
+      }
+
+      const where = { patientId };
+
+      // Filter by status
+      if (status) {
+        where.status = status;
+      } else if (unreadOnly === 'true' || unreadOnly === true) {
+        where.status = 'unread';
+      }
+
+      // Filter by type
+      if (type) {
+        where.type = type;
+      }
+
+      // Search in title and message (SQLite compatible)
+      if (search) {
+        where.OR = [
+          { title: { contains: search } },
+          { message: { contains: search } }
+        ];
+      }
+
+      // Fetch notifications with related data
+      const notifications = await prisma.notification.findMany({
+        where,
+        include: {
+          event: {
+            select: {
+              id: true,
+              title: true,
+              startDate: true,
+              endDate: true
+            }
+          },
+          doctor: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              specialization: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      // Fetch appointment data separately for notifications that have appointmentId
+      const notificationsWithAppointments = await Promise.all(
+        notifications.map(async (notif) => {
+          if (notif.appointmentId) {
+            try {
+              const appointment = await prisma.appointment.findUnique({
+                where: { id: notif.appointmentId },
+                select: {
+                  id: true,
+                  date: true,
+                  time: true,
+                  doctor: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                      specialization: true
+                    }
+                  }
+                }
+              });
+              return { ...notif, appointment };
+            } catch (error) {
+              console.error(`Error fetching appointment ${notif.appointmentId}:`, error);
+              return notif;
+            }
+          }
+          return notif;
+        })
+      );
+
+      return res.json({
+        success: true,
+        data: notificationsWithAppointments,
+        total: notificationsWithAppointments.length
+      });
+    } catch (error) {
+      console.error('❌ Error fetching patient notifications:', error);
+      console.error('Error stack:', error.stack);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch notifications',
+        message: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
+  },
+
+  // Get unread notification count for patient
+  getPatientUnreadCount: async (req, res) => {
+    try {
+      let patientId = null;
+      if (req.user && req.user.patientId) {
+        patientId = req.user.patientId;
+      } else if (req.params.patientId) {
+        patientId = req.params.patientId;
+      }
+
+      if (!patientId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Patient ID is required'
+        });
+      }
+
+      const count = await prisma.notification.count({
+        where: {
+          patientId,
+          status: 'unread'
+        }
+      });
+
+      return res.json({
+        success: true,
+        count
+      });
+    } catch (error) {
+      console.error('❌ Error fetching patient unread count:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch unread count',
+        message: error.message
+      });
+    }
+  },
+
+  // Mark all notifications as read for patient
+  markAllPatientAsRead: async (req, res) => {
+    try {
+      let patientId = null;
+      if (req.user && req.user.patientId) {
+        patientId = req.user.patientId;
+      } else if (req.params.patientId) {
+        patientId = req.params.patientId;
+      }
+
+      if (!patientId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Patient ID is required'
+        });
+      }
+
+      const result = await prisma.notification.updateMany({
+        where: {
+          patientId,
+          status: 'unread'
+        },
+        data: {
+          status: 'read',
+          readAt: new Date()
+        }
+      });
+
+      return res.json({
+        success: true,
+        count: result.count,
+        message: `${result.count} notification(s) marked as read`
+      });
+    } catch (error) {
+      console.error('❌ Error marking all patient notifications as read:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to mark all notifications as read',
+        message: error.message
+      });
+    }
   }
 };
 

@@ -34,5 +34,24 @@ router.patch('/:id/archive', notificationController.archiveNotification);
 // Delete notification
 router.delete('/:id', notificationController.deleteNotification);
 
+// Patient notification routes
+// Get notifications for logged-in patient
+router.get('/patient', notificationController.getPatientNotifications);
+
+// Get notifications for specific patient (by ID)
+router.get('/patient/:patientId', notificationController.getPatientNotifications);
+
+// Get unread count for logged-in patient
+router.get('/patient/unread/count', notificationController.getPatientUnreadCount);
+
+// Get unread count for specific patient
+router.get('/patient/:patientId/unread/count', notificationController.getPatientUnreadCount);
+
+// Mark all notifications as read for logged-in patient
+router.patch('/patient/mark-all-read', notificationController.markAllPatientAsRead);
+
+// Mark all notifications as read for specific patient
+router.patch('/patient/:patientId/mark-all-read', notificationController.markAllPatientAsRead);
+
 module.exports = router;
 

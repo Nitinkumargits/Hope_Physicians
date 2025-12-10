@@ -155,3 +155,83 @@ export const archiveNotification = async (notificationId) => {
   }
 };
 
+/**
+ * PATIENT NOTIFICATION METHODS
+ */
+
+/**
+ * Get notifications for a patient
+ * If patientId is provided, uses that; otherwise uses logged-in patient from token
+ */
+export const getPatientNotifications = async (patientId, filters = {}) => {
+  try {
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams(filters);
+    
+    const endpoint = patientId 
+      ? `${API_BASE}/notifications/patient/${patientId}?${params}`
+      : `${API_BASE}/notifications/patient?${params}`;
+    
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 5000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching patient notifications:', error);
+    if (error.response) {
+      console.error('Response error:', error.response.data);
+    }
+    throw error;
+  }
+};
+
+/**
+ * Get unread notification count for a patient
+ */
+export const getPatientUnreadCount = async (patientId) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    const response = await axios.get(
+      `${API_BASE}/notifications/patient${patientId ? `/${patientId}` : ''}/unread/count`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 5000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching patient unread count:', error);
+    throw error;
+  }
+};
+
+/**
+ * Mark all notifications as read for a patient
+ */
+export const markAllPatientAsRead = async (patientId) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    const response = await axios.patch(
+      `${API_BASE}/notifications/patient${patientId ? `/${patientId}` : ''}/mark-all-read`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 5000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error marking all patient notifications as read:', error);
+    throw error;
+  }
+};
+
