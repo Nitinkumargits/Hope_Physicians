@@ -83,16 +83,23 @@ jobs:
           export VITE_API_URL="${{ secrets.VITE_API_URL }}"
           ./deploy.sh
           
-    - name: Verify deployment
+    - name: Verify deployment and run diagnostics
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: ${{ secrets.EC2_PORT || 22 }}
-        timeout: 30s
+        timeout: 60s
         script: |
           echo "🔍 Verifying deployment..."
-          pm2 status || echo "PM2 not running"
-          sudo systemctl status nginx --no-pager -l || echo "Nginx status check"
+          cd /home/${{ secrets.EC2_USER }}/hope-physicians
+          chmod +x check-deployment.sh 2>/dev/null || true
+          ./check-deployment.sh 2>/dev/null || {
+            echo "Running basic checks..."
+            pm2 status || echo "PM2 not running"
+            sudo systemctl status nginx --no-pager -l || echo "Nginx status check"
+            echo "Checking ports..."
+            netstat -tuln 2>/dev/null | grep -E "(80|5000)" || ss -tuln 2>/dev/null | grep -E "(80|5000)" || echo "Cannot check ports"
+          }
           echo "✅ Deployment verification completed"
