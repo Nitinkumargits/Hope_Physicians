@@ -166,14 +166,19 @@ echo -e "\n${YELLOW}🎨 Deploying Frontend...${NC}"
 
 cd $FRONTEND_DIR
 
-# Install dependencies
-echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
-npm ci
-
-# Build frontend
-echo -e "${YELLOW}🏗️  Building frontend...${NC}"
-npm run build
-echo -e "${GREEN}✅ Frontend built${NC}"
+# Check if dist directory already exists (from CI build)
+if [ -d "dist" ] && [ "$(ls -A dist 2>/dev/null)" ]; then
+    echo -e "${GREEN}✅ Frontend build already exists, skipping build${NC}"
+else
+    # Install dependencies (including devDependencies for build)
+    echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
+    npm ci --production=false || npm install
+    
+    # Build frontend using npm script (which uses npx/vite from node_modules)
+    echo -e "${YELLOW}🏗️  Building frontend...${NC}"
+    npm run build || npx vite build
+    echo -e "${GREEN}✅ Frontend built${NC}"
+fi
 
 # ============================================
 # NGINX CONFIGURATION
