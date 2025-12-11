@@ -115,9 +115,9 @@ jobs:
         RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
         RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        PORT: ${{ secrets.PORT || 5000 }}
-        NODE_ENV: ${{ secrets.NODE_ENV || production }}
-        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        PORT: ${{ secrets.PORT || '5000' }}
+        NODE_ENV: ${{ secrets.NODE_ENV || 'production' }}
+        VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
       run: |
         # Create deployment directory on EC2
         ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/backend"
@@ -141,7 +141,7 @@ jobs:
         scp check-deployment.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
         
         # Run deployment script on EC2
-        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd ~/hope-physicians && chmod +x deploy.sh && export JWT_SECRET='$JWT_SECRET' && export EMAIL_USER='$EMAIL_USER' && export EMAIL_PASS='$EMAIL_PASS' && export RAZORPAY_KEY_ID='$RAZORPAY_KEY_ID' && export RAZORPAY_KEY_SECRET='$RAZORPAY_KEY_SECRET' && export DATABASE_URL='$DATABASE_URL' && export PORT='$PORT' && export NODE_ENV='$NODE_ENV' && export VITE_API_URL='$VITE_API_URL' && bash deploy.sh"
+        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd ~/hope-physicians && chmod +x deploy.sh && export JWT_SECRET='$JWT_SECRET' && export EMAIL_USER='$EMAIL_USER' && export EMAIL_PASS='$EMAIL_PASS' && export RAZORPAY_KEY_ID='$RAZORPAY_KEY_ID' && export RAZORPAY_KEY_SECRET='$RAZORPAY_KEY_SECRET' && export DATABASE_URL='$DATABASE_URL' && export PORT='${PORT:-5000}' && export NODE_ENV='${NODE_ENV:-production}' && export VITE_API_URL='$VITE_API_URL' && bash deploy.sh"
 
   status:
     name: CI/CD Status
