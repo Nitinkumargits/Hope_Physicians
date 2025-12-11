@@ -135,8 +135,7 @@ echo -e "${GREEN}✅ Frontend built${NC}"
 if command -v nginx &> /dev/null; then
     echo -e "\n${YELLOW}🌐 Configuring Nginx...${NC}"
     
-    sudo tee /etc/nginx/sites-available/hope-physicians > /dev/null << EOF
-server {
+    NGINX_CONFIG="server {
     listen 80;
     server_name _;
     
@@ -161,54 +160,30 @@ server {
     
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
-        add_header Cache-Control "public, immutable";
+        add_header Cache-Control \"public, immutable\";
     }
-}
-EOF
-
+}"
+    
+    # Debian/Ubuntu style
+    if [ -d "/etc/nginx/sites-available" ]; then
+        echo "$NGINX_CONFIG" | sudo tee /etc/nginx/sites-available/hope-physicians > /dev/null
+        sudo mkdir -p /etc/nginx/sites-enabled
         sudo ln -sf /etc/nginx/sites-available/hope-physicians /etc/nginx/sites-enabled/
         sudo rm -f /etc/nginx/sites-enabled/default
-    else
-        # RHEL/CentOS style - use conf.d
-        sudo tee /etc/nginx/conf.d/hope-physicians.conf > /dev/null << EOF
-server {
-    listen 80;
-    server_name _;
-    
-    root $FRONTEND_DIR/dist;
-    index index.html;
-    
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-    
-    location /api {
-        proxy_pass http://localhost:$BACKEND_PORT;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
-    }
-    
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-}
-EOF
+    # RHEL/CentOS/Amazon Linux style
+    elif [ -d "/etc/nginx/conf.d" ]; then
+        echo "$NGINX_CONFIG" | sudo tee /etc/nginx/conf.d/hope-physicians.conf > /dev/null
     fi
     
     if sudo nginx -t 2>/dev/null; then
         if systemctl --version &>/dev/null; then
-            sudo systemctl reload nginx
+            sudo systemctl reload nginx 2>/dev/null || sudo service nginx reload 2>/dev/null || true
         else
-            sudo service nginx reload
+            sudo service nginx reload 2>/dev/null || true
         fi
         echo -e "${GREEN}✅ Nginx configured${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Nginx config test failed${NC}"
     fi
 fi
 
