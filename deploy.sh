@@ -22,18 +22,31 @@ NODE_ENV=${NODE_ENV:-production}
 
 echo -e "${YELLOW}📁 Application Directory: $APP_DIR${NC}"
 
-# Install Node.js if not present
-if ! command -v node &> /dev/null; then
-    echo -e "${YELLOW}📦 Installing Node.js 18...${NC}"
+# Install build tools first (needed for native modules)
+echo -e "${YELLOW}🔧 Installing build tools...${NC}"
+if [ -f /etc/debian_version ]; then
+    # Debian/Ubuntu
+    sudo apt-get update -qq
+    sudo apt-get install -y build-essential python3 make g++ || true
+elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
+    # RHEL/CentOS/Amazon Linux
+    sudo yum groupinstall -y "Development Tools" 2>/dev/null || sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
+    sudo yum install -y python3 make gcc-c++ 2>/dev/null || sudo dnf install -y python3 make gcc-c++ 2>/dev/null || true
+fi
+
+# Install Node.js if not present or if version is less than 20
+NODE_VERSION=$(node --version 2>/dev/null | cut -d'v' -f2 | cut -d'.' -f1 || echo "0")
+if ! command -v node &> /dev/null || [ "$NODE_VERSION" -lt 20 ]; then
+    echo -e "${YELLOW}📦 Installing Node.js 20...${NC}"
     # Detect OS and install accordingly
     if [ -f /etc/debian_version ]; then
         # Debian/Ubuntu
-        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
         sudo apt-get install -y nodejs
-    elif [ -f /etc/redhat-release ]; then
+    elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
         # RHEL/CentOS/Amazon Linux
-        curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-        sudo yum install -y nodejs
+        curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+        sudo yum install -y nodejs 2>/dev/null || sudo dnf install -y nodejs 2>/dev/null || true
     else
         # Try using nvm as fallback
         export NVM_DIR="$HOME/.nvm"
@@ -42,8 +55,9 @@ if ! command -v node &> /dev/null; then
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         }
-        nvm install 18
-        nvm use 18
+        nvm install 20
+        nvm use 20
+        nvm alias default 20
     fi
     echo -e "${GREEN}✅ Node.js installed${NC}"
 fi
@@ -71,6 +85,15 @@ cd $BACKEND_DIR
 
 # Install dependencies
 echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
+# Ensure build tools are available
+if ! command -v make &> /dev/null; then
+    echo -e "${YELLOW}⚠️  'make' not found, installing build tools...${NC}"
+    if [ -f /etc/debian_version ]; then
+        sudo apt-get install -y build-essential python3 make g++ || true
+    elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
+        sudo yum install -y make gcc-c++ python3 2>/dev/null || sudo dnf install -y make gcc-c++ python3 2>/dev/null || true
+    fi
+fi
 npm ci --production=false
 
 # Generate Prisma Client

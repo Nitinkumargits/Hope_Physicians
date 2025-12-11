@@ -28,14 +28,14 @@ elif [ "$OS_TYPE" = "rhel" ]; then
     sudo yum update -y
 fi
 
-# Install Node.js 18
-echo "📦 Installing Node.js 18..."
+# Install Node.js 20
+echo "📦 Installing Node.js 20..."
 if [ "$OS_TYPE" = "debian" ]; then
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
     sudo apt-get install -y nodejs
 elif [ "$OS_TYPE" = "rhel" ]; then
-    curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-    sudo yum install -y nodejs
+    curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+    sudo yum install -y nodejs 2>/dev/null || sudo dnf install -y nodejs 2>/dev/null || true
 fi
 
 # Install PM2
@@ -63,13 +63,13 @@ if ! command -v git &> /dev/null; then
     fi
 fi
 
-# Install build tools
+# Install build tools (required for native modules like better-sqlite3)
 echo "📦 Installing build tools..."
 if [ "$OS_TYPE" = "debian" ]; then
-    sudo apt-get install -y build-essential python3
+    sudo apt-get install -y build-essential python3 make g++
 elif [ "$OS_TYPE" = "rhel" ]; then
-    sudo yum groupinstall -y "Development Tools"
-    sudo yum install -y python3
+    sudo yum groupinstall -y "Development Tools" 2>/dev/null || sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
+    sudo yum install -y python3 make gcc-c++ 2>/dev/null || sudo dnf install -y python3 make gcc-c++ 2>/dev/null || true
 fi
 
 # Setup firewall
