@@ -1,0 +1,81 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  test-and-deploy:
+    name: Test, Build & Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    # Backend Tests
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Generate Prisma Client
+      working-directory: ./backend
+      run: npm run prisma:generate
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL || 'file:./dev.db' }}
+        NODE_ENV: test
+        
+    # Frontend Build
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+      
+    - name: Build frontend
+      working-directory: ./frontend
+      env:
+        VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
+        NODE_ENV: production
+      run: npm run build
+      
+    # Deploy to EC2
+    - name: Deploy to EC2 via SCP
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_PORT || 22 }}
+        source: "."
+        target: "/home/${{ secrets.EC2_USER }}/hope-physicians"
+        strip_components: 0
+        rm: false
+        
+    - name: Execute deployment script on EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_PORT || 22 }}
+        envs: JWT_SECRET,EMAIL_USER,EMAIL_PASS,RAZORPAY_KEY_ID,RAZORPAY_KEY_SECRET,DATABASE_URL,PORT,NODE_ENV,VITE_API_URL
+        script: |
+          cd /home/${{ secrets.EC2_USER }}/hope-physicians
+          chmod +x deploy.sh
+          export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+          export EMAIL_USER="${{ secrets.EMAIL_USER }}"
+          export EMAIL_PASS="${{ secrets.EMAIL_PASS }}"
+          export RAZORPAY_KEY_ID="${{ secrets.RAZORPAY_KEY_ID }}"
+          export RAZORPAY_KEY_SECRET="${{ secrets.RAZORPAY_KEY_SECRET }}"
+          export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+          export PORT="${{ secrets.PORT || 5000 }}"
+          export NODE_ENV="${{ secrets.NODE_ENV || production }}"
+          export VITE_API_URL="${{ secrets.VITE_API_URL }}"
+          ./deploy.sh
