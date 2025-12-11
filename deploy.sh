@@ -35,7 +35,10 @@ elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
 fi
 
 # Install Node.js if not present or if version is less than 20
-NODE_VERSION=$(node --version 2>/dev/null | cut -d'v' -f2 | cut -d'.' -f1 || echo "0")
+# Check system Node.js first (not NVM)
+SYSTEM_NODE=$(/usr/bin/node --version 2>/dev/null || /usr/local/bin/node --version 2>/dev/null || node --version 2>/dev/null || echo "")
+NODE_VERSION=$(echo "$SYSTEM_NODE" | cut -d'v' -f2 | cut -d'.' -f1 || echo "0")
+
 if ! command -v node &> /dev/null || [ "$NODE_VERSION" -lt 20 ]; then
     echo -e "${YELLOW}📦 Installing Node.js 20...${NC}"
     # Detect OS and install accordingly
@@ -62,8 +65,15 @@ if ! command -v node &> /dev/null || [ "$NODE_VERSION" -lt 20 ]; then
     echo -e "${GREEN}✅ Node.js installed${NC}"
 fi
 
-echo -e "${GREEN}✅ Node.js: $(node --version)${NC}"
-echo -e "${GREEN}✅ npm: $(npm --version)${NC}"
+# Ensure we're using Node.js 20 (unset NVM if it's overriding)
+unset NVM_DIR
+export PATH="/usr/bin:/usr/local/bin:$PATH"
+
+# Verify Node.js version
+NODE_VER=$(node --version 2>/dev/null || echo "unknown")
+NPM_VER=$(npm --version 2>/dev/null || echo "unknown")
+echo -e "${GREEN}✅ Node.js: $NODE_VER${NC}"
+echo -e "${GREEN}✅ npm: $NPM_VER${NC}"
 
 # Install PM2 if not present
 if ! command -v pm2 &> /dev/null; then
@@ -126,13 +136,26 @@ pm2 delete hope-physicians-backend 2>/dev/null || true
 
 # Start backend with PM2
 echo -e "${YELLOW}🚀 Starting backend with PM2...${NC}"
-cd $APP_DIR
-if [ -f "$APP_DIR/ecosystem.config.js" ]; then
-    pm2 start ecosystem.config.js --update-env
-else
-    cd $BACKEND_DIR
-    pm2 start server.js --name "hope-physicians-backend" --update-env
+cd $BACKEND_DIR
+
+# Verify server.js exists
+if [ ! -f "server.js" ]; then
+    echo -e "${RED}❌ Error: server.js not found in $BACKEND_DIR${NC}"
+    echo -e "${YELLOW}📁 Contents of $BACKEND_DIR:${NC}"
+    ls -la $BACKEND_DIR | head -20
+    exit 1
 fi
+
+# Start with PM2 using absolute path
+pm2 start "$BACKEND_DIR/server.js" \
+    --name "hope-physicians-backend" \
+    --cwd "$BACKEND_DIR" \
+    --update-env \
+    --env production \
+    --log "$APP_DIR/logs/backend-out.log" \
+    --error "$APP_DIR/logs/backend-error.log" \
+    --time
+
 pm2 save --force
 echo -e "${GREEN}✅ Backend started${NC}"
 
