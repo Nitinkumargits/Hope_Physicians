@@ -181,8 +181,28 @@ else
 fi
 
 # ============================================
-# NGINX CONFIGURATION
+# NGINX INSTALLATION & CONFIGURATION
 # ============================================
+# Install Nginx if not present
+if ! command -v nginx &> /dev/null; then
+    echo -e "\n${YELLOW}📦 Installing Nginx...${NC}"
+    if [ -f /etc/debian_version ]; then
+        # Debian/Ubuntu
+        sudo apt-get install -y nginx || true
+    elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
+        # RHEL/CentOS/Amazon Linux
+        sudo yum install -y nginx 2>/dev/null || sudo dnf install -y nginx 2>/dev/null || true
+    fi
+    
+    # Start and enable Nginx
+    if systemctl --version &>/dev/null; then
+        sudo systemctl enable nginx 2>/dev/null || true
+        sudo systemctl start nginx 2>/dev/null || true
+    else
+        sudo service nginx start 2>/dev/null || true
+    fi
+fi
+
 if command -v nginx &> /dev/null; then
     echo -e "\n${YELLOW}🌐 Configuring Nginx...${NC}"
     
@@ -228,14 +248,29 @@ if command -v nginx &> /dev/null; then
     
     if sudo nginx -t 2>/dev/null; then
         if systemctl --version &>/dev/null; then
-            sudo systemctl reload nginx 2>/dev/null || sudo service nginx reload 2>/dev/null || true
+            sudo systemctl restart nginx 2>/dev/null || sudo service nginx restart 2>/dev/null || true
+            sudo systemctl enable nginx 2>/dev/null || true
         else
-            sudo service nginx reload 2>/dev/null || true
+            sudo service nginx restart 2>/dev/null || true
         fi
-        echo -e "${GREEN}✅ Nginx configured${NC}"
+        echo -e "${GREEN}✅ Nginx configured and started${NC}"
     else
         echo -e "${YELLOW}⚠️  Nginx config test failed${NC}"
+        sudo nginx -t
     fi
+    
+    # Ensure firewall allows HTTP traffic
+    echo -e "${YELLOW}🔥 Configuring firewall for HTTP/HTTPS...${NC}"
+    if command -v ufw &> /dev/null; then
+        sudo ufw allow 80/tcp 2>/dev/null || true
+        sudo ufw allow 443/tcp 2>/dev/null || true
+    elif command -v firewall-cmd &> /dev/null; then
+        sudo firewall-cmd --permanent --add-service=http 2>/dev/null || true
+        sudo firewall-cmd --permanent --add-service=https 2>/dev/null || true
+        sudo firewall-cmd --reload 2>/dev/null || true
+    fi
+else
+    echo -e "${RED}❌ Nginx installation failed. Please install manually.${NC}"
 fi
 
 # ============================================
