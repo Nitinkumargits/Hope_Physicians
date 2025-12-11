@@ -24,10 +24,24 @@ NODE_ENV=${NODE_ENV:-production}
 
 echo -e "${YELLOW}📁 Application Directory: $APP_DIR${NC}"
 
-# Check if Node.js is installed
+# Check if Node.js is installed, install if not
 if ! command -v node &> /dev/null; then
-    echo -e "${RED}❌ Node.js is not installed. Please install Node.js 18 or higher.${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️  Node.js is not installed. Installing Node.js 18...${NC}"
+    
+    # Install Node.js 18.x
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - || {
+        echo -e "${YELLOW}Trying alternative installation method...${NC}"
+        sudo apt-get update
+        sudo apt-get install -y curl
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    }
+    
+    sudo apt-get install -y nodejs || {
+        echo -e "${RED}❌ Failed to install Node.js${NC}"
+        exit 1
+    }
+    
+    echo -e "${GREEN}✅ Node.js installed successfully${NC}"
 fi
 
 echo -e "${GREEN}✅ Node.js version: $(node --version)${NC}"
