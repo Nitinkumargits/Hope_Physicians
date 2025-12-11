@@ -4,6 +4,10 @@ node_modules/
 # yarn.lock - Keep if using Yarn
 # pnpm-lock.yaml - Keep if using pnpm
 
+# Root level package files (should not exist)
+/package-lock.json
+/package.json
+
 # Build outputs
 dist/
 dist-ssr/
