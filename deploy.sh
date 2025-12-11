@@ -206,12 +206,35 @@ fi
 if command -v nginx &> /dev/null; then
     echo -e "\n${YELLOW}🌐 Configuring Nginx...${NC}"
     
+    # Verify frontend dist directory exists
+    if [ ! -d "$FRONTEND_DIR/dist" ]; then
+        echo -e "${RED}❌ Frontend dist directory not found: $FRONTEND_DIR/dist${NC}"
+        echo -e "${YELLOW}📁 Creating directory...${NC}"
+        mkdir -p "$FRONTEND_DIR/dist"
+    fi
+    
+    # Check if dist has files
+    if [ ! "$(ls -A $FRONTEND_DIR/dist 2>/dev/null)" ]; then
+        echo -e "${YELLOW}⚠️  Frontend dist directory is empty${NC}"
+        echo -e "${YELLOW}📁 Contents of $FRONTEND_DIR:${NC}"
+        ls -la "$FRONTEND_DIR" | head -10
+    else
+        echo -e "${GREEN}✅ Frontend dist directory found with files${NC}"
+    fi
+    
+    # Ensure proper permissions
+    chmod -R 755 "$FRONTEND_DIR/dist" 2>/dev/null || true
+    
     NGINX_CONFIG="server {
     listen 80;
     server_name _;
     
     root $FRONTEND_DIR/dist;
     index index.html;
+    
+    # Logging
+    access_log /var/log/nginx/hope-physicians-access.log;
+    error_log /var/log/nginx/hope-physicians-error.log;
     
     location / {
         try_files \$uri \$uri/ /index.html;
@@ -227,6 +250,8 @@ if command -v nginx &> /dev/null; then
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_cache_bypass \$http_upgrade;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
     }
     
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
@@ -254,9 +279,23 @@ if command -v nginx &> /dev/null; then
             sudo service nginx restart 2>/dev/null || true
         fi
         echo -e "${GREEN}✅ Nginx configured and started${NC}"
+        
+        # Show Nginx status
+        echo -e "${YELLOW}📊 Nginx status:${NC}"
+        if systemctl --version &>/dev/null; then
+            sudo systemctl status nginx --no-pager -l 2>/dev/null | head -10 || true
+        fi
+        
+        # Show recent Nginx errors if any
+        if [ -f "/var/log/nginx/error.log" ]; then
+            echo -e "${YELLOW}📋 Recent Nginx errors:${NC}"
+            sudo tail -n 5 /var/log/nginx/error.log 2>/dev/null || true
+        fi
     else
-        echo -e "${YELLOW}⚠️  Nginx config test failed${NC}"
+        echo -e "${RED}❌ Nginx config test failed${NC}"
         sudo nginx -t
+        echo -e "${YELLOW}📋 Checking Nginx error log:${NC}"
+        sudo tail -n 20 /var/log/nginx/error.log 2>/dev/null || true
     fi
     
     # Ensure firewall allows HTTP traffic
