@@ -529,9 +529,11 @@ else
     sudo nginx -t
 fi
 
-# Show PM2 status
+# Show PM2 status with memory info
 echo -e "\n${YELLOW}📊 PM2 Status:${NC}"
 pm2 list
+echo -e "\n${YELLOW}💾 Memory usage by PM2 processes:${NC}"
+pm2 jlist 2>/dev/null | node -e "try { const data = JSON.parse(require('fs').readFileSync(0, 'utf-8')); data.forEach(p => console.log(\`  \${p.name}: \${(p.monit.memory / 1024 / 1024).toFixed(2)}MB\`)); } catch(e) {}" || echo "  (Memory info not available)"
 
 # Final cleanup and memory free
 echo -e "\n${YELLOW}🧹 Final cleanup...${NC}"
