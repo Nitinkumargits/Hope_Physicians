@@ -188,6 +188,28 @@ jobs:
         }
         echo "✅ ecosystem.config.js copied"
         
+        # Copy optimization scripts
+        if [ -f "optimize-low-memory-ec2.sh" ]; then
+          echo "📤 Copying optimize-low-memory-ec2.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 optimize-low-memory-ec2.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy optimize-low-memory-ec2.sh (non-critical)"
+          } || true
+        fi
+        
+        if [ -f "setup-cron-restart.sh" ]; then
+          echo "📤 Copying setup-cron-restart.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 setup-cron-restart.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy setup-cron-restart.sh (non-critical)"
+          } || true
+        fi
+        
+        if [ -f "monitor-memory.sh" ]; then
+          echo "📤 Copying monitor-memory.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 monitor-memory.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy monitor-memory.sh (non-critical)"
+          } || true
+        fi
+        
         echo "✅ All deployment scripts copied successfully"
         
     - name: Execute multi-app deployment script on EC2
