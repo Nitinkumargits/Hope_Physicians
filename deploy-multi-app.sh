@@ -72,9 +72,9 @@ fi
 # Function to deploy a single app
 deploy_app() {
     local APP_NAME=$1
-    echo -e "\n${BLUE}════════════════════════════════════════${NC}"
-    echo -e "${BLUE}📦 Deploying: $APP_NAME${NC}"
-    echo -e "${BLUE}════════════════════════════════════════${NC}\n"
+    echo -e "\n${BLUE}════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}🚀 DEPLOYING APPLICATION: $APP_NAME${NC}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}\n"
     
     # Extract app config using Node.js
     local APP_CONFIG=$(node -e "
@@ -89,8 +89,12 @@ deploy_app() {
     fi
     
     # Parse config
+    local DISPLAY_NAME=$(node -e "const c = JSON.parse('$APP_CONFIG'); console.log(c.displayName || '$APP_NAME')")
     local APP_DIR=$(node -e "console.log(JSON.parse('$APP_CONFIG').directory)")
     local REPO_URL=$(node -e "console.log(JSON.parse('$APP_CONFIG').repo || '')")
+    
+    echo -e "${GREEN}📱 Application: ${DISPLAY_NAME}${NC}"
+    echo -e "${GREEN}🔑 Internal Name: ${APP_NAME}${NC}"
     local BACKEND_DIR=$(node -e "const c = JSON.parse('$APP_CONFIG'); console.log(c.backend ? c.directory + '/' + c.backend.directory : '')")
     local FRONTEND_DIR=$(node -e "const c = JSON.parse('$APP_CONFIG'); console.log(c.frontend ? c.directory + '/' + c.frontend.directory : '')")
     local BACKEND_PORT=$(node -e "const c = JSON.parse('$APP_CONFIG'); console.log(c.backend ? c.backend.port : '')")
@@ -102,6 +106,7 @@ deploy_app() {
     
     echo -e "${YELLOW}📁 App Directory: $APP_DIR${NC}"
     echo -e "${YELLOW}🔗 Repository: $REPO_URL${NC}"
+    echo ""
     
     # Clone or update repository
     if [ -n "$REPO_URL" ] && [ "$REPO_URL" != "null" ]; then
@@ -135,27 +140,38 @@ deploy_app() {
     
     # Deploy backend
     if [ -n "$BACKEND_DIR" ] && [ -d "$BACKEND_DIR" ]; then
-        echo -e "${YELLOW}🔧 Deploying Backend...${NC}"
+        echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BLUE}🔧 [$APP_NAME] Deploying Backend${NC}"
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
         cd "$BACKEND_DIR"
         
-        # Install dependencies
-        echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
-        echo "⏳ This may take a few minutes..."
-        npm ci --production=false || npm install
-        echo "✅ Dependencies installed"
+        # Install dependencies with timeout and progress
+        echo -e "${YELLOW}📦 [$APP_NAME] Installing backend dependencies...${NC}"
+        echo -e "${YELLOW}⏳ This may take 2-5 minutes, please wait...${NC}"
+        echo -e "${YELLOW}💡 Installing packages (this can appear stuck but is working)...${NC}"
+        
+        # Use timeout to prevent hanging
+        if timeout 600 npm ci --production=false --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
+            echo -e "${GREEN}✅ [$APP_NAME] Backend dependencies installed successfully${NC}"
+        elif timeout 600 npm install --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
+            echo -e "${GREEN}✅ [$APP_NAME] Backend dependencies installed successfully (using npm install)${NC}"
+        else
+            echo -e "${RED}❌ [$APP_NAME] Failed to install backend dependencies (timeout or error)${NC}"
+            return 1
+        fi
         
         # Generate Prisma Client if exists
         if [ -f "prisma/schema.prisma" ]; then
-            echo -e "${YELLOW}🔨 Generating Prisma Client...${NC}"
+            echo -e "${YELLOW}🔨 [$APP_NAME] Generating Prisma Client...${NC}"
             npm run prisma:generate || npx prisma generate || true
             
             # Run migrations
-            echo -e "${YELLOW}🗄️  Running database migrations...${NC}"
+            echo -e "${YELLOW}🗄️  [$APP_NAME] Running database migrations...${NC}"
             npx prisma migrate deploy --skip-generate 2>/dev/null || npx prisma db push --skip-generate --accept-data-loss 2>/dev/null || true
         fi
         
         # Create .env file
-        echo -e "${YELLOW}📝 Creating .env file...${NC}"
+        echo -e "${YELLOW}📝 [$APP_NAME] Creating .env file...${NC}"
         cat > .env << EOF
 NODE_ENV=${NODE_ENV:-production}
 PORT=${BACKEND_PORT}
@@ -173,7 +189,7 @@ EOF
         
         # Start backend with PM2
         if [ -f "$BACKEND_SCRIPT" ]; then
-            echo -e "${YELLOW}🚀 Starting backend with PM2...${NC}"
+            echo -e "${YELLOW}🚀 [$APP_NAME] Starting backend with PM2 on port $BACKEND_PORT...${NC}"
             pm2 start "$BACKEND_SCRIPT" \
                 --name "${APP_NAME}-backend" \
                 --cwd "$BACKEND_DIR" \
@@ -193,29 +209,44 @@ EOF
     
     # Deploy frontend
     if [ -n "$FRONTEND_DIR" ] && [ -d "$FRONTEND_DIR" ]; then
-        echo -e "${YELLOW}🎨 Deploying Frontend...${NC}"
+        echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BLUE}🎨 [$APP_NAME] Deploying Frontend${NC}"
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
         cd "$FRONTEND_DIR"
         
         # Check if dist already exists (from CI build)
         if [ ! -d "$FRONTEND_DIST" ] || [ ! "$(ls -A $FRONTEND_DIST 2>/dev/null)" ]; then
-            # Install dependencies
-            echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
-            echo "⏳ This may take a few minutes..."
-            npm ci --legacy-peer-deps --production=false || npm install --legacy-peer-deps
-            echo "✅ Dependencies installed"
+            # Install dependencies with timeout and progress
+            echo -e "${YELLOW}📦 [$APP_NAME] Installing frontend dependencies...${NC}"
+            echo -e "${YELLOW}⏳ This may take 2-5 minutes, please wait...${NC}"
+            echo -e "${YELLOW}💡 Installing packages (this can appear stuck but is working)...${NC}"
+            
+            # Use timeout to prevent hanging
+            if timeout 600 npm ci --legacy-peer-deps --production=false 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
+                echo -e "${GREEN}✅ [$APP_NAME] Frontend dependencies installed successfully${NC}"
+            elif timeout 600 npm install --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
+                echo -e "${GREEN}✅ [$APP_NAME] Frontend dependencies installed successfully (using npm install)${NC}"
+            else
+                echo -e "${RED}❌ [$APP_NAME] Failed to install frontend dependencies (timeout or error)${NC}"
+                return 1
+            fi
             
             # Build frontend with base path if needed
-            echo -e "${YELLOW}🏗️  Building frontend...${NC}"
-            echo "⏳ Building may take a few minutes..."
+            echo -e "${YELLOW}🏗️  [$APP_NAME] Building frontend...${NC}"
+            echo -e "${YELLOW}⏳ Building may take 2-5 minutes, please wait...${NC}"
             if [ "$NGINX_FRONTEND_PATH" != "/" ]; then
                 # Set base path for React Router
                 export VITE_BASE_PATH="$NGINX_FRONTEND_PATH"
                 export VITE_API_URL="$NGINX_API_PATH"
             fi
-            eval "$FRONTEND_BUILD_CMD" || npm run build || npx vite build
-            echo -e "${GREEN}✅ Frontend built${NC}"
+            if timeout 600 bash -c "$FRONTEND_BUILD_CMD" 2>&1 | sed "s/^/[$APP_NAME-BUILD] /"; then
+                echo -e "${GREEN}✅ [$APP_NAME] Frontend built successfully${NC}"
+            else
+                echo -e "${RED}❌ [$APP_NAME] Frontend build failed${NC}"
+                return 1
+            fi
         else
-            echo -e "${GREEN}✅ Frontend build already exists${NC}"
+            echo -e "${GREEN}✅ [$APP_NAME] Frontend build already exists (skipping build)${NC}"
         fi
         
         # Ensure proper permissions
@@ -226,15 +257,37 @@ EOF
         cd - > /dev/null
     fi
     
-    echo -e "${GREEN}✅ $APP_NAME deployment completed${NC}"
+    echo -e "\n${GREEN}════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}✅ [$APP_NAME] Deployment completed successfully!${NC}"
+    echo -e "${GREEN}📱 Application: ${DISPLAY_NAME}${NC}"
+    echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}\n"
 }
 
 # Read apps from config
 APPS=$(node -e "const config = require('./apps.config.json'); console.log(config.apps.map(a => a.name).join(' '))")
 
-# Deploy each app
+echo -e "\n${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║         MULTI-APPLICATION DEPLOYMENT STARTING                   ║${NC}"
+echo -e "${BLUE}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${YELLOW}📋 Applications to deploy:${NC}"
 for APP_NAME in $APPS; do
+    DISPLAY_NAME=$(node -e "const config = require('./apps.config.json'); const app = config.apps.find(a => a.name === '$APP_NAME'); console.log(app ? app.displayName || app.name : '$APP_NAME')")
+    echo -e "   • ${DISPLAY_NAME} (${APP_NAME})"
+done
+echo ""
+
+# Deploy each app
+APP_COUNT=0
+for APP_NAME in $APPS; do
+    APP_COUNT=$((APP_COUNT + 1))
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}📦 Deploying Application $APP_COUNT of $(echo $APPS | wc -w)${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     deploy_app "$APP_NAME"
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Failed to deploy $APP_NAME${NC}"
+        exit 1
+    fi
 done
 
 # Configure Nginx for all apps
@@ -346,4 +399,16 @@ fi
 echo -e "\n${YELLOW}📊 PM2 Status:${NC}"
 pm2 list
 
-echo -e "\n${GREEN}🎉 Multi-application deployment completed!${NC}"
+echo -e "\n${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║         MULTI-APPLICATION DEPLOYMENT COMPLETED!                ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}✅ Successfully deployed applications:${NC}"
+for APP_NAME in $APPS; do
+    DISPLAY_NAME=$(node -e "const config = require('./apps.config.json'); const app = config.apps.find(a => a.name === '$APP_NAME'); console.log(app ? app.displayName || app.name : '$APP_NAME')")
+    BACKEND_PORT=$(node -e "const config = require('./apps.config.json'); const app = config.apps.find(a => a.name === '$APP_NAME'); console.log(app && app.backend ? app.backend.port : 'N/A')")
+    FRONTEND_PATH=$(node -e "const config = require('./apps.config.json'); const app = config.apps.find(a => a.name === '$APP_NAME'); console.log(app && app.nginx ? app.nginx.frontendPath : '/')")
+    echo -e "   • ${DISPLAY_NAME} (${APP_NAME})"
+    echo -e "     - Backend: Port ${BACKEND_PORT}"
+    echo -e "     - Frontend: ${FRONTEND_PATH}"
+done
+echo -e "\n${GREEN}🎉 All applications are now running!${NC}"
