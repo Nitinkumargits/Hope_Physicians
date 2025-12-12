@@ -35,7 +35,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || true
+        echo "🔍 Verifying SSH key format..."
+        head -1 ~/.ssh/id_rsa | grep -q "BEGIN" && echo "✅ SSH key format looks correct" || echo "⚠️  SSH key might be missing BEGIN line"
+        echo "🔍 Testing SSH key file..."
+        test -f ~/.ssh/id_rsa && echo "✅ SSH key file exists" || echo "❌ SSH key file not found"
+        echo "🔍 Getting EC2 host fingerprint..."
+        ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts 2>&1 || echo "⚠️  Could not get host fingerprint (might be normal)"
+        echo "🔍 Testing basic connectivity..."
+        timeout 5 nc -zv $EC2_HOST 22 2>&1 || echo "⚠️  Port 22 not reachable (might be normal if security group blocks)"
         
     # Deploy configuration and scripts to EC2
     - name: Deploy deployment scripts to EC2
@@ -59,11 +66,20 @@ jobs:
               sleep 5
             else
               echo "❌ SSH connection failed after $MAX_RETRIES attempts"
-              echo "⚠️  Troubleshooting tips:"
-              echo "   1. Verify EC2 instance is running"
-              echo "   2. Check security group allows SSH (port 22) from GitHub Actions IPs"
-              echo "   3. Verify EC2_HOST secret is correct: $EC2_HOST"
-              echo "   4. Check EC2 instance public IP hasn't changed"
+              echo ""
+              echo "🔍 Diagnostic Information:"
+              echo "   EC2_HOST: $EC2_HOST"
+              echo "   EC2_USER: $EC2_USER"
+              echo "   Testing port 22 connectivity..."
+              timeout 5 bash -c "echo > /dev/tcp/$EC2_HOST/22" 2>/dev/null && echo "   ✅ Port 22 is reachable" || echo "   ❌ Port 22 is NOT reachable"
+              echo ""
+              echo "⚠️  Since SSH works locally but not from GitHub Actions:"
+              echo "   1. Verify EC2_HOST secret matches the IP you use locally"
+              echo "   2. Verify EC2_SSH_KEY secret is the SAME key that works locally"
+              echo "   3. Check if security group change has propagated (wait 30 seconds)"
+              echo "   4. Verify Network ACLs allow traffic (if using VPC)"
+              echo "   5. Check if instance has iptables/firewall: ssh into instance and run 'sudo iptables -L'"
+              echo "   6. If using Elastic IP, verify it's attached to the instance"
               exit 1
             fi
           fi
