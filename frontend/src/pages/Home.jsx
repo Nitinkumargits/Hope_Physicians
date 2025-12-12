@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
 
@@ -16,6 +16,15 @@ import medSupportImg from "../assets/images/med_support.jpg";
 import adminSupportImg from "../assets/images/admin_support.jpg";
 
 const Home = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    privacy: false,
+  });
+  const [formStatus, setFormStatus] = useState({ type: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     document.title = "Hope Physicians — World-Class Healthcare";
 
@@ -37,6 +46,39 @@ const Home = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  const handleFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus({ type: "", message: "" });
+
+    try {
+      // TODO: Connect to backend API when available
+      // For now, simulate form submission
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setFormStatus({
+        type: "success",
+        message: "Thank you! Your message has been sent successfully.",
+      });
+      setFormData({ name: "", email: "", message: "", privacy: false });
+    } catch (error) {
+      setFormStatus({
+        type: "error",
+        message: "Failed to send message. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const consultationItems = [
     {
@@ -187,44 +229,74 @@ const Home = () => {
     <>
       {/* HERO SECTION */}
       <section
-        className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll"
+        className="relative overflow-hidden py-16 md:py-24 reveal-on-scroll"
         role="banner"
-        style={{ backgroundImage: `url(${heroImg})` }}>
+        style={{
+          backgroundImage: `url(${heroImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}>
         <div className="hero-overlay"></div>
-        <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -left-24 top-6 h-72 w-72 rounded-full bg-blue-500/25 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" aria-hidden="true"></span>
-        </div>
-
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr,0.9fr] items-center min-h-[480px]">
-            <div className="space-y-4 hero-content">
-              <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight reveal-on-scroll">
-                World-Class Healthcare at Hope Physicians
-              </h1>
-              <p className="text-white/90 text-lg md:text-xl reveal-on-scroll">
-                Providing compassionate & expert medical care for you and your family.
-              </p>
-
-              <div className="hero-ctas reveal-on-scroll">
-                <Link className="hero-btn" to="/appointment">
-                  Book Appointment
+          <div className="grid gap-8 lg:grid-cols-2 items-start min-h-[500px]">
+            {/* Left: Blue Overlay with Text */}
+            <div className="space-y-6">
+              <div className="bg-primary rounded-3xl p-10 shadow-2xl max-w-lg border border-white/10">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 reveal-on-scroll tracking-tight">
+                  Quality Healthcare Services with a Heart
+                </h1>
+                <p className="text-white/90 text-lg md:text-xl mb-8 reveal-on-scroll leading-relaxed">
+                  We treat your loved ones like family
+                </p>
+                <Link
+                  to="/appointment"
+                  className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 reveal-on-scroll">
+                  <span>Learn More</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
                 </Link>
-                <a className="hero-ghost" href="/contact">
-                  Contact Us
-                </a>
+              </div>
+
+              {/* Image Overlay Below */}
+              <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-white/20">
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30"
+                  aria-hidden="true"></div>
+                <img
+                  src={familyImg}
+                  alt="Hope Physicians - Caring for families"
+                  className="w-full h-[300px] object-cover"
+                />
               </div>
             </div>
 
-            <div className="flex justify-center">
-              <div className="relative w-[280px] h-[320px] md:w-[320px] md:h-[360px] rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-                <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/55 opacity-80" aria-hidden="true"></div>
-                <img
-                  src={doctorImg}
-                  alt="Hope Physicians"
-                  className="w-full h-full object-cover"
-                />
+            {/* Right: Welcome Text */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-primary"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
               </div>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+                style={{ fontFamily: "serif" }}>
+                Hello & Welcome to Hope Physicians
+              </h2>
+              <p className="text-gray-700 text-base leading-relaxed">
+                Leading the way in medical excellence with cutting-edge
+                technology and compassionate care. We provide comprehensive
+                healthcare services for you and your family, ensuring quality
+                medical care with a personal touch.
+              </p>
             </div>
           </div>
         </div>
@@ -233,14 +305,24 @@ const Home = () => {
       {/* CONSULTATION TIMING BANNER */}
       <section className="relative overflow-hidden py-12 md:py-14 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white -mt-12 rounded-b-[28px]">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -left-16 top-6 h-60 w-60 rounded-full bg-blue-500/25 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute inset-4 rounded-3xl border border-white/10 opacity-40" aria-hidden="true"></span>
-          <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" aria-hidden="true"></span>
+          <span
+            className="absolute -left-16 top-6 h-60 w-60 rounded-full bg-blue-500/25 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute inset-4 rounded-3xl border border-white/10 opacity-40"
+            aria-hidden="true"></span>
+          <span
+            className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
+            aria-hidden="true"></span>
         </div>
         <div className="container relative z-10">
           <div className="flex flex-col items-center gap-3 text-center mb-8">
-            <p className="text-white/80 text-sm md:text-base tracking-wide uppercase">Here when you need us</p>
+            <p className="text-white/80 text-sm md:text-base tracking-wide uppercase">
+              Here when you need us
+            </p>
             <div className="h-1.5 w-16 rounded-full bg-white/60 blur-[1px] shadow-[0_0_20px_rgba(255,255,255,0.35)]"></div>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
@@ -278,59 +360,144 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ABOUT */}
+      {/* MISSION STATEMENT */}
       <section
         id="about"
-        className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-50 to-slate-100">
-        <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute inset-6 rounded-3xl border border-slate-200/50" aria-hidden="true"></span>
+        className="relative overflow-hidden py-20 md:py-28 reveal-on-scroll bg-gray-50">
+        <div className="grid lg:grid-cols-2 min-h-[500px]">
+          {/* Left: White Background */}
+          <div className="bg-white p-10 md:p-16 flex items-center">
+            <div className="space-y-6 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full w-fit mb-2">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <p className="text-primary text-sm uppercase tracking-wider font-semibold">
+                  Our Commitment
+                </p>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                Mission Statement
+              </h2>
+            </div>
+          </div>
+
+          {/* Right: Blue Background with Pattern */}
+          <div className="bg-primary relative p-10 md:p-16 flex items-center">
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+                backgroundSize: "40px 40px",
+              }}></div>
+            <div className="relative z-10 space-y-8 max-w-2xl">
+              <p className="text-white/95 text-lg md:text-xl leading-relaxed">
+                Leading the way in medical excellence with cutting-edge
+                technology and compassionate care. We are committed to providing
+                comprehensive healthcare services for you and your family,
+                ensuring quality medical care with a personal touch. Our mission
+                is to treat every patient with dignity, respect, and the highest
+                standard of medical expertise.
+              </p>
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                <span>About Us</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </Link>
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white">
-              <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/40 opacity-80" aria-hidden="true"></div>
-              <img src={aboutImg} alt="Hope Physicians facility" loading="lazy" className="w-full h-full object-cover" />
-              <div className="absolute bottom-5 right-5 bg-blue-700 text-white px-5 py-4 rounded-xl shadow-lg text-center">
-                <div className="text-3xl font-bold">25+</div>
-                <div className="text-xs uppercase tracking-wide">Years of Excellence</div>
-              </div>
+        {/* Image Overlay */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20">
+          <div className="max-w-md mx-auto lg:absolute lg:right-1/4 lg:top-1/2 lg:transform lg:-translate-y-1/2">
+            <div className="relative rounded-xl overflow-hidden shadow-2xl">
+              <img
+                src={aboutImg}
+                alt="Hope Physicians - Caring healthcare"
+                className="w-full h-[350px] object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20"></div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">About Hope Physicians</h2>
-              <p className="text-slate-600 text-lg leading-relaxed">
-                Leading the way in medical excellence with cutting-edge technology and compassionate care since 1995.
+      {/* Referral & Request Cards */}
+      <section className="relative py-20 md:py-28 reveal-on-scroll bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-32 lg:mt-0">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Physician Referral Form Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center border border-primary/20">
+                  <svg
+                    className="w-7 h-7 text-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Physician Referral Form
+                </h3>
+              </div>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                Refer patients for quality care and comprehensive medical
+                services.
               </p>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 rounded-xl bg-white/80 backdrop-blur border border-slate-200 p-4 shadow-sm">
-                  <div className="text-2xl">🏥</div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">State-of-the-Art Facilities</h3>
-                    <p className="text-slate-600">Equipped with the latest medical technology</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 rounded-xl bg-white/80 backdrop-blur border border-slate-200 p-4 shadow-sm">
-                  <div className="text-2xl">👨‍⚕️</div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Expert Medical Team</h3>
-                    <p className="text-slate-600">Board-certified physicians and specialists</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 rounded-xl bg-white/80 backdrop-blur border border-slate-200 p-4 shadow-sm">
-                  <div className="text-2xl">❤️</div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Patient-Centered Care</h3>
-                    <p className="text-slate-600">Personalized treatment plans for every patient</p>
-                  </div>
-                </div>
-              </div>
             </div>
+
+            {/* Request Card (Medical Teal) */}
+            <Link
+              to="/appointment"
+              className="bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block border border-teal-400/20">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                  <svg
+                    className="w-7 h-7 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white">
+                  Book Appointment
+                </h3>
+              </div>
+              <p className="text-white/95 text-lg leading-relaxed">
+                Schedule your visit with our expert medical team.
+              </p>
+            </Link>
           </div>
         </div>
       </section>
@@ -505,69 +672,98 @@ const Home = () => {
       {/* SERVICES */}
       <section
         id="services"
-        className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
-        <div className="pointer-events-none absolute inset-0">
-          <span
-            className="absolute -top-24 left-1/5 h-80 w-80 rounded-full bg-blue-600/25 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute -bottom-28 right-1/6 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute inset-6 rounded-3xl border border-white/5 opacity-40"
-            aria-hidden="true"></span>
-        </div>
-
+        className="relative overflow-hidden py-20 md:py-28 reveal-on-scroll bg-primary">
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 mb-10">
-            <div className="space-y-4 max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 text-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                Care that covers all
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">Our Services</h2>
-              <p className="text-slate-200 text-lg leading-relaxed">
-                Comprehensive healthcare services for you and your family.
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full mb-4">
+              <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+              <p className="text-white/90 text-sm uppercase tracking-wider font-semibold">
+                What We Offer
               </p>
             </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              Our Available Services
+            </h2>
+            <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+              Comprehensive healthcare services for you and your family,
+              delivered with compassion and expertise.
+            </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((s, i) => (
+          {/* Services Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {services.slice(0, 3).map((s, i) => (
               <article
                 key={s.path}
-                className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur shadow-xl transition duration-200 hover:-translate-y-2 hover:shadow-2xl"
+                className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100"
                 aria-labelledby={`svc-${i}`}>
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/60 opacity-90 mix-blend-normal"
-                  />
+                {/* Numbered Badge */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 text-white font-bold text-lg shadow-lg">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+
+                {/* Service Title */}
+                <h3
+                  id={`svc-${i}`}
+                  className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
+                  {s.title}
+                </h3>
+
+                {/* Service Description */}
+                <p className="text-gray-600 text-base mb-6 leading-relaxed">
+                  {s.desc}
+                </p>
+
+                {/* Service Image */}
+                <div className="relative w-full h-40 rounded-xl overflow-hidden mt-6 border border-gray-100">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent z-10"></div>
                   <img
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105 saturate-[1.1] contrast-[1.05] brightness-[1.02]"
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                     src={s.img}
                     alt={s.title}
                     loading="lazy"
                   />
                 </div>
-                <div className="flex flex-col gap-3 p-5">
-                  <div className="flex items-center justify-between">
-                    <h3 id={`svc-${i}`} className="text-xl font-semibold text-white">
-                      {s.title}
-                    </h3>
-                    <span className="h-2 w-2 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 shadow-[0_0_0_8px_rgba(59,130,246,0.12)]" aria-hidden="true"></span>
-                  </div>
-                  <p className="text-slate-200 leading-relaxed">{s.desc}</p>
-                  <Link
-                    className="mt-auto inline-flex items-center gap-2 text-blue-100 font-semibold tracking-wide transition duration-200 group-hover:text-white"
-                    to={s.path}>
-                    <span>Learn more</span>
-                    <span className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">
-                      →
-                    </span>
-                  </Link>
-                </div>
               </article>
             ))}
+
+            {/* View More Services Card (Medical Teal) */}
+            <Link
+              to="/departments"
+              className="group relative bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col items-center justify-center text-center border border-teal-400/20">
+              <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">
+                View More Services
+              </h3>
+              <p className="text-white/90 text-base mb-6">
+                Explore our full care options
+              </p>
+              <div className="relative w-full h-40 rounded-xl overflow-hidden mt-4 border border-white/20">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10"></div>
+                <img
+                  className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                  src={doctorImg}
+                  alt="More services"
+                  loading="lazy"
+                />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -575,9 +771,15 @@ const Home = () => {
       {/* TESTIMONIALS */}
       <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-50 to-slate-100">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute inset-6 rounded-3xl border border-slate-200/50" aria-hidden="true"></span>
+          <span
+            className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute inset-6 rounded-3xl border border-slate-200/50"
+            aria-hidden="true"></span>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -628,14 +830,22 @@ const Home = () => {
       {/* SPECIALIST */}
       <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-50 to-slate-100">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute inset-6 rounded-3xl border border-slate-200/50" aria-hidden="true"></span>
+          <span
+            className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute inset-6 rounded-3xl border border-slate-200/50"
+            aria-hidden="true"></span>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-3 mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Meet Our Specialist</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Meet Our Specialist
+            </h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               Expert healthcare professional leading our medical team
             </p>
@@ -643,7 +853,9 @@ const Home = () => {
 
           <div className="grid lg:grid-cols-[1.1fr,1.1fr] gap-10 items-center">
             <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white">
-              <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/40 opacity-80" aria-hidden="true"></div>
+              <div
+                className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/40 opacity-80"
+                aria-hidden="true"></div>
               <img
                 src={doctorImg}
                 alt="Dr. Okonkwo"
@@ -653,13 +865,17 @@ const Home = () => {
 
             <div className="space-y-4 bg-white/80 backdrop-blur border border-slate-200 rounded-2xl p-6 shadow-lg">
               <h3 className="text-2xl font-bold text-slate-900">Dr. Okonkwo</h3>
-              <p className="text-lg font-semibold text-blue-700">Lead Physician - Family Medicine</p>
+              <p className="text-lg font-semibold text-blue-700">
+                Lead Physician - Family Medicine
+              </p>
               <p className="text-slate-700 font-medium">
                 MBBS, MD - Family Medicine | 15+ Years Experience
               </p>
 
               <p className="text-slate-600 leading-relaxed">
-                Dr. Okonkwo is a highly experienced family physician with a passion for providing comprehensive healthcare to patients of all ages. His expertise includes:
+                Dr. Okonkwo is a highly experienced family physician with a
+                passion for providing comprehensive healthcare to patients of
+                all ages. His expertise includes:
               </p>
 
               <ul className="space-y-2 text-slate-700">
@@ -694,14 +910,22 @@ const Home = () => {
       {/* SUPPORT STAFF SECTION */}
       <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -top-24 left-1/5 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-500/18 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute inset-6 rounded-3xl border border-white/5 opacity-40" aria-hidden="true"></span>
+          <span
+            className="absolute -top-24 left-1/5 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-500/18 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute inset-6 rounded-3xl border border-white/5 opacity-40"
+            aria-hidden="true"></span>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-3 mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Our Support Team</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">
+              Our Support Team
+            </h2>
             <p className="text-slate-200 max-w-2xl mx-auto">
               Dedicated professionals ensuring quality patient care
             </p>
@@ -722,9 +946,12 @@ const Home = () => {
                 />
               </div>
               <div className="flex flex-col gap-3 p-5 text-center">
-                <h3 className="text-xl font-semibold text-white">Medical Support Team</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Medical Support Team
+                </h3>
                 <p className="text-slate-200 leading-relaxed">
-                  Our dedicated team of healthcare professionals working together to provide exceptional patient care
+                  Our dedicated team of healthcare professionals working
+                  together to provide exceptional patient care
                 </p>
               </div>
             </div>
@@ -743,9 +970,12 @@ const Home = () => {
                 />
               </div>
               <div className="flex flex-col gap-3 p-5 text-center">
-                <h3 className="text-xl font-semibold text-white">Administrative Support Team</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Administrative Support Team
+                </h3>
                 <p className="text-slate-200 leading-relaxed">
-                  Our administrative staff ensuring smooth operations and excellent patient experience
+                  Our administrative staff ensuring smooth operations and
+                  excellent patient experience
                 </p>
               </div>
             </div>
@@ -756,8 +986,12 @@ const Home = () => {
       {/* CTA */}
       <section className="relative overflow-hidden py-14 md:py-16 reveal-on-scroll bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -left-16 top-0 h-48 w-48 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute right-0 -bottom-12 h-56 w-56 rounded-full bg-white/12 blur-3xl" aria-hidden="true"></span>
+          <span
+            className="absolute -left-16 top-0 h-48 w-48 rounded-full bg-white/10 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute right-0 -bottom-12 h-56 w-56 rounded-full bg-white/12 blur-3xl"
+            aria-hidden="true"></span>
         </div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -766,7 +1000,8 @@ const Home = () => {
                 Ready to Book Your Appointment?
               </h2>
               <p className="text-blue-50 text-lg">
-                We make booking simple — choose a time and see a specialist you trust.
+                We make booking simple — choose a time and see a specialist you
+                trust.
               </p>
             </div>
             <Link
@@ -779,24 +1014,204 @@ const Home = () => {
         </div>
       </section>
 
+      {/* CONTACT FORM SECTION */}
+      <section className="relative overflow-hidden py-20 md:py-28 reveal-on-scroll bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-full mb-6">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                <p className="text-primary text-sm uppercase tracking-wider font-semibold">
+                  Need Assistance?
+                </p>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+                Message Us Today!
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                We're here to help. Send us a message and we'll get back to you
+                as soon as possible.
+              </p>
+            </div>
+
+            {/* Contact Form */}
+            <form
+              onSubmit={handleFormSubmit}
+              className="bg-white rounded-3xl p-10 md:p-12 shadow-2xl space-y-6 border border-gray-100">
+              {formStatus.message && (
+                <div
+                  className={`p-4 rounded-lg ${
+                    formStatus.type === "success"
+                      ? "bg-green-50 text-green-800 border border-green-200"
+                      : "bg-red-50 text-red-800 border border-red-200"
+                  }`}>
+                  {formStatus.message}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                  placeholder="Enter your email address"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Message
+                </label>
+                <textarea
+                  rows="6"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-vertical bg-gray-50 focus:bg-white"
+                  placeholder="Enter your message"></textarea>
+              </div>
+
+              {/* Privacy Policy Checkbox */}
+              <div className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="privacy"
+                  name="privacy"
+                  checked={formData.privacy}
+                  onChange={handleFormChange}
+                  required
+                  className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                />
+                <label htmlFor="privacy" className="text-sm text-gray-600">
+                  By submitting this form you agree to the terms of the{" "}
+                  <Link
+                    to="/privacy-policy"
+                    className="text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+
+              {/* reCAPTCHA Placeholder */}
+              <div className="bg-gray-200 rounded-lg p-4 text-center text-sm text-gray-600">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-6 h-6 border-2 border-gray-400 rounded"></div>
+                  <span>I'm not a Robot</span>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:from-teal-400 disabled:to-teal-500 disabled:cursor-not-allowed text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.02] disabled:hover:scale-100 flex items-center justify-center gap-2">
+                {isSubmitting ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit</span>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       {/* DISCLAIMER SECTION */}
       <section className="relative overflow-hidden py-12 reveal-on-scroll bg-slate-50">
         <div className="pointer-events-none absolute inset-0">
-          <span className="absolute -top-20 left-1/4 h-60 w-60 rounded-full bg-blue-100/50 blur-3xl" aria-hidden="true"></span>
-          <span className="absolute -bottom-24 right-1/5 h-72 w-72 rounded-full bg-indigo-100/40 blur-3xl" aria-hidden="true"></span>
+          <span
+            className="absolute -top-20 left-1/4 h-60 w-60 rounded-full bg-blue-100/50 blur-3xl"
+            aria-hidden="true"></span>
+          <span
+            className="absolute -bottom-24 right-1/5 h-72 w-72 rounded-full bg-indigo-100/40 blur-3xl"
+            aria-hidden="true"></span>
         </div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
-            <h4 className="text-xl font-semibold text-blue-700 mb-4">Disclaimer</h4>
+            <h4 className="text-xl font-semibold text-blue-700 mb-4">
+              Disclaimer
+            </h4>
             <div className="space-y-4 text-slate-600 leading-relaxed text-sm">
               <p>
-                The information provided on this website is for general informational purposes only and is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read on this website. In case of a medical emergency, call 911 immediately.
+                The information provided on this website is for general
+                informational purposes only and is not intended to be a
+                substitute for professional medical advice, diagnosis, or
+                treatment. Always seek the advice of your physician or other
+                qualified health provider with any questions you may have
+                regarding a medical condition. Never disregard professional
+                medical advice or delay in seeking it because of something you
+                have read on this website. In case of a medical emergency, call
+                911 immediately.
               </p>
               <p>
-                Every person may respond differently to treatments, and results can vary from one patient to another. The information provided on this website should not be considered as a guarantee of specific results or outcomes.
+                Every person may respond differently to treatments, and results
+                can vary from one patient to another. The information provided
+                on this website should not be considered as a guarantee of
+                specific results or outcomes.
               </p>
               <p className="mb-0">
-                By using this site and sharing your information, you agree to let us contact you through email, phone, or other ways. We also keep track of visits and use data to help improve our services and marketing. Your privacy is important to us, and we handle your information in accordance with our privacy policy.
+                By using this site and sharing your information, you agree to
+                let us contact you through email, phone, or other ways. We also
+                keep track of visits and use data to help improve our services
+                and marketing. Your privacy is important to us, and we handle
+                your information in accordance with our privacy policy.
               </p>
             </div>
           </div>
