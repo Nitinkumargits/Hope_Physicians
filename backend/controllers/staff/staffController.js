@@ -3,7 +3,90 @@
  * Handles attendance, tasks, stats, and KYC assistance
  */
 
-const { prisma } = require('../../src/lib/prisma.js');
+const { prisma } = require("../../src/lib/prisma.js");
+
+/**
+ * Helper function to resolve employeeId from user context
+ * Handles cases where user has staffId but no employeeId
+ */
+const resolveEmployeeId = async (user) => {
+  let employeeId = user?.employeeId;
+  const staffId = user?.staffId;
+
+  // If already has employeeId, return it
+  if (employeeId) {
+    return employeeId;
+  }
+
+  // If no employeeId but has staffId, find or create Employee record
+  if (staffId) {
+    try {
+      const staff = await prisma.staff.findUnique({
+        where: { id: staffId },
+        include: {
+          portalUser: {
+            select: {
+              employeeId: true,
+            },
+          },
+        },
+      });
+
+      if (!staff) {
+        throw new Error("Staff record not found");
+      }
+
+      // Check if PortalUser already has employeeId
+      if (staff.portalUser?.employeeId) {
+        employeeId = staff.portalUser.employeeId;
+      } else {
+        // Try to find existing Employee by empId
+        let employee = await prisma.employee.findUnique({
+          where: { empId: staff.empId },
+        });
+
+        if (!employee) {
+          // Create Employee record for Staff member
+          employee = await prisma.employee.create({
+            data: {
+              empId: staff.empId,
+              firstName: staff.firstName,
+              lastName: staff.lastName,
+              email: staff.email,
+              phone: staff.phone || null,
+              designation: staff.designation || null,
+              department: staff.department || null,
+              status: "working",
+            },
+          });
+        }
+
+        // Link Employee to PortalUser if user.id exists
+        if (user.id && employee.id) {
+          try {
+            await prisma.portalUser.update({
+              where: { id: user.id },
+              data: { employeeId: employee.id },
+            });
+          } catch (updateError) {
+            // If update fails, log but continue (employeeId is still valid)
+            console.warn(
+              "Failed to link employeeId to portalUser:",
+              updateError.message
+            );
+          }
+        }
+
+        employeeId = employee.id;
+      }
+    } catch (error) {
+      console.error("Error resolving employeeId:", error);
+      throw error;
+    }
+  }
+
+  return employeeId;
+};
 
 /**
  * Get staff dashboard statistics
@@ -11,11 +94,11 @@ const { prisma } = require('../../src/lib/prisma.js');
 const getStaffStats = async (req, res) => {
   try {
     const employeeId = req.user?.employeeId || req.user?.id;
-    
+
     if (!employeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Employee ID not found'
+        message: "Employee ID not found",
       });
     }
 
@@ -34,9 +117,9 @@ const getStaffStats = async (req, res) => {
     const kycPending = await prisma.kYCDocument.count({
       where: {
         status: {
-          in: ['pending', 'submitted', 'under_review']
-        }
-      }
+          in: ["pending", "submitted", "under_review"],
+        },
+      },
     });
 
     res.json({
@@ -44,15 +127,15 @@ const getStaffStats = async (req, res) => {
       data: {
         tasksCompleted,
         tasksPending,
-        kycPending
-      }
+        kycPending,
+      },
     });
   } catch (error) {
-    console.error('Get staff stats error:', error);
+    console.error("Get staff stats error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching staff statistics',
-      error: error.message
+      message: "Error fetching staff statistics",
+      error: error.message,
     });
   }
 };
@@ -75,15 +158,15 @@ const getTasks = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total: 0,
-        pages: 0
-      }
+        pages: 0,
+      },
     });
   } catch (error) {
-    console.error('Get tasks error:', error);
+    console.error("Get tasks error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching tasks',
-      error: error.message
+      message: "Error fetching tasks",
+      error: error.message,
     });
   }
 };
@@ -99,14 +182,14 @@ const startTask = async (req, res) => {
     // TODO: Implement task starting when Task model is created
     res.json({
       success: true,
-      message: 'Task started successfully'
+      message: "Task started successfully",
     });
   } catch (error) {
-    console.error('Start task error:', error);
+    console.error("Start task error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error starting task',
-      error: error.message
+      message: "Error starting task",
+      error: error.message,
     });
   }
 };
@@ -122,14 +205,14 @@ const completeTask = async (req, res) => {
     // TODO: Implement task completion when Task model is created
     res.json({
       success: true,
-      message: 'Task completed successfully'
+      message: "Task completed successfully",
     });
   } catch (error) {
-    console.error('Complete task error:', error);
+    console.error("Complete task error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error completing task',
-      error: error.message
+      message: "Error completing task",
+      error: error.message,
     });
   }
 };
@@ -139,14 +222,42 @@ const completeTask = async (req, res) => {
  */
 const checkIn = async (req, res) => {
   try {
-    const employeeId = req.user?.employeeId || req.user?.id;
-    const staffId = req.user?.staffId;
     const { checkInPhoto, checkInLocation } = req.body;
 
+    // Resolve employeeId (handles staffId -> employeeId conversion)
+    let employeeId;
+    try {
+      employeeId = await resolveEmployeeId(req.user);
+    } catch (resolveError) {
+      console.error("Error resolving employeeId:", resolveError);
+      return res.status(500).json({
+        success: false,
+        message: "Error setting up employee record",
+        error:
+          process.env.NODE_ENV === "development"
+            ? resolveError.message
+            : "Internal server error",
+      });
+    }
+
+    // Validate employeeId exists
     if (!employeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Employee ID not found'
+        message:
+          "Employee ID not found. Please ensure your account is properly linked to an employee record.",
+      });
+    }
+
+    // Verify Employee record exists
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+    });
+
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee record not found",
       });
     }
 
@@ -161,42 +272,76 @@ const checkIn = async (req, res) => {
         employeeId,
         checkInTime: {
           gte: today,
-          lt: tomorrow
+          lt: tomorrow,
         },
-        checkOutTime: null
-      }
+        checkOutTime: null,
+      },
     });
 
     if (existing) {
       return res.status(400).json({
         success: false,
-        message: 'Already checked in today'
+        message: "Already checked in today",
+        data: {
+          checkInTime: existing.checkInTime.toISOString(),
+          existingRecord: existing,
+        },
       });
     }
 
+    // Create attendance record
     const attendance = await prisma.attendance.create({
       data: {
         employeeId,
-        staffId: staffId || null,
+        staffId: req.user?.staffId || null,
         checkInTime: new Date(),
         checkInPhoto: checkInPhoto || null,
         checkInLocation: checkInLocation || null,
-        status: 'present'
-      }
+        status: "present",
+      },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            empId: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     res.json({
       success: true,
-      message: 'Checked in successfully',
+      message: "Checked in successfully",
       checkInTime: attendance.checkInTime.toISOString(),
-      data: attendance
+      data: attendance,
     });
   } catch (error) {
-    console.error('Check-in error:', error);
+    console.error("Check-in error:", error);
+    console.error("Error details:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    });
+
+    // Provide more specific error messages
+    let errorMessage = "Error checking in";
+    if (error.code === "P2003") {
+      errorMessage =
+        "Invalid employee reference. Please contact administrator.";
+    } else if (error.code === "P2002") {
+      errorMessage = "Duplicate attendance record detected.";
+    }
+
     res.status(500).json({
       success: false,
-      message: 'Error checking in',
-      error: error.message
+      message: errorMessage,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -206,13 +351,29 @@ const checkIn = async (req, res) => {
  */
 const checkOut = async (req, res) => {
   try {
-    const employeeId = req.user?.employeeId || req.user?.id;
     const { checkOutPhoto, checkOutLocation } = req.body;
+
+    // Resolve employeeId
+    let employeeId;
+    try {
+      employeeId = await resolveEmployeeId(req.user);
+    } catch (resolveError) {
+      console.error("Error resolving employeeId:", resolveError);
+      return res.status(500).json({
+        success: false,
+        message: "Error resolving employee record",
+        error:
+          process.env.NODE_ENV === "development"
+            ? resolveError.message
+            : "Internal server error",
+      });
+    }
 
     if (!employeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Employee ID not found'
+        message:
+          "Employee ID not found. Please ensure your account is properly linked to an employee record.",
       });
     }
 
@@ -227,16 +388,16 @@ const checkOut = async (req, res) => {
         employeeId,
         checkInTime: {
           gte: today,
-          lt: tomorrow
+          lt: tomorrow,
         },
-        checkOutTime: null
-      }
+        checkOutTime: null,
+      },
     });
 
     if (!attendance) {
       return res.status(400).json({
         success: false,
-        message: 'No check-in record found for today'
+        message: "No check-in record found for today",
       });
     }
 
@@ -246,11 +407,11 @@ const checkOut = async (req, res) => {
     const workingHours = diffMs / (1000 * 60 * 60); // Convert to hours
 
     // Determine status based on working hours
-    let status = 'present';
+    let status = "present";
     if (workingHours < 4) {
-      status = 'half_day';
+      status = "half_day";
     } else if (workingHours < 6) {
-      status = 'late';
+      status = "late";
     }
 
     const updated = await prisma.attendance.update({
@@ -260,23 +421,25 @@ const checkOut = async (req, res) => {
         checkOutPhoto: checkOutPhoto || null,
         checkOutLocation: checkOutLocation || null,
         workingHours: parseFloat(workingHours.toFixed(2)),
-        status
-      }
+        status,
+      },
     });
 
     res.json({
       success: true,
-      message: `Checked out successfully! You worked ${workingHours.toFixed(2)} hours today.`,
+      message: `Checked out successfully! You worked ${workingHours.toFixed(
+        2
+      )} hours today.`,
       checkOutTime: updated.checkOutTime.toISOString(),
       hoursWorked: workingHours.toFixed(2),
-      data: updated
+      data: updated,
     });
   } catch (error) {
-    console.error('Check-out error:', error);
+    console.error("Check-out error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error checking out',
-      error: error.message
+      message: "Error checking out",
+      error: error.message,
     });
   }
 };
@@ -286,12 +449,26 @@ const checkOut = async (req, res) => {
  */
 const getAttendanceStatus = async (req, res) => {
   try {
-    const employeeId = req.user?.employeeId || req.user?.id;
+    // Resolve employeeId
+    let employeeId;
+    try {
+      employeeId = await resolveEmployeeId(req.user);
+    } catch (resolveError) {
+      console.error("Error resolving employeeId:", resolveError);
+      return res.status(500).json({
+        success: false,
+        message: "Error resolving employee record",
+        error:
+          process.env.NODE_ENV === "development"
+            ? resolveError.message
+            : "Internal server error",
+      });
+    }
 
     if (!employeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Employee ID not found'
+        message: "Employee ID not found",
       });
     }
 
@@ -305,12 +482,12 @@ const getAttendanceStatus = async (req, res) => {
         employeeId,
         checkInTime: {
           gte: today,
-          lt: tomorrow
-        }
+          lt: tomorrow,
+        },
       },
       orderBy: {
-        checkInTime: 'desc'
-      }
+        checkInTime: "desc",
+      },
     });
 
     res.json({
@@ -318,14 +495,14 @@ const getAttendanceStatus = async (req, res) => {
       checkedIn: !!attendance && !attendance.checkOutTime,
       checkInTime: attendance?.checkInTime?.toISOString() || null,
       checkOutTime: attendance?.checkOutTime?.toISOString() || null,
-      workingHours: attendance?.workingHours || null
+      workingHours: attendance?.workingHours || null,
     });
   } catch (error) {
-    console.error('Get attendance status error:', error);
+    console.error("Get attendance status error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching attendance status',
-      error: error.message
+      message: "Error fetching attendance status",
+      error: error.message,
     });
   }
 };
@@ -335,13 +512,28 @@ const getAttendanceStatus = async (req, res) => {
  */
 const getAttendanceHistory = async (req, res) => {
   try {
-    const employeeId = req.user?.employeeId || req.user?.id;
     const { page = 1, limit = 30, dateFrom, dateTo } = req.query;
+
+    // Resolve employeeId
+    let employeeId;
+    try {
+      employeeId = await resolveEmployeeId(req.user);
+    } catch (resolveError) {
+      console.error("Error resolving employeeId:", resolveError);
+      return res.status(500).json({
+        success: false,
+        message: "Error resolving employee record",
+        error:
+          process.env.NODE_ENV === "development"
+            ? resolveError.message
+            : "Internal server error",
+      });
+    }
 
     if (!employeeId) {
       return res.status(400).json({
         success: false,
-        message: 'Employee ID not found'
+        message: "Employee ID not found",
       });
     }
 
@@ -363,19 +555,19 @@ const getAttendanceHistory = async (req, res) => {
         where,
         skip,
         take: parseInt(limit),
-        orderBy: { checkInTime: 'desc' },
+        orderBy: { checkInTime: "desc" },
         include: {
           employee: {
             select: {
               id: true,
               empId: true,
               firstName: true,
-              lastName: true
-            }
-          }
-        }
+              lastName: true,
+            },
+          },
+        },
       }),
-      prisma.attendance.count({ where })
+      prisma.attendance.count({ where }),
     ]);
 
     res.json({
@@ -385,15 +577,15 @@ const getAttendanceHistory = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
-    console.error('Get attendance history error:', error);
+    console.error("Get attendance history error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching attendance history',
-      error: error.message
+      message: "Error fetching attendance history",
+      error: error.message,
     });
   }
 };
@@ -403,13 +595,16 @@ const getAttendanceHistory = async (req, res) => {
  */
 const getKYCAssistance = async (req, res) => {
   try {
-    const { status = 'pending', page = 1, limit = 100 } = req.query;
+    const { status = "pending", page = 1, limit = 100 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const where = {
       status: {
-        in: status === 'pending' ? ['pending', 'submitted', 'under_review'] : [status]
-      }
+        in:
+          status === "pending"
+            ? ["pending", "submitted", "under_review"]
+            : [status],
+      },
     };
 
     const [kycDocs, total] = await Promise.all([
@@ -424,27 +619,35 @@ const getKYCAssistance = async (req, res) => {
               firstName: true,
               lastName: true,
               email: true,
-              phone: true
-            }
-          }
+              phone: true,
+            },
+          },
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: "desc" },
       }),
-      prisma.kYCDocument.count({ where })
+      prisma.kYCDocument.count({ where }),
     ]);
 
     // Format KYC documents for display
-    const formattedKYC = kycDocs.map(kyc => {
+    const formattedKYC = kycDocs.map((kyc) => {
       const docCount = [
-        kyc.salarySlip1, kyc.salarySlip2, kyc.salarySlip3,
-        kyc.cancelledCheque, kyc.passbook,
-        kyc.aadhaarFront, kyc.aadhaarBack,
-        kyc.educationalDoc1, kyc.educationalDoc2, kyc.educationalDoc3
+        kyc.salarySlip1,
+        kyc.salarySlip2,
+        kyc.salarySlip3,
+        kyc.cancelledCheque,
+        kyc.passbook,
+        kyc.aadhaarFront,
+        kyc.aadhaarBack,
+        kyc.educationalDoc1,
+        kyc.educationalDoc2,
+        kyc.educationalDoc3,
       ].filter(Boolean).length;
 
       return {
         id: kyc.id,
-        patient: `${kyc.patient?.firstName || ''} ${kyc.patient?.lastName || ''}`.trim(),
+        patient: `${kyc.patient?.firstName || ""} ${
+          kyc.patient?.lastName || ""
+        }`.trim(),
         patientId: kyc.patientId,
         patientEmail: kyc.patient?.email,
         patientPhone: kyc.patient?.phone,
@@ -453,7 +656,7 @@ const getKYCAssistance = async (req, res) => {
         documents: docCount,
         status: kyc.status,
         // Full KYC object
-        fullKYC: kyc
+        fullKYC: kyc,
       };
     });
 
@@ -464,15 +667,15 @@ const getKYCAssistance = async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
-    console.error('Get KYC assistance error:', error);
+    console.error("Get KYC assistance error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching KYC assistance requests',
-      error: error.message
+      message: "Error fetching KYC assistance requests",
+      error: error.message,
     });
   }
 };
@@ -488,41 +691,41 @@ const assistKYC = async (req, res) => {
 
     const kycDoc = await prisma.kYCDocument.findUnique({
       where: { id },
-      include: { patient: true }
+      include: { patient: true },
     });
 
     if (!kycDoc) {
       return res.status(404).json({
         success: false,
-        message: 'KYC document not found'
+        message: "KYC document not found",
       });
     }
 
     // Update KYC status to under_review if it's pending
-    if (kycDoc.status === 'pending' || kycDoc.status === 'submitted') {
+    if (kycDoc.status === "pending" || kycDoc.status === "submitted") {
       await prisma.kYCDocument.update({
         where: { id },
         data: {
-          status: 'under_review'
-        }
+          status: "under_review",
+        },
       });
     }
 
     res.json({
       success: true,
-      message: 'KYC assistance provided successfully',
+      message: "KYC assistance provided successfully",
       data: {
         kycId: id,
         assistedBy: employeeId,
-        notes: notes || null
-      }
+        notes: notes || null,
+      },
     });
   } catch (error) {
-    console.error('Assist KYC error:', error);
+    console.error("Assist KYC error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error providing KYC assistance',
-      error: error.message
+      message: "Error providing KYC assistance",
+      error: error.message,
     });
   }
 };
@@ -537,6 +740,5 @@ module.exports = {
   getAttendanceStatus,
   getAttendanceHistory,
   getKYCAssistance,
-  assistKYC
+  assistKYC,
 };
-
