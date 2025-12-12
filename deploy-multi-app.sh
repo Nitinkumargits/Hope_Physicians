@@ -108,17 +108,25 @@ deploy_app() {
         if [ -d "$APP_DIR/.git" ]; then
             echo -e "${YELLOW}🔄 Updating repository...${NC}"
             cd "$APP_DIR"
-            git pull || true
+            # Try to pull from main branch first, then master
+            git checkout main 2>/dev/null || git checkout master 2>/dev/null || true
+            git pull origin main 2>/dev/null || git pull origin master 2>/dev/null || git pull || true
             cd - > /dev/null
         else
             echo -e "${YELLOW}📥 Cloning repository...${NC}"
             echo "⏳ Cloning may take a few minutes..."
             mkdir -p "$APP_DIR"
-            git clone "$REPO_URL" "$APP_DIR" || {
+            # Try cloning main branch first, then master, then default
+            if git clone -b main "$REPO_URL" "$APP_DIR" 2>/dev/null; then
+                echo "✅ Repository cloned (main branch)"
+            elif git clone -b master "$REPO_URL" "$APP_DIR" 2>/dev/null; then
+                echo "✅ Repository cloned (master branch)"
+            elif git clone "$REPO_URL" "$APP_DIR"; then
+                echo "✅ Repository cloned (default branch)"
+            else
                 echo -e "${RED}❌ Failed to clone repository${NC}"
                 return 1
-            }
-            echo "✅ Repository cloned"
+            fi
         fi
     fi
     
@@ -193,7 +201,7 @@ EOF
             # Install dependencies
             echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
             echo "⏳ This may take a few minutes..."
-            npm ci --production=false || npm install
+            npm ci --legacy-peer-deps --production=false || npm install --legacy-peer-deps
             echo "✅ Dependencies installed"
             
             # Build frontend with base path if needed
