@@ -25,7 +25,7 @@
     {
       "name": "ojoto-union",
       "displayName": "Ojoto Union NA",
-      "repo": "https://github.com/Jeankodex/Ojoto_Union_NA.git",
+      "repo": "https://github.com/Shubham96681/ojoto_union.git",
       "directory": "/home/ec2-user/ojoto-union",
       "backend": {
         "directory": "backend",
