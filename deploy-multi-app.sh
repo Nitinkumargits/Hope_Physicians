@@ -305,7 +305,7 @@ EOF
         pm2 stop "${APP_NAME}-backend" 2>/dev/null || true
         pm2 delete "${APP_NAME}-backend" 2>/dev/null || true
         
-        # Start backend with PM2
+        # Start backend with PM2 (with memory limits for low-memory EC2)
         if [ -f "$BACKEND_SCRIPT" ]; then
             echo -e "${YELLOW}🚀 [$APP_NAME] Starting backend with PM2 on port $BACKEND_PORT...${NC}"
             pm2 start "$BACKEND_SCRIPT" \
@@ -315,9 +315,11 @@ EOF
                 --env production \
                 --log "$APP_DIR/logs/backend-out.log" \
                 --error "$APP_DIR/logs/backend-error.log" \
-                --time
+                --time \
+                --max-memory-restart 400M \
+                --node-args="--max-old-space-size=384"
             pm2 save --force
-            echo -e "${GREEN}✅ Backend started${NC}"
+            echo -e "${GREEN}✅ Backend started (memory limit: 400MB)${NC}"
         else
             echo -e "${YELLOW}⚠️  Backend script not found: $BACKEND_SCRIPT${NC}"
         fi
