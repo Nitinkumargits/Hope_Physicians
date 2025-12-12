@@ -250,6 +250,30 @@ deploy_app() {
             return 1
         fi
         
+        # Verify critical modules are installed
+        echo -e "${YELLOW}🔍 [$APP_NAME] Verifying critical modules...${NC}"
+        MISSING_MODULES=()
+        # Check for express (most common backend framework)
+        if [ ! -d "node_modules/express" ] && [ ! -f "node_modules/express/package.json" ]; then
+            MISSING_MODULES+=("express")
+        fi
+        
+        if [ ${#MISSING_MODULES[@]} -gt 0 ]; then
+            echo -e "${RED}❌ [$APP_NAME] Critical modules missing: ${MISSING_MODULES[*]}${NC}"
+            echo -e "${YELLOW}🔄 [$APP_NAME] Attempting to reinstall missing modules...${NC}"
+            # Try to install express specifically
+            for module in "${MISSING_MODULES[@]}"; do
+                echo -e "${YELLOW}   Installing $module...${NC}"
+                npm install "$module" --legacy-peer-deps --no-audit --no-fund --loglevel=error 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /" || true
+            done
+            # Verify again
+            if [ ! -d "node_modules/express" ] && [ ! -f "node_modules/express/package.json" ]; then
+                echo -e "${RED}❌ [$APP_NAME] Failed to install express module. Please check package.json${NC}"
+                return 1
+            fi
+        fi
+        echo -e "${GREEN}✅ [$APP_NAME] Critical modules verified${NC}"
+        
         # Free memory after install
         free_memory
         check_memory
