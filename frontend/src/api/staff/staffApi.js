@@ -3,19 +3,20 @@
  * API calls for staff dashboard and operations
  */
 
-import axios from 'axios';
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -32,8 +33,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear token and redirect to login
-      localStorage.removeItem('token');
-      window.location.href = '/portal/login';
+      localStorage.removeItem("token");
+      window.location.href = "/portal/login";
     }
     return Promise.reject(error);
   }
@@ -41,23 +42,23 @@ api.interceptors.response.use(
 
 export const staffApi = {
   // Dashboard Statistics
-  getStats: () => api.get('/staff/stats'),
-  
+  getStats: () => api.get("/staff/stats"),
+
   // Tasks
-  getTasks: (params) => api.get('/staff/tasks', { params }),
+  getTasks: (params) => api.get("/staff/tasks", { params }),
   startTask: (id) => api.post(`/staff/tasks/${id}/start`),
   completeTask: (id) => api.post(`/staff/tasks/${id}/complete`),
-  
+
   // Attendance
-  checkIn: (data) => api.post('/staff/attendance/check-in', data),
-  checkOut: (data) => api.post('/staff/attendance/check-out', data),
-  getAttendanceStatus: () => api.get('/staff/attendance/status'),
-  getAttendanceHistory: (params) => api.get('/staff/attendance/history', { params }),
-  
+  checkIn: (data) => api.post("/staff/attendance/check-in", data),
+  checkOut: (data) => api.post("/staff/attendance/check-out", data),
+  getAttendanceStatus: () => api.get("/staff/attendance/status"),
+  getAttendanceHistory: (params) =>
+    api.get("/staff/attendance/history", { params }),
+
   // KYC Assistance
-  getKYCAssistance: (params) => api.get('/staff/kyc-assistance', { params }),
+  getKYCAssistance: (params) => api.get("/staff/kyc-assistance", { params }),
   assistKYC: (id, data) => api.post(`/staff/kyc-assistance/${id}/assist`, data),
 };
 
 export default staffApi;
-

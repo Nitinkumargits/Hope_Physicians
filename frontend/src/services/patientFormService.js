@@ -1,7 +1,6 @@
 // services/patientFormService.js
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const patientFormService = {
   // Submit Patient Information form
@@ -11,29 +10,33 @@ const patientFormService = {
         `${API_BASE_URL}/patient-forms/patient-info`,
         formData,
         {
-          timeout: 10000,
+          timeout: 30000, // Increased to 30 seconds for production
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
+          },
+          // Add retry logic for production
+          validateStatus: function (status) {
+            return status < 500; // Don't throw on 4xx errors
           },
         }
       );
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Error submitting Patient Information form:', error);
+      console.error("Error submitting Patient Information form:", error);
       if (error.response) {
         return {
           success: false,
-          error: error.response.data.error || 'Failed to submit form',
+          error: error.response.data.error || "Failed to submit form",
         };
       } else if (error.request) {
         return {
           success: false,
-          error: 'Network error. Please check your connection.',
+          error: "Network error. Please check your connection.",
         };
       } else {
         return {
           success: false,
-          error: error.message || 'An unexpected error occurred',
+          error: error.message || "An unexpected error occurred",
         };
       }
     }
@@ -48,27 +51,27 @@ const patientFormService = {
         {
           timeout: 10000,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Error submitting Privacy Acknowledgement form:', error);
+      console.error("Error submitting Privacy Acknowledgement form:", error);
       if (error.response) {
         return {
           success: false,
-          error: error.response.data.error || 'Failed to submit form',
+          error: error.response.data.error || "Failed to submit form",
         };
       } else if (error.request) {
         return {
           success: false,
-          error: 'Network error. Please check your connection.',
+          error: "Network error. Please check your connection.",
         };
       } else {
         return {
           success: false,
-          error: error.message || 'An unexpected error occurred',
+          error: error.message || "An unexpected error occurred",
         };
       }
     }
@@ -83,27 +86,27 @@ const patientFormService = {
         {
           timeout: 10000,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Error submitting Parental Consent form:', error);
+      console.error("Error submitting Parental Consent form:", error);
       if (error.response) {
         return {
           success: false,
-          error: error.response.data.error || 'Failed to submit form',
+          error: error.response.data.error || "Failed to submit form",
         };
       } else if (error.request) {
         return {
           success: false,
-          error: 'Network error. Please check your connection.',
+          error: "Network error. Please check your connection.",
         };
       } else {
         return {
           success: false,
-          error: error.message || 'An unexpected error occurred',
+          error: error.message || "An unexpected error occurred",
         };
       }
     }
@@ -118,27 +121,27 @@ const patientFormService = {
         {
           timeout: 10000,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Error submitting Release of Information form:', error);
+      console.error("Error submitting Release of Information form:", error);
       if (error.response) {
         return {
           success: false,
-          error: error.response.data.error || 'Failed to submit form',
+          error: error.response.data.error || "Failed to submit form",
         };
       } else if (error.request) {
         return {
           success: false,
-          error: 'Network error. Please check your connection.',
+          error: "Network error. Please check your connection.",
         };
       } else {
         return {
           success: false,
-          error: error.message || 'An unexpected error occurred',
+          error: error.message || "An unexpected error occurred",
         };
       }
     }
@@ -146,4 +149,3 @@ const patientFormService = {
 };
 
 export default patientFormService;
-

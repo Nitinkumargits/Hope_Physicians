@@ -168,15 +168,18 @@ cd $FRONTEND_DIR
 
 # Check if dist directory already exists (from CI build)
 if [ -d "dist" ] && [ "$(ls -A dist 2>/dev/null)" ]; then
-    echo -e "${GREEN}✅ Frontend build already exists, skipping build${NC}"
+    echo -e "${GREEN}✅ Frontend build already exists from CI/CD, using it${NC}"
+    echo -e "${YELLOW}📁 Build files:${NC}"
+    ls -la dist/ | head -5
 else
     # Install dependencies (including devDependencies for build)
     echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
     npm ci --production=false || npm install
     
     # Build frontend using npm script (which uses npx/vite from node_modules)
+    # Note: No VITE_API_URL needed - using runtime config in index.html
     echo -e "${YELLOW}🏗️  Building frontend...${NC}"
-    npm run build || npx vite build
+    NODE_ENV=production npm run build || npx vite build
     echo -e "${GREEN}✅ Frontend built${NC}"
 fi
 
@@ -227,6 +230,18 @@ if command -v nginx &> /dev/null; then
     chmod 755 "$APP_DIR" 2>/dev/null || true
     chmod 755 "$FRONTEND_DIR" 2>/dev/null || true
     chmod -R 755 "$FRONTEND_DIR/dist" 2>/dev/null || true
+    
+    # Verify index.html exists and contains API config
+    if [ -f "$FRONTEND_DIR/dist/index.html" ]; then
+        echo -e "${GREEN}✅ Frontend index.html found${NC}"
+        if grep -q "APP_CONFIG" "$FRONTEND_DIR/dist/index.html"; then
+            echo -e "${GREEN}✅ API runtime config found in index.html${NC}"
+        else
+            echo -e "${YELLOW}⚠️  API runtime config not found in index.html${NC}"
+        fi
+    else
+        echo -e "${RED}❌ Frontend index.html not found!${NC}"
+    fi
     
     NGINX_CONFIG="server {
     listen 80;

@@ -2,19 +2,20 @@
  * Patient Insurance API Client
  */
 
-import axios from 'axios';
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const api = axios.create({
   baseURL: `${API_URL}/patient/insurance`,
   headers: {
-    'Content-Type': 'multipart/form-data'
-  }
+    "Content-Type": "multipart/form-data",
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -26,10 +27,9 @@ api.interceptors.request.use((config) => {
 });
 
 export const insuranceApi = {
-  getAll: () => api.get('/'),
-  upload: (formData) => api.post('/upload', formData),
-  delete: (id) => api.delete(`/${id}`)
+  getAll: () => api.get("/"),
+  upload: (formData) => api.post("/upload", formData),
+  delete: (id) => api.delete(`/${id}`),
 };
 
 export default { insuranceApi };
-

@@ -1,0 +1,81 @@
+name: Fix 401 Login Error
+
+on:
+  workflow_dispatch: # Manual trigger only
+
+env:
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_USER: ${{ secrets.EC2_USER }}
+  SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+
+jobs:
+  fix-login:
+    name: Fix 401 Login Error
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || true
+
+      - name: Copy fix scripts to server
+        run: |
+          scp -i ~/.ssh/id_rsa backend/scripts/check-users.js $EC2_USER@$EC2_HOST:~/hope-physicians/backend/scripts/ || true
+          scp -i ~/.ssh/id_rsa backend/scripts/fix-login.js $EC2_USER@$EC2_HOST:~/hope-physicians/backend/scripts/ || true
+          scp -i ~/.ssh/id_rsa backend/scripts/test-login.js $EC2_USER@$EC2_HOST:~/hope-physicians/backend/scripts/ || true
+          scp -i ~/.ssh/id_rsa fix-login-401.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
+
+      - name: Run fix script
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+            cd ~/hope-physicians/backend || exit 1
+            
+            echo "🔍 Step 1: Checking users..."
+            node scripts/check-users.js || echo "⚠️  Check users failed"
+            
+            echo ""
+            echo "🔧 Step 2: Fixing login..."
+            node scripts/fix-login.js || exit 1
+            
+            echo ""
+            echo "🧪 Step 3: Testing login..."
+            node scripts/test-login.js || echo "⚠️  Test login failed"
+            
+            echo ""
+            echo "🔄 Step 4: Restarting backend..."
+            pm2 restart hope-physicians-backend || exit 1
+            
+            echo ""
+            echo "✅ Fix completed!"
+          EOF
+
+      - name: Verify fix
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+            echo "🔍 Verifying fix..."
+            
+            # Test login endpoint
+            RESPONSE=$(curl -s -X POST http://localhost:5000/api/auth/login \
+              -H "Content-Type: application/json" \
+              -d '{"email":"admin@hopephysicians.com","password":"admin123"}' || echo "ERROR")
+            
+            if echo "$RESPONSE" | grep -q "token"; then
+              echo "✅ Login test successful!"
+              echo "Token received: $(echo $RESPONSE | grep -o '"token":"[^"]*' | cut -d'"' -f4 | head -c 20)..."
+            else
+              echo "❌ Login test failed"
+              echo "Response: $RESPONSE"
+              exit 1
+            fi
+            
+            # Check PM2 status
+            echo ""
+            echo "📊 PM2 Status:"
+            pm2 status || echo "PM2 not available"
+          EOF

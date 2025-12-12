@@ -1,13 +1,13 @@
 // pages/doctor/PrescriptionEditor.jsx
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import Card from '../../components/shared/Card';
-import Button from '../../components/shared/Button';
-import Input from '../../components/shared/Input';
-import Modal from '../../components/shared/Modal';
-import { useAuth } from '../../contexts/AuthContext';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/portal/DashboardLayout";
+import Card from "../../components/shared/Card";
+import Button from "../../components/shared/Button";
+import Input from "../../components/shared/Input";
+import Modal from "../../components/shared/Modal";
+import { useAuth } from "../../contexts/AuthContext";
+import toast from "react-hot-toast";
 import {
   FaPlus,
   FaTrash,
@@ -16,9 +16,10 @@ import {
   FaSpinner,
   FaPills,
   FaNotesMedical,
-} from 'react-icons/fa';
-import * as prescriptionService from '../../services/prescriptionService';
-import axios from 'axios';
+} from "react-icons/fa";
+import * as prescriptionService from "../../services/prescriptionService";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
 const PrescriptionEditor = () => {
   const { appointmentId, prescriptionId } = useParams();
@@ -31,12 +32,12 @@ const PrescriptionEditor = () => {
 
   // Form state
   const [medications, setMedications] = useState([
-    { name: '', dosage: '', frequency: '', duration: '', instructions: '' }
+    { name: "", dosage: "", frequency: "", duration: "", instructions: "" },
   ]);
-  const [diagnosis, setDiagnosis] = useState('');
-  const [instructions, setInstructions] = useState('');
-  const [notes, setNotes] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
+  const [diagnosis, setDiagnosis] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [notes, setNotes] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
 
   useEffect(() => {
     if (appointmentId) {
@@ -49,22 +50,25 @@ const PrescriptionEditor = () => {
 
   const fetchAppointment = async () => {
     if (!appointmentId) return;
-    
+
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      
-      const response = await axios.get(`${API_URL}/appointments/${appointmentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
+      const token = localStorage.getItem("token");
+      const API_URL = API_BASE_URL;
+
+      const response = await axios.get(
+        `${API_URL}/appointments/${appointmentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setAppointment(response.data?.data || response.data);
     } catch (error) {
-      console.error('Error fetching appointment:', error);
-      toast.error('Failed to load appointment details');
+      console.error("Error fetching appointment:", error);
+      toast.error("Failed to load appointment details");
     } finally {
       setLoading(false);
     }
@@ -73,24 +77,43 @@ const PrescriptionEditor = () => {
   const fetchPrescription = async () => {
     try {
       setLoading(true);
-      const response = await prescriptionService.getPrescription(prescriptionId);
+      const response = await prescriptionService.getPrescription(
+        prescriptionId
+      );
       const data = response.data;
       setPrescription(data);
-      setMedications(data.medications || [{ name: '', dosage: '', frequency: '', duration: '', instructions: '' }]);
-      setDiagnosis(data.diagnosis || '');
-      setInstructions(data.instructions || '');
-      setNotes(data.notes || '');
-      setExpiryDate(data.expiryDate ? new Date(data.expiryDate).toISOString().split('T')[0] : '');
+      setMedications(
+        data.medications || [
+          {
+            name: "",
+            dosage: "",
+            frequency: "",
+            duration: "",
+            instructions: "",
+          },
+        ]
+      );
+      setDiagnosis(data.diagnosis || "");
+      setInstructions(data.instructions || "");
+      setNotes(data.notes || "");
+      setExpiryDate(
+        data.expiryDate
+          ? new Date(data.expiryDate).toISOString().split("T")[0]
+          : ""
+      );
     } catch (error) {
-      console.error('Error fetching prescription:', error);
-      toast.error('Failed to load prescription');
+      console.error("Error fetching prescription:", error);
+      toast.error("Failed to load prescription");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAddMedication = () => {
-    setMedications([...medications, { name: '', dosage: '', frequency: '', duration: '', instructions: '' }]);
+    setMedications([
+      ...medications,
+      { name: "", dosage: "", frequency: "", duration: "", instructions: "" },
+    ]);
   };
 
   const handleRemoveMedication = (index) => {
@@ -107,11 +130,11 @@ const PrescriptionEditor = () => {
 
   const validateForm = () => {
     if (!diagnosis.trim()) {
-      toast.error('Please enter a diagnosis');
+      toast.error("Please enter a diagnosis");
       return false;
     }
-    if (medications.some(med => !med.name.trim())) {
-      toast.error('Please fill in all medication names');
+    if (medications.some((med) => !med.name.trim())) {
+      toast.error("Please fill in all medication names");
       return false;
     }
     return true;
@@ -127,7 +150,7 @@ const PrescriptionEditor = () => {
         appointmentId: appointmentId || prescription?.appointmentId,
         patientId: appointment?.patientId || prescription?.patientId,
         doctorId: user?.doctorId || user?.id,
-        medications: medications.filter(med => med.name.trim()),
+        medications: medications.filter((med) => med.name.trim()),
         diagnosis,
         instructions,
         notes,
@@ -136,28 +159,33 @@ const PrescriptionEditor = () => {
 
       let response;
       if (isEditMode) {
-        response = await prescriptionService.updatePrescription(prescriptionId, prescriptionData);
-        toast.success('Prescription updated successfully');
+        response = await prescriptionService.updatePrescription(
+          prescriptionId,
+          prescriptionData
+        );
+        toast.success("Prescription updated successfully");
       } else {
-        response = await prescriptionService.createPrescription(prescriptionData);
-        toast.success('Prescription created successfully');
+        response = await prescriptionService.createPrescription(
+          prescriptionData
+        );
+        toast.success("Prescription created successfully");
       }
 
       // Generate PDF
       if (response.data?.id) {
         try {
           await prescriptionService.generatePDF(response.data.id);
-          toast.success('PDF generated successfully');
+          toast.success("PDF generated successfully");
         } catch (error) {
-          console.error('Error generating PDF:', error);
-          toast.error('Prescription saved but PDF generation failed');
+          console.error("Error generating PDF:", error);
+          toast.error("Prescription saved but PDF generation failed");
         }
       }
 
-      navigate('/doctor/prescriptions');
+      navigate("/doctor/prescriptions");
     } catch (error) {
-      console.error('Error saving prescription:', error);
-      toast.error(error.response?.data?.error || 'Failed to save prescription');
+      console.error("Error saving prescription:", error);
+      toast.error(error.response?.data?.error || "Failed to save prescription");
     } finally {
       setLoading(false);
     }
@@ -165,17 +193,17 @@ const PrescriptionEditor = () => {
 
   const handleGeneratePDF = async () => {
     if (!prescriptionId) {
-      toast.error('Please save the prescription first');
+      toast.error("Please save the prescription first");
       return;
     }
 
     try {
       setLoading(true);
       await prescriptionService.generatePDF(prescriptionId);
-      toast.success('PDF generated successfully');
+      toast.success("PDF generated successfully");
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error('Failed to generate PDF');
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF");
     } finally {
       setLoading(false);
     }
@@ -198,14 +226,14 @@ const PrescriptionEditor = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {isEditMode ? 'Edit Prescription' : 'Create Prescription'}
+              {isEditMode ? "Edit Prescription" : "Create Prescription"}
             </h1>
             <p className="text-gray-600 mt-1">
-              {appointment?.patient 
+              {appointment?.patient
                 ? `Patient: ${appointment.patient.firstName} ${appointment.patient.lastName}`
                 : prescription?.patient
                 ? `Patient: ${prescription.patient.firstName} ${prescription.patient.lastName}`
-                : 'New Prescription'}
+                : "New Prescription"}
             </p>
           </div>
           <div className="flex gap-2">
@@ -213,16 +241,12 @@ const PrescriptionEditor = () => {
               <Button
                 variant="outline"
                 onClick={handleGeneratePDF}
-                disabled={loading}
-              >
+                disabled={loading}>
                 <FaFilePdf className="w-4 h-4 mr-2" />
                 Generate PDF
               </Button>
             )}
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-            >
+            <Button onClick={handleSave} disabled={loading}>
               {loading ? (
                 <>
                   <FaSpinner className="w-4 h-4 mr-2 animate-spin" />
@@ -260,11 +284,7 @@ const PrescriptionEditor = () => {
               <FaPills className="w-5 h-5 text-primary" />
               Medications
             </h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAddMedication}
-            >
+            <Button variant="outline" size="sm" onClick={handleAddMedication}>
               <FaPlus className="w-4 h-4 mr-2" />
               Add Medication
             </Button>
@@ -272,12 +292,16 @@ const PrescriptionEditor = () => {
 
           <div className="space-y-4">
             {medications.map((med, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg">
                 <Input
                   type="text"
                   placeholder="Medication Name"
                   value={med.name}
-                  onChange={(e) => handleMedicationChange(index, 'name', e.target.value)}
+                  onChange={(e) =>
+                    handleMedicationChange(index, "name", e.target.value)
+                  }
                   className="md:col-span-2"
                   required
                 />
@@ -285,26 +309,38 @@ const PrescriptionEditor = () => {
                   type="text"
                   placeholder="Dosage (e.g., 500mg)"
                   value={med.dosage}
-                  onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
+                  onChange={(e) =>
+                    handleMedicationChange(index, "dosage", e.target.value)
+                  }
                 />
                 <Input
                   type="text"
                   placeholder="Frequency (e.g., 2x daily)"
                   value={med.frequency}
-                  onChange={(e) => handleMedicationChange(index, 'frequency', e.target.value)}
+                  onChange={(e) =>
+                    handleMedicationChange(index, "frequency", e.target.value)
+                  }
                 />
                 <Input
                   type="text"
                   placeholder="Duration (e.g., 7 days)"
                   value={med.duration}
-                  onChange={(e) => handleMedicationChange(index, 'duration', e.target.value)}
+                  onChange={(e) =>
+                    handleMedicationChange(index, "duration", e.target.value)
+                  }
                 />
                 <div className="flex items-center gap-2">
                   <Input
                     type="text"
                     placeholder="Instructions"
                     value={med.instructions}
-                    onChange={(e) => handleMedicationChange(index, 'instructions', e.target.value)}
+                    onChange={(e) =>
+                      handleMedicationChange(
+                        index,
+                        "instructions",
+                        e.target.value
+                      )
+                    }
                     className="flex-1"
                   />
                   {medications.length > 1 && (
@@ -312,8 +348,7 @@ const PrescriptionEditor = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveMedication(index)}
-                      className="text-red-600 hover:text-red-700"
-                    >
+                      className="text-red-600 hover:text-red-700">
                       <FaTrash className="w-4 h-4" />
                     </Button>
                   )}
@@ -326,7 +361,9 @@ const PrescriptionEditor = () => {
         {/* Instructions & Notes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">General Instructions</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              General Instructions
+            </h2>
             <textarea
               className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="Enter general instructions for the patient..."
@@ -336,7 +373,9 @@ const PrescriptionEditor = () => {
           </Card>
 
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Additional Notes</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Additional Notes
+            </h2>
             <textarea
               className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="Enter any additional notes..."
@@ -348,7 +387,9 @@ const PrescriptionEditor = () => {
 
         {/* Expiry Date */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Prescription Validity</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Prescription Validity
+          </h2>
           <Input
             type="date"
             label="Expiry Date (Optional)"
@@ -363,4 +404,3 @@ const PrescriptionEditor = () => {
 };
 
 export default PrescriptionEditor;
-

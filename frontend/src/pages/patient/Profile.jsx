@@ -3,15 +3,16 @@
  * View and edit patient profile information
  */
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import FormInput from '../../components/shared/FormInput';
-import Modal from '../../components/shared/Modal';
-import toast from 'react-hot-toast';
-import { FaEdit, FaUser } from 'react-icons/fa';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import FormInput from "../../components/shared/FormInput";
+import Modal from "../../components/shared/Modal";
+import toast from "react-hot-toast";
+import { FaEdit, FaUser } from "react-icons/fa";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const Profile = () => {
   const { user } = useAuth();
@@ -19,18 +20,18 @@ const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [patientData, setPatientData] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    gender: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    emergencyContact: '',
-    emergencyPhone: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    dateOfBirth: "",
+    gender: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    emergencyContact: "",
+    emergencyPhone: "",
   });
 
   useEffect(() => {
@@ -40,27 +41,29 @@ const Profile = () => {
   const loadPatientData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const res = await axios.get(`${API_URL}/patients/${user?.patientId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPatientData(res.data);
       setFormData({
-        firstName: res.data.firstName || '',
-        lastName: res.data.lastName || '',
-        email: res.data.email || '',
-        phone: res.data.phone || '',
-        dateOfBirth: res.data.dateOfBirth ? new Date(res.data.dateOfBirth).toISOString().split('T')[0] : '',
-        gender: res.data.gender || '',
-        address: res.data.address || '',
-        city: res.data.city || '',
-        state: res.data.state || '',
-        zipCode: res.data.zipCode || '',
-        emergencyContact: res.data.emergencyContact || '',
-        emergencyPhone: res.data.emergencyPhone || ''
+        firstName: res.data.firstName || "",
+        lastName: res.data.lastName || "",
+        email: res.data.email || "",
+        phone: res.data.phone || "",
+        dateOfBirth: res.data.dateOfBirth
+          ? new Date(res.data.dateOfBirth).toISOString().split("T")[0]
+          : "",
+        gender: res.data.gender || "",
+        address: res.data.address || "",
+        city: res.data.city || "",
+        state: res.data.state || "",
+        zipCode: res.data.zipCode || "",
+        emergencyContact: res.data.emergencyContact || "",
+        emergencyPhone: res.data.emergencyPhone || "",
       });
     } catch (error) {
-      toast.error('Error loading profile');
+      toast.error("Error loading profile");
     } finally {
       setLoading(false);
     }
@@ -69,15 +72,15 @@ const Profile = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.put(`${API_URL}/patients/${user?.patientId}`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Profile updated successfully!');
+      toast.success("Profile updated successfully!");
       setIsEditModalOpen(false);
       loadPatientData();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error updating profile');
+      toast.error(error.response?.data?.message || "Error updating profile");
     }
   };
 
@@ -95,8 +98,7 @@ const Profile = () => {
         <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
         <button
           onClick={() => setIsEditModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-        >
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
           <FaEdit />
           <span>Edit Profile</span>
         </button>
@@ -135,36 +137,42 @@ const Profile = () => {
           <div>
             <label className="text-sm text-gray-600">Date of Birth</label>
             <p className="font-medium">
-              {patientData?.dateOfBirth ? new Date(patientData.dateOfBirth).toLocaleDateString() : 'N/A'}
+              {patientData?.dateOfBirth
+                ? new Date(patientData.dateOfBirth).toLocaleDateString()
+                : "N/A"}
             </p>
           </div>
           <div>
             <label className="text-sm text-gray-600">Gender</label>
-            <p className="font-medium">{patientData?.gender || 'N/A'}</p>
+            <p className="font-medium">{patientData?.gender || "N/A"}</p>
           </div>
           <div className="md:col-span-2">
             <label className="text-sm text-gray-600">Address</label>
-            <p className="font-medium">{patientData?.address || 'N/A'}</p>
+            <p className="font-medium">{patientData?.address || "N/A"}</p>
           </div>
           <div>
             <label className="text-sm text-gray-600">City</label>
-            <p className="font-medium">{patientData?.city || 'N/A'}</p>
+            <p className="font-medium">{patientData?.city || "N/A"}</p>
           </div>
           <div>
             <label className="text-sm text-gray-600">State</label>
-            <p className="font-medium">{patientData?.state || 'N/A'}</p>
+            <p className="font-medium">{patientData?.state || "N/A"}</p>
           </div>
           <div>
             <label className="text-sm text-gray-600">Zip Code</label>
-            <p className="font-medium">{patientData?.zipCode || 'N/A'}</p>
+            <p className="font-medium">{patientData?.zipCode || "N/A"}</p>
           </div>
           <div>
             <label className="text-sm text-gray-600">Emergency Contact</label>
-            <p className="font-medium">{patientData?.emergencyContact || 'N/A'}</p>
+            <p className="font-medium">
+              {patientData?.emergencyContact || "N/A"}
+            </p>
           </div>
           <div>
             <label className="text-sm text-gray-600">Emergency Phone</label>
-            <p className="font-medium">{patientData?.emergencyPhone || 'N/A'}</p>
+            <p className="font-medium">
+              {patientData?.emergencyPhone || "N/A"}
+            </p>
           </div>
         </div>
 
@@ -173,12 +181,18 @@ const Profile = () => {
             <h3 className="font-semibold mb-4">Insurance Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="text-sm text-gray-600">Insurance Provider</label>
+                <label className="text-sm text-gray-600">
+                  Insurance Provider
+                </label>
                 <p className="font-medium">{patientData.insuranceProvider}</p>
               </div>
               <div>
-                <label className="text-sm text-gray-600">Insurance Number</label>
-                <p className="font-medium">{patientData.insuranceNumber || 'N/A'}</p>
+                <label className="text-sm text-gray-600">
+                  Insurance Number
+                </label>
+                <p className="font-medium">
+                  {patientData.insuranceNumber || "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -190,22 +204,25 @@ const Profile = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         title="Edit Profile"
-        size="lg"
-      >
+        size="lg">
         <form onSubmit={handleUpdate} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormInput
               label="First Name"
               name="firstName"
               value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, firstName: e.target.value })
+              }
               required
             />
             <FormInput
               label="Last Name"
               name="lastName"
               value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, lastName: e.target.value })
+              }
               required
             />
           </div>
@@ -215,7 +232,9 @@ const Profile = () => {
             name="email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             required
           />
 
@@ -223,7 +242,9 @@ const Profile = () => {
             label="Phone"
             name="phone"
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
             required
           />
 
@@ -233,13 +254,17 @@ const Profile = () => {
               name="dateOfBirth"
               type="date"
               value={formData.dateOfBirth}
-              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, dateOfBirth: e.target.value })
+              }
             />
             <FormInput
               label="Gender"
               name="gender"
               value={formData.gender}
-              onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
             />
           </div>
 
@@ -247,7 +272,9 @@ const Profile = () => {
             label="Address"
             name="address"
             value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, address: e.target.value })
+            }
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -255,19 +282,25 @@ const Profile = () => {
               label="City"
               name="city"
               value={formData.city}
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, city: e.target.value })
+              }
             />
             <FormInput
               label="State"
               name="state"
               value={formData.state}
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, state: e.target.value })
+              }
             />
             <FormInput
               label="Zip Code"
               name="zipCode"
               value={formData.zipCode}
-              onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, zipCode: e.target.value })
+              }
             />
           </div>
 
@@ -276,13 +309,17 @@ const Profile = () => {
               label="Emergency Contact"
               name="emergencyContact"
               value={formData.emergencyContact}
-              onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, emergencyContact: e.target.value })
+              }
             />
             <FormInput
               label="Emergency Phone"
               name="emergencyPhone"
               value={formData.emergencyPhone}
-              onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, emergencyPhone: e.target.value })
+              }
             />
           </div>
 
@@ -290,14 +327,12 @@ const Profile = () => {
             <button
               type="button"
               onClick={() => setIsEditModalOpen(false)}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-            >
+              className="px-4 py-2 border rounded-lg hover:bg-gray-50">
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Update Profile
             </button>
           </div>
@@ -308,4 +343,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

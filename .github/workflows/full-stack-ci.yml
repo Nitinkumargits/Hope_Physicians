@@ -2,9 +2,22 @@ name: Full Stack CI/CD
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [master, main]
+    paths:
+      # Only run when these paths change
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/full-stack-ci.yml"
+      - "deploy.sh"
+      - "ecosystem.config.js"
+      - "package.json"
+      - "package-lock.json"
   pull_request:
-    branches: [ master, main ]
+    branches: [master, main]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/full-stack-ci.yml"
   workflow_dispatch:
 
 env:
@@ -16,158 +29,171 @@ jobs:
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Remove root package-lock.json if exists
-      run: |
-        if [ -f package-lock.json ]; then
-          echo "Removing root package-lock.json"
-          rm -f package-lock.json
-        fi
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install backend dependencies
-      working-directory: ./backend
-      run: npm ci
-      
-    - name: Generate Prisma Client
-      working-directory: ./backend
-      run: npm run prisma:generate
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL || 'file:./dev.db' }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key' }}
-        
-    - name: Upload backend artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: backend-build
-        path: |
-          backend/
-        retention-days: 7
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Remove root package-lock.json if exists
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "Removing root package-lock.json"
+            rm -f package-lock.json
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: npm run prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'file:./dev.db' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key' }}
+
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: |
+            backend/
+          retention-days: 7
 
   frontend:
     name: Frontend Build & Test
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Remove root package-lock.json if exists
-      run: |
-        if [ -f package-lock.json ]; then
-          echo "Removing root package-lock.json"
-          rm -f package-lock.json
-        fi
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-      
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm ci
-      
-    - name: Run linter
-      working-directory: ./frontend
-      run: npm run lint
-      continue-on-error: true
-      
-    - name: Build frontend
-      working-directory: ./frontend
-      run: npm run build
-      env:
-        VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
-        NODE_ENV: production
-      
-    - name: Upload frontend artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-build
-        path: frontend/dist
-        retention-days: 7
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Remove root package-lock.json if exists
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "Removing root package-lock.json"
+            rm -f package-lock.json
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ./frontend
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          # No VITE_API_URL needed - using runtime config in index.html
+          # API URL auto-detects based on hostname (production uses /api via Nginx)
+          NODE_ENV: production
+
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+          retention-days: 7
 
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
-        
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || true
-        
-    - name: Deploy to EC2
-      env:
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-        RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
-        RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        PORT: ${{ secrets.PORT || '5000' }}
-        NODE_ENV: ${{ secrets.NODE_ENV || 'production' }}
-        VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
-      run: |
-        # Create deployment directory on EC2
-        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/backend"
-        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/frontend/dist"
-        
-        # Copy entire backend directory (excluding node_modules)
-        rsync -avz --exclude node_modules --exclude '.git*' artifacts/backend-build/ $EC2_USER@$EC2_HOST:~/hope-physicians/backend/ || {
-          echo "Rsync failed, trying scp..."
-          scp -r artifacts/backend-build/* $EC2_USER@$EC2_HOST:~/hope-physicians/backend/
-        }
-        
-        # Copy frontend build
-        rsync -avz artifacts/frontend-build/ $EC2_USER@$EC2_HOST:~/hope-physicians/frontend/dist/ || {
-          echo "Rsync failed, trying scp..."
-          scp -r artifacts/frontend-build/* $EC2_USER@$EC2_HOST:~/hope-physicians/frontend/dist/
-        }
-        
-        # Copy deployment scripts
-        scp deploy.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
-        scp ecosystem.config.js $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
-        scp check-deployment.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
-        
-        # Run deployment script on EC2
-        ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd ~/hope-physicians && chmod +x deploy.sh && export JWT_SECRET='$JWT_SECRET' && export EMAIL_USER='$EMAIL_USER' && export EMAIL_PASS='$EMAIL_PASS' && export RAZORPAY_KEY_ID='$RAZORPAY_KEY_ID' && export RAZORPAY_KEY_SECRET='$RAZORPAY_KEY_SECRET' && export DATABASE_URL='$DATABASE_URL' && export PORT='${PORT:-5000}' && export NODE_ENV='${NODE_ENV:-production}' && export VITE_API_URL='$VITE_API_URL' && bash deploy.sh"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || true
+
+      - name: Deploy to EC2
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PORT: ${{ secrets.PORT || '5000' }}
+          NODE_ENV: ${{ secrets.NODE_ENV || 'production' }}
+          # VITE_API_URL not needed - using runtime config in index.html
+        run: |
+          # Create deployment directory on EC2
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/backend"
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/frontend/dist"
+
+          # Copy entire backend directory (excluding node_modules)
+          rsync -avz --exclude node_modules --exclude '.git*' artifacts/backend-build/ $EC2_USER@$EC2_HOST:~/hope-physicians/backend/ || {
+            echo "Rsync failed, trying scp..."
+            scp -r artifacts/backend-build/* $EC2_USER@$EC2_HOST:~/hope-physicians/backend/
+          }
+
+          # Copy frontend build to Nginx web root
+          echo "📦 Copying frontend build to server..."
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "mkdir -p ~/hope-physicians/frontend/dist"
+          rsync -avz --delete artifacts/frontend-build/ $EC2_USER@$EC2_HOST:~/hope-physicians/frontend/dist/ || {
+            echo "Rsync failed, trying scp..."
+            ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf ~/hope-physicians/frontend/dist/*"
+            scp -r artifacts/frontend-build/* $EC2_USER@$EC2_HOST:~/hope-physicians/frontend/dist/
+          }
+          echo "✅ Frontend build copied to ~/hope-physicians/frontend/dist"
+
+          # Copy deployment scripts
+          scp deploy.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
+          scp ecosystem.config.js $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
+          scp check-deployment.sh $EC2_USER@$EC2_HOST:~/hope-physicians/ || true
+
+          # Run deployment script on EC2
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd ~/hope-physicians && chmod +x deploy.sh && export JWT_SECRET='$JWT_SECRET' && export EMAIL_USER='$EMAIL_USER' && export EMAIL_PASS='$EMAIL_PASS' && export RAZORPAY_KEY_ID='$RAZORPAY_KEY_ID' && export RAZORPAY_KEY_SECRET='$RAZORPAY_KEY_SECRET' && export DATABASE_URL='$DATABASE_URL' && export PORT='${PORT:-5000}' && export NODE_ENV='${NODE_ENV:-production}' && bash deploy.sh"
+
+          # Verify frontend deployment
+          echo "🔍 Verifying frontend deployment..."
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "ls -la ~/hope-physicians/frontend/dist/ | head -10"
+
+          # Restart Nginx to serve new build
+          echo "🔄 Restarting Nginx..."
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo nginx -t && sudo systemctl restart nginx || sudo service nginx restart"
 
   status:
     name: CI/CD Status
     runs-on: ubuntu-latest
     needs: [backend, frontend, deploy]
     if: always()
-    
+
     steps:
-    - name: Display Status
-      run: |
-        echo "Backend CI: ${{ needs.backend.result }}"
-        echo "Frontend CI: ${{ needs.frontend.result }}"
-        echo "Deployment: ${{ needs.deploy.result }}"
-        if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "🚀 Deployment completed successfully!"
-        else
-          echo "❌ Deployment failed. Check logs for details."
-          exit 1
-        fi
+      - name: Display Status
+        run: |
+          echo "Backend CI: ${{ needs.backend.result }}"
+          echo "Frontend CI: ${{ needs.frontend.result }}"
+          echo "Deployment: ${{ needs.deploy.result }}"
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "🚀 Deployment completed successfully!"
+          else
+            echo "❌ Deployment failed. Check logs for details."
+            exit 1
+          fi

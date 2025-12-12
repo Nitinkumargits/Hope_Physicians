@@ -1,6 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from "../config/apiConfig";
+
+const API_BASE = API_BASE_URL;
 
 /**
  * Notification Service - API methods for doctor notifications
@@ -12,15 +14,15 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
  */
 export const getDoctorNotifications = async (doctorId, filters = {}) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const params = new URLSearchParams(filters);
-    
+
     // Use /doctor endpoint (without ID) to get notifications for logged-in doctor
     // The backend will extract doctorId from the JWT token
-    const endpoint = doctorId 
+    const endpoint = doctorId
       ? `${API_BASE}/notifications/doctor/${doctorId}?${params}`
       : `${API_BASE}/notifications/doctor?${params}`;
-    
+
     const response = await axios.get(endpoint, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -29,9 +31,9 @@ export const getDoctorNotifications = async (doctorId, filters = {}) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching doctor notifications:', error);
+    console.error("Error fetching doctor notifications:", error);
     if (error.response) {
-      console.error('Response error:', error.response.data);
+      console.error("Response error:", error.response.data);
     }
     throw error;
   }
@@ -42,10 +44,12 @@ export const getDoctorNotifications = async (doctorId, filters = {}) => {
  */
 export const getUnreadCount = async (doctorId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.get(
-      `${API_BASE}/notifications/doctor${doctorId ? `/${doctorId}` : ''}/unread/count`,
+      `${API_BASE}/notifications/doctor${
+        doctorId ? `/${doctorId}` : ""
+      }/unread/count`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,7 +59,7 @@ export const getUnreadCount = async (doctorId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching unread count:', error);
+    console.error("Error fetching unread count:", error);
     throw error;
   }
 };
@@ -65,8 +69,8 @@ export const getUnreadCount = async (doctorId) => {
  */
 export const markAsRead = async (notificationId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.patch(
       `${API_BASE}/notifications/${notificationId}/read`,
       {},
@@ -79,7 +83,7 @@ export const markAsRead = async (notificationId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    console.error("Error marking notification as read:", error);
     throw error;
   }
 };
@@ -89,10 +93,12 @@ export const markAsRead = async (notificationId) => {
  */
 export const markAllAsRead = async (doctorId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.patch(
-      `${API_BASE}/notifications/doctor${doctorId ? `/${doctorId}` : ''}/mark-all-read`,
+      `${API_BASE}/notifications/doctor${
+        doctorId ? `/${doctorId}` : ""
+      }/mark-all-read`,
       {},
       {
         headers: {
@@ -103,7 +109,7 @@ export const markAllAsRead = async (doctorId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    console.error("Error marking all notifications as read:", error);
     throw error;
   }
 };
@@ -113,8 +119,8 @@ export const markAllAsRead = async (doctorId) => {
  */
 export const deleteNotification = async (notificationId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.delete(
       `${API_BASE}/notifications/${notificationId}`,
       {
@@ -126,7 +132,7 @@ export const deleteNotification = async (notificationId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    console.error("Error deleting notification:", error);
     throw error;
   }
 };
@@ -136,8 +142,8 @@ export const deleteNotification = async (notificationId) => {
  */
 export const archiveNotification = async (notificationId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.patch(
       `${API_BASE}/notifications/${notificationId}/archive`,
       {},
@@ -150,7 +156,7 @@ export const archiveNotification = async (notificationId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error archiving notification:', error);
+    console.error("Error archiving notification:", error);
     throw error;
   }
 };
@@ -165,13 +171,13 @@ export const archiveNotification = async (notificationId) => {
  */
 export const getPatientNotifications = async (patientId, filters = {}) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const params = new URLSearchParams(filters);
-    
-    const endpoint = patientId 
+
+    const endpoint = patientId
       ? `${API_BASE}/notifications/patient/${patientId}?${params}`
       : `${API_BASE}/notifications/patient?${params}`;
-    
+
     const response = await axios.get(endpoint, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -180,9 +186,9 @@ export const getPatientNotifications = async (patientId, filters = {}) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching patient notifications:', error);
+    console.error("Error fetching patient notifications:", error);
     if (error.response) {
-      console.error('Response error:', error.response.data);
+      console.error("Response error:", error.response.data);
     }
     throw error;
   }
@@ -193,10 +199,12 @@ export const getPatientNotifications = async (patientId, filters = {}) => {
  */
 export const getPatientUnreadCount = async (patientId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.get(
-      `${API_BASE}/notifications/patient${patientId ? `/${patientId}` : ''}/unread/count`,
+      `${API_BASE}/notifications/patient${
+        patientId ? `/${patientId}` : ""
+      }/unread/count`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -206,7 +214,7 @@ export const getPatientUnreadCount = async (patientId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching patient unread count:', error);
+    console.error("Error fetching patient unread count:", error);
     throw error;
   }
 };
@@ -216,10 +224,12 @@ export const getPatientUnreadCount = async (patientId) => {
  */
 export const markAllPatientAsRead = async (patientId) => {
   try {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     const response = await axios.patch(
-      `${API_BASE}/notifications/patient${patientId ? `/${patientId}` : ''}/mark-all-read`,
+      `${API_BASE}/notifications/patient${
+        patientId ? `/${patientId}` : ""
+      }/mark-all-read`,
       {},
       {
         headers: {
@@ -230,8 +240,7 @@ export const markAllPatientAsRead = async (patientId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error marking all patient notifications as read:', error);
+    console.error("Error marking all patient notifications as read:", error);
     throw error;
   }
 };
-

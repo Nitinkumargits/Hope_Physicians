@@ -2,19 +2,20 @@
  * Patient Report API Client
  */
 
-import axios from 'axios';
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const api = axios.create({
   baseURL: `${API_URL}/patient/reports`,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -26,11 +27,10 @@ api.interceptors.request.use((config) => {
 });
 
 export const reportApi = {
-  getAll: (params) => api.get('/', { params }),
+  getAll: (params) => api.get("/", { params }),
   getById: (id) => api.get(`/${id}`),
   download: (id) => api.get(`/${id}/download`),
-  getLabReports: (params) => api.get('/lab', { params })
+  getLabReports: (params) => api.get("/lab", { params }),
 };
 
 export default { reportApi };
-

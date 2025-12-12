@@ -1,23 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import Card from '../../components/shared/Card';
-import Badge from '../../components/shared/Badge';
-import Button from '../../components/shared/Button';
-import toast from 'react-hot-toast';
-import { FaCalendarAlt, FaSearch, FaFilter, FaSpinner, FaClock, FaUserMd, FaUser } from 'react-icons/fa';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import DashboardLayout from "../../components/portal/DashboardLayout";
+import Card from "../../components/shared/Card";
+import Badge from "../../components/shared/Badge";
+import Button from "../../components/shared/Button";
+import toast from "react-hot-toast";
+import {
+  FaCalendarAlt,
+  FaSearch,
+  FaFilter,
+  FaSpinner,
+  FaClock,
+  FaUserMd,
+  FaUser,
+} from "react-icons/fa";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     fetchAppointments();
@@ -29,62 +38,68 @@ const Appointments = () => {
       const token = getAuthToken();
       const response = await axios.get(`${API_URL}/appointments`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         params: {
-          limit: 100
-        }
+          limit: 100,
+        },
       });
-      
+
       const appointmentsData = response.data?.data || [];
-      
+
       // Format appointments for display
-      const formattedAppointments = appointmentsData.map(apt => ({
+      const formattedAppointments = appointmentsData.map((apt) => ({
         id: apt.id,
-        patient: `${apt.patient?.firstName || ''} ${apt.patient?.lastName || ''}`.trim(),
-        doctor: `${apt.doctor?.firstName || ''} ${apt.doctor?.lastName || ''}`.trim() || 'N/A',
+        patient: `${apt.patient?.firstName || ""} ${
+          apt.patient?.lastName || ""
+        }`.trim(),
+        doctor:
+          `${apt.doctor?.firstName || ""} ${
+            apt.doctor?.lastName || ""
+          }`.trim() || "N/A",
         date: apt.appointmentDate,
         time: apt.appointmentTime,
-        type: apt.appointmentType || 'Consultation',
+        type: apt.appointmentType || "Consultation",
         status: apt.status,
-        phone: apt.patient?.phone || 'N/A'
+        phone: apt.patient?.phone || "N/A",
       }));
-      
+
       setAppointments(formattedAppointments);
     } catch (error) {
-      console.error('Failed to fetch appointments:', error);
-      toast.error('Failed to load appointments');
+      console.error("Failed to fetch appointments:", error);
+      toast.error("Failed to load appointments");
       setAppointments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredAppointments = appointments.filter(apt => {
-    const matchesSearch = apt.patient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         apt.doctor?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === 'all' || apt.status === filter;
+  const filteredAppointments = appointments.filter((apt) => {
+    const matchesSearch =
+      apt.patient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      apt.doctor?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filter === "all" || apt.status === filter;
     return matchesSearch && matchesFilter;
   });
 
   const getStatusBadge = (status) => {
     const variants = {
-      'scheduled': 'primary',
-      'in-progress': 'info',
-      'completed': 'success',
-      'cancelled': 'danger'
+      scheduled: "primary",
+      "in-progress": "info",
+      completed: "success",
+      cancelled: "danger",
     };
-    return variants[status] || 'default';
+    return variants[status] || "default";
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -94,7 +109,9 @@ const Appointments = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Appointments</h1>
-            <p className="text-gray-600 mt-1">View and manage patient appointments</p>
+            <p className="text-gray-600 mt-1">
+              View and manage patient appointments
+            </p>
           </div>
         </div>
 
@@ -116,8 +133,7 @@ const Appointments = () => {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                 <option value="all">All Status</option>
                 <option value="scheduled">Scheduled</option>
                 <option value="in-progress">In Progress</option>
@@ -145,18 +161,21 @@ const Appointments = () => {
               {filteredAppointments.map((apt) => (
                 <div
                   key={apt.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-4 border-primary"
-                >
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-4 border-primary">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="p-2 bg-primary-100 rounded-lg">
                         <FaCalendarAlt className="w-4 h-4 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{apt.patient}</p>
+                        <p className="font-semibold text-gray-900">
+                          {apt.patient}
+                        </p>
                         <p className="text-sm text-gray-600">{apt.doctor}</p>
                       </div>
-                      <Badge variant={getStatusBadge(apt.status)}>{apt.status}</Badge>
+                      <Badge variant={getStatusBadge(apt.status)}>
+                        {apt.status}
+                      </Badge>
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
@@ -179,7 +198,9 @@ const Appointments = () => {
                       )}
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm">View Details</Button>
+                  <Button variant="ghost" size="sm">
+                    View Details
+                  </Button>
                 </div>
               ))}
             </div>
@@ -191,4 +212,3 @@ const Appointments = () => {
 };
 
 export default Appointments;
-

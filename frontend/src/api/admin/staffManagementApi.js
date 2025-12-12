@@ -2,19 +2,20 @@
  * Admin Staff Management API Client
  */
 
-import axios from 'axios';
+import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = API_BASE_URL;
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const api = axios.create({
   baseURL: `${API_URL}/admin/staff`,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -27,34 +28,34 @@ api.interceptors.request.use((config) => {
 
 // Staff APIs
 export const staffApi = {
-  getAll: (params) => api.get('/staff', { params }),
-  getEmployees: (params) => api.get('/employees', { params }),
-  add: (data) => api.post('/staff', data),
+  getAll: (params) => api.get("/staff", { params }),
+  getEmployees: (params) => api.get("/employees", { params }),
+  add: (data) => api.post("/staff", data),
   update: (id, data) => api.put(`/staff/${id}`, data),
-  delete: (id) => api.delete(`/staff/${id}`)
+  delete: (id) => api.delete(`/staff/${id}`),
 };
 
 // Role Permission APIs
 export const rolePermissionApi = {
-  getAll: () => api.get('/roles'),
-  update: (role, data) => api.put(`/roles/${role}/permissions`, data)
+  getAll: () => api.get("/roles"),
+  update: (role, data) => api.put(`/roles/${role}/permissions`, data),
 };
 
 // Attendance APIs
 export const attendanceApi = {
-  getAll: (params) => api.get('/attendance', { params })
+  getAll: (params) => api.get("/attendance", { params }),
 };
 
 // Inventory APIs
 export const inventoryApi = {
-  getAll: (params) => api.get('/inventory', { params }),
-  add: (data) => api.post('/inventory', data),
-  update: (id, data) => api.put(`/inventory/${id}`, data)
+  getAll: (params) => api.get("/inventory", { params }),
+  add: (data) => api.post("/inventory", data),
+  update: (id, data) => api.put(`/inventory/${id}`, data),
 };
 
 // Statistics
 export const adminStatsApi = {
-  getStats: () => api.get('/stats')
+  getStats: () => api.get("/stats"),
 };
 
 export default {
@@ -62,6 +63,5 @@ export default {
   rolePermissionApi,
   attendanceApi,
   inventoryApi,
-  adminStatsApi
+  adminStatsApi,
 };
-
