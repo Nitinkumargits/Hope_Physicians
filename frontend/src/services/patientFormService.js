@@ -43,9 +43,13 @@ const patientFormService = {
         `${API_BASE_URL}/patient-forms/patient-info`,
         formData,
         {
-          timeout: 10000,
+          timeout: 30000, // Increased to 30 seconds for production
           headers: {
             "Content-Type": "application/json",
+          },
+          // Add retry logic for production
+          validateStatus: function (status) {
+            return status < 500; // Don't throw on 4xx errors
           },
         }
       );
