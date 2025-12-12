@@ -180,7 +180,9 @@ const PatientForms = () => {
         : selectedForm.formData || selectedForm;
 
     return (
-      <div className="space-y-6" ref={modalContentRef}>
+      <div
+        className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-100"
+        ref={modalContentRef}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
           <div className="bg-white p-4 rounded-lg border border-gray-200">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">
