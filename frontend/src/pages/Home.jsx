@@ -259,25 +259,25 @@ const Home = () => {
 
   const testimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Brenda Watson",
       feedback:
-        "Outstanding care from the cardiology department. Dr. Smith and his team were incredibly professional and caring throughout my treatment.",
+        "Dr. Okonkwo is an awesome doctor that is willing to listen to me about my health concerns. Most importantly, he believes in me as a patient and gives me an opportunity to get healthier with medication or without. I feel comfortable talking with him because he listens to me.",
+      rating: 5,
+      avatar: womensImg,
+    },
+    {
+      name: "Lu McMurtry",
+      feedback:
+        "Very friendly staff. Always knows my Mom's name and makes her feel welcome. The wait time to see the doctor can be long, but he does a good job listening to her concerns once he is with her. Most doctors want to get you in and out, but I hear him with his patients asking questions and listening to what is bothering them. When I take my Mom for her appointment with him, I plan my day accordingly. Yes, it may be a long day at the doctor's office, but I like the attentiveness he gives to her needs. So waiting to get that type of service, I don't mind.",
       rating: 5,
       avatar: familyImg,
     },
     {
-      name: "Michael Brown",
+      name: "Deacon Hull",
       feedback:
-        "The staff at Hope Physicians is exceptional. They made me feel comfortable and cared for during my entire visit.",
+        "The facility is a little dated; however, the professionalism and courtesy of the staff is exceptional. My wife had called just about every physician in town and everyone was full. The receptionist was caring and 'fit' me in the next day due to the severity of my condition. None of the other offices would. The wait was a little long, but I saw so many patients coming out who had been seen before me. All of the patients looked satisfied, and I was impressed with the fact that many of the patients knew the staff by name. It caused me to reminisce of my childhood when our family physician knew us by name and cared. Hats off to Hope Physicians for outstanding customer service in an age of impatience.",
       rating: 5,
       avatar: mensImg,
-    },
-    {
-      name: "Emily Davis",
-      feedback:
-        "I've been coming here for years and the quality of care never disappoints. Highly recommend to anyone looking for excellent healthcare.",
-      rating: 5,
-      avatar: womensImg,
     },
   ];
 
