@@ -27,8 +27,6 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    document.title = "Hope Physicians — World-Class Healthcare";
-
     // Reveal on scroll
     const reveals = document.querySelectorAll(".reveal-on-scroll");
     const observer = new IntersectionObserver(
@@ -84,8 +82,12 @@ const Home = () => {
   const consultationItems = [
     {
       key: "hours",
-      title: "Consultation Hours",
-      lines: ["Mon - Thu: 8:00 AM - 5:00 PM", "Fri: 8:00 AM - 12:00 PM"],
+      title: "Urgent Care Hours",
+      lines: [
+        "Mon - Thu: 8:00 AM - 5:00 PM",
+        "Fri: 8:00 AM - 12:00 PM",
+        "Walk-In Welcome",
+      ],
       icon: "clock",
     },
     {
@@ -96,8 +98,12 @@ const Home = () => {
     },
     {
       key: "appointment",
-      title: "Book Appointment",
-      lines: ["Call: 252-522-3663", "Fax: 252-522-3660"],
+      title: "Location & Contact",
+      lines: [
+        "2104 North Herritage Street",
+        "Kinston, NC 28501",
+        "Call: 252-522-3663",
+      ],
       icon: "calendar",
     },
   ];
@@ -165,39 +171,45 @@ const Home = () => {
   // Services (drives the dynamic Services section)
   const services = [
     {
+      img: heroImg,
+      title: "Urgent Care",
+      desc: "Walk-in urgent care and immediate care services in Kinston, NC. No appointment needed. Located at 2104 North Herritage Street, Kinston, NC 28501.",
+      path: "/urgent-care",
+    },
+    {
       img: familyImg,
       title: "Family Medicine",
-      desc: "Comprehensive primary healthcare for individuals & families.",
+      desc: "Comprehensive primary healthcare for individuals & families in Kinston, NC.",
       path: "/family-medicine",
     },
     {
       img: pediatricsImg,
       title: "Pediatric Care",
-      desc: "Compassionate care for infants, children and adolescents.",
+      desc: "Compassionate care for infants, children and adolescents in Kinston, NC.",
       path: "/pediatric-care",
     },
     {
       img: mensImg,
       title: "Men's Health",
-      desc: "Preventive & specialized care for men.",
+      desc: "Preventive & specialized care for men in Kinston, NC.",
       path: "/mens-health",
     },
     {
       img: womensImg,
       title: "Women's Health",
-      desc: "Gynecological and maternal health services.",
+      desc: "Gynecological and maternal health services in Kinston, NC.",
       path: "/womens-health",
     },
     {
       img: occupationalImg,
       title: "Occupational Health",
-      desc: "Workplace health programmes & screenings.",
+      desc: "Workplace health programmes & screenings in Kinston, NC.",
       path: "/occupational-health",
     },
     {
       img: geriatricImg,
       title: "Geriatric Care",
-      desc: "Holistic senior care & chronic disease management.",
+      desc: "Holistic senior care & chronic disease management in Kinston, NC.",
       path: "/geriatric-care",
     },
   ];
@@ -229,14 +241,15 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Primary Care & Family Medicine | Kinston, NC"
-        description="Hope Physicians & Urgent Care, PLLC provides comprehensive primary care physician services, family medicine, urgent care, and immediate care in Kinston, NC. Expert doctors offering pediatric care, women's health, geriatric care, occupational health, and wellness care services."
+        title="Urgent Care in Kinston, NC | Immediate Care & Walk-In Clinic"
+        description="Hope Physicians provides urgent care and immediate care services in Kinston, NC at 2104 North Herritage Street, Kinston, NC 28501. Walk-in urgent care welcome, no appointment needed. Family medicine, primary care physician services, and specialized medical care available."
         keywords={[
-          "Primary care physician",
-          "Family Medicine",
-          "Urgent Care",
-          "Immediate Care",
-          "Kinston NC",
+          "urgent care in Kinston",
+          "Kinston urgent care",
+          "urgent care near me Kinston",
+          "immediate care Kinston",
+          "walk-in clinic Kinston",
+          "urgent care Kinston NC",
         ]}
       />
       {/* HERO SECTION */}
@@ -257,13 +270,14 @@ const Home = () => {
             <div className="space-y-6">
               <div className="bg-primary rounded-3xl p-10 shadow-2xl max-w-lg border border-white/10">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 reveal-on-scroll tracking-tight">
-                  Expert Primary Care Physicians & Family Medicine in Kinston,
-                  NC
+                  Urgent Care in Kinston, NC | Walk-In Immediate Care
                 </h1>
                 <p className="text-white/90 text-lg md:text-xl mb-8 reveal-on-scroll leading-relaxed">
-                  Comprehensive healthcare services including urgent care,
-                  immediate care, pediatric care, women's health, and geriatric
-                  care. We treat your loved ones like family.
+                  Walk-in urgent care and immediate care services in Kinston,
+                  NC. No appointment needed. Located at 2104 North Herritage
+                  Street, Kinston, NC 28501. We also provide family medicine,
+                  pediatric care, women's health, and geriatric care. We treat
+                  your loved ones like family.
                 </p>
                 <Link
                   to="/appointment"
@@ -456,6 +470,95 @@ const Home = () => {
                 style={{ imageRendering: "high-quality", objectFit: "cover" }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Urgent Care in Kinston Section */}
+      <section className="relative py-20 md:py-28 reveal-on-scroll bg-gradient-to-b from-blue-50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <p className="text-primary text-sm uppercase tracking-wider font-semibold">
+                  Urgent Care Services
+                </p>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+                Urgent Care in Kinston, NC
+              </h2>
+              <p className="text-gray-700 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
+                Walk-in urgent care and immediate care services available. No
+                appointment needed. Our expert physicians are ready to provide
+                quality medical care when you need it most.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Location
+                </h3>
+                <p className="text-gray-700 text-lg mb-4">
+                  <strong>2104 North Herritage Street</strong>
+                  <br />
+                  Kinston, NC 28501
+                </p>
+                <p className="text-gray-600">
+                  Conveniently located in Kinston, North Carolina, providing
+                  easy access to urgent care services for residents and
+                  visitors.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Contact & Hours
+                </h3>
+                <p className="text-gray-700 text-lg mb-2">
+                  <strong>Phone:</strong>{" "}
+                  <a
+                    href="tel:252-522-3663"
+                    className="text-primary hover:underline">
+                    252-522-3663
+                  </a>
+                </p>
+                <p className="text-gray-700 text-lg mb-4">
+                  <strong>Fax:</strong> 252-522-3660
+                </p>
+                <p className="text-gray-600">
+                  <strong>Hours:</strong> Mon - Thu: 8:00 AM - 5:00 PM | Fri:
+                  8:00 AM - 12:00 PM
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-primary to-blue-700 rounded-2xl p-8 text-white text-center">
+              <h3 className="text-2xl font-bold mb-4">Walk-In Welcome</h3>
+              <p className="text-white/90 text-lg mb-6">
+                No appointment needed for urgent care visits. Simply walk in
+                during our business hours and receive prompt, professional
+                medical attention.
+              </p>
+              <Link
+                to="/appointment"
+                className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                <span>Book Appointment or Walk-In</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -714,13 +817,14 @@ const Home = () => {
               </p>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-              Our Primary Care & Medical Services
+              Urgent Care & Medical Services in Kinston, NC
             </h2>
             <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              Comprehensive primary care physician services, family medicine,
-              urgent care, immediate care, pediatric care, women's health,
-              geriatric care, and occupational health for you and your family,
-              delivered with compassion and expertise.
+              Walk-in urgent care and immediate care services in Kinston, NC at
+              2104 North Herritage Street, Kinston, NC 28501. Comprehensive
+              primary care physician services, family medicine, pediatric care,
+              women's health, geriatric care, and occupational health for you
+              and your family, delivered with compassion and expertise.
             </p>
           </div>
 

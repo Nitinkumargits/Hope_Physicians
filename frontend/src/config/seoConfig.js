@@ -6,17 +6,24 @@
 export const seoConfig = {
   // Default meta tags
   default: {
-    title: "Hope Physicians | Primary Care & Family Medicine | Kinston, NC",
+    title: "Urgent Care in Kinston, NC | Hope Physicians & Urgent Care",
     description:
-      "Hope Physicians & Urgent Care, PLLC provides comprehensive primary care, family medicine, urgent care, and specialized medical services in Kinston, NC. Expert physicians offering pediatric care, women's health, geriatric care, and occupational health services.",
+      "Hope Physicians provides urgent care and immediate care services in Kinston, NC at 2104 North Herritage Street, Kinston, NC 28501. Walk-in urgent care, family medicine, and primary care physician services. No appointment needed for urgent care visits.",
     keywords: [
+      "urgent care in Kinston",
+      "urgent care Kinston NC",
+      "Kinston urgent care",
+      "immediate care Kinston",
+      "urgent care near me Kinston",
+      "walk-in clinic Kinston",
+      "urgent care Kinston North Carolina",
+      "Urgent Care",
+      "Immediate Care",
       "Physicians",
       "Doctors",
       "Primary care",
       "Primary care physician",
       "Family Medicine",
-      "Urgent Care",
-      "Immediate Care",
       "Geriatric Care",
       "Women's Health",
       "Pediatric care",
@@ -38,7 +45,7 @@ export const seoConfig = {
   business: {
     name: "Hope Physicians & Urgent Care, PLLC",
     address: {
-      streetAddress: "2104 North Heritage St.",
+      streetAddress: "2104 North Herritage Street",
       addressLocality: "Kinston",
       addressRegion: "NC",
       postalCode: "28501",
@@ -62,9 +69,11 @@ export const seoConfig = {
 
   // Services
   services: [
-    "Primary Care",
     "Urgent Care",
+    "UrgentCareService",
+    "EmergencyService",
     "Immediate Care",
+    "Primary Care",
     "Family Medicine",
     "Pediatric Care",
     "Women's Health",
@@ -89,7 +98,7 @@ export const seoConfig = {
 export const getMedicalBusinessSchema = (url = seoConfig.business.url) => {
   return {
     "@context": "https://schema.org",
-    "@type": "MedicalBusiness",
+    "@type": ["MedicalBusiness", "EmergencyService"],
     name: seoConfig.business.name,
     image: `${url}/logo.png`,
     "@id": url,
@@ -97,6 +106,8 @@ export const getMedicalBusinessSchema = (url = seoConfig.business.url) => {
     telephone: seoConfig.business.phone,
     faxNumber: seoConfig.business.fax,
     email: seoConfig.business.email,
+    description:
+      "Urgent care and immediate care services in Kinston, NC. Walk-in welcome, no appointment needed. Located at 2104 North Herritage Street, Kinston, NC 28501.",
     address: {
       "@type": "PostalAddress",
       streetAddress: seoConfig.business.address.streetAddress,
@@ -108,6 +119,13 @@ export const getMedicalBusinessSchema = (url = seoConfig.business.url) => {
     medicalSpecialty: seoConfig.specialties,
     service: seoConfig.services,
     priceRange: "$$",
+    paymentAccepted: ["Cash", "Credit Card", "Insurance"],
+    currenciesAccepted: "USD",
+    areaServed: {
+      "@type": "City",
+      name: "Kinston",
+      "@id": "https://www.wikidata.org/wiki/Q1007401",
+    },
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -135,11 +153,17 @@ export const getOrganizationSchema = (url = seoConfig.business.url) => {
     name: seoConfig.business.name,
     url: url,
     logo: `${url}/logo.png`,
+    description:
+      "Urgent care and primary care services in Kinston, NC. Providing walk-in urgent care, immediate care, family medicine, and specialized medical services at 2104 North Herritage Street, Kinston, NC 28501.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: seoConfig.business.phone,
       contactType: "customer service",
-      areaServed: "US",
+      areaServed: {
+        "@type": "City",
+        name: "Kinston",
+        addressRegion: "NC",
+      },
       availableLanguage: ["English"],
     },
     address: {
@@ -169,6 +193,8 @@ export const getLocalBusinessSchema = (url = seoConfig.business.url) => {
     "@id": url,
     url: url,
     telephone: seoConfig.business.phone,
+    description:
+      "Urgent care and immediate care services in Kinston, NC. Walk-in welcome, no appointment needed. Located at 2104 North Herritage Street, Kinston, NC 28501.",
     address: {
       "@type": "PostalAddress",
       streetAddress: seoConfig.business.address.streetAddress,
@@ -182,6 +208,25 @@ export const getLocalBusinessSchema = (url = seoConfig.business.url) => {
       latitude: "35.2621",
       longitude: "-77.5816",
     },
+    areaServed: {
+      "@type": "City",
+      name: "Kinston",
+      addressRegion: "NC",
+    },
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: "35.2621",
+        longitude: "-77.5816",
+      },
+      geoRadius: {
+        "@type": "Distance",
+        value: "25",
+        unitCode: "mi",
+      },
+    },
+    hasMap: `https://www.google.com/maps?q=2104+North+Herritage+Street,+Kinston,+NC+28501`,
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -197,5 +242,7 @@ export const getLocalBusinessSchema = (url = seoConfig.business.url) => {
       },
     ],
     priceRange: "$$",
+    paymentAccepted: ["Cash", "Credit Card", "Insurance"],
+    currenciesAccepted: "USD",
   };
 };
