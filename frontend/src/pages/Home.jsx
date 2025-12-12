@@ -174,43 +174,43 @@ const Home = () => {
   // Services (drives the dynamic Services section)
   const services = [
     {
-      img: heroImg,
+      img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=900&q=90&auto=format&fit=crop",
       title: "Urgent Care",
       desc: "Walk-in urgent care and immediate care services in Kinston, NC. No appointment needed. Located at 2104 North Herritage Street, Kinston, NC 28501.",
       path: "/urgent-care",
     },
     {
-      img: familyImg,
+      img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=900&q=90&auto=format&fit=crop",
       title: "Family Medicine",
       desc: "Comprehensive primary healthcare for individuals & families in Kinston, NC.",
       path: "/family-medicine",
     },
     {
-      img: pediatricsImg,
+      img: "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=900&q=90&auto=format&fit=crop",
       title: "Pediatric Care",
       desc: "Compassionate care for infants, children and adolescents in Kinston, NC.",
       path: "/pediatric-care",
     },
     {
-      img: mensImg,
+      img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=900&q=90&auto=format&fit=crop",
       title: "Men's Health",
       desc: "Preventive & specialized care for men in Kinston, NC.",
       path: "/mens-health",
     },
     {
-      img: womensImg,
+      img: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=900&q=90&auto=format&fit=crop",
       title: "Women's Health",
       desc: "Gynecological and maternal health services in Kinston, NC.",
       path: "/womens-health",
     },
     {
-      img: occupationalImg,
+      img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=900&q=90&auto=format&fit=crop",
       title: "Occupational Health",
       desc: "Workplace health programmes & screenings in Kinston, NC.",
       path: "/occupational-health",
     },
     {
-      img: geriatricImg,
+      img: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=900&q=90&auto=format&fit=crop",
       title: "Geriatric Care",
       desc: "Holistic senior care & chronic disease management in Kinston, NC.",
       path: "/geriatric-care",
@@ -905,10 +905,12 @@ const Home = () => {
                     </div>
                     {/* Service Details */}
                     <div className="support-details absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
-                      <h3 className="text-2xl font-bold mb-4">{s.title}</h3>
+                      <h3 className="text-2xl font-bold mb-4 text-left w-full mt-3">
+                        {s.title}
+                      </h3>
                       <Link
                         to={s.path}
-                        className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-primary font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-primary font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl text-left">
                         Get to know
                         <svg
                           className="w-4 h-4"
@@ -948,10 +950,10 @@ const Home = () => {
                     />
                   </div>
                   <div className="support-details absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
-                    <h3 className="text-2xl font-bold mb-4">
+                    <h3 className="text-0.5xl font-bold mb-4 text-left w-full mt-5">
                       View More Services
                     </h3>
-                    <span className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-teal-600 font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <span className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-teal-600 font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl text-left">
                       Explore All
                       <svg
                         className="w-4 h-4"
