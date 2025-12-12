@@ -51,6 +51,30 @@ jobs:
         echo "📦 Copying deployment scripts to EC2..."
         echo "🔍 Testing SSH connection to $EC2_HOST..."
         
+        # First, test basic network connectivity
+        echo "🌐 Testing network connectivity to $EC2_HOST:22..."
+        if timeout 5 bash -c "echo > /dev/tcp/$EC2_HOST/22" 2>/dev/null; then
+          echo "✅ Port 22 is reachable"
+        else
+          echo "❌ Port 22 is NOT reachable"
+          echo ""
+          echo "🔍 Network Diagnostics:"
+          echo "   Testing DNS resolution..."
+          if host $EC2_HOST 2>/dev/null || nslookup $EC2_HOST 2>/dev/null || getent hosts $EC2_HOST 2>/dev/null; then
+            echo "   ✅ DNS resolution works"
+          else
+            echo "   ⚠️  DNS resolution may be failing"
+          fi
+          echo ""
+          echo "   Testing ICMP (ping)..."
+          if timeout 3 ping -c 1 $EC2_HOST 2>/dev/null; then
+            echo "   ✅ Host is reachable via ping"
+          else
+            echo "   ❌ Host is NOT reachable via ping"
+          fi
+          echo ""
+        fi
+        
         # Retry SSH connection up to 3 times
         MAX_RETRIES=3
         RETRY_COUNT=0
@@ -80,6 +104,14 @@ jobs:
               echo "   4. Verify Network ACLs allow traffic (if using VPC)"
               echo "   5. Check if instance has iptables/firewall: ssh into instance and run 'sudo iptables -L'"
               echo "   6. If using Elastic IP, verify it's attached to the instance"
+              echo ""
+              echo "🔧 AWS Console Checks:"
+              echo "   • EC2 Dashboard → Instances → Check instance state (should be 'running')"
+              echo "   • Security Groups → Inbound Rules → Ensure port 22 allows:"
+              echo "     - Type: SSH, Protocol: TCP, Port: 22"
+              echo "     - Source: 0.0.0.0/0 (or GitHub Actions IP ranges)"
+              echo "   • Network Interfaces → Check if instance has a public IP"
+              echo "   • If instance was stopped/started, public IP may have changed"
               exit 1
             fi
           fi
