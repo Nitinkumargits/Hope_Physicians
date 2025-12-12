@@ -160,6 +160,78 @@ pm2 save --force
 echo -e "${GREEN}✅ Backend started${NC}"
 
 # ============================================
+# CREATE/VERIFY TEST USERS
+# ============================================
+echo -e "\n${YELLOW}👥 Creating/verifying test users...${NC}"
+
+# Wait a moment for backend to be ready
+sleep 3
+
+# Check if fix-login script exists, if not create a simple one
+if [ -f "$BACKEND_DIR/scripts/fix-login.js" ]; then
+    echo -e "${YELLOW}🔧 Running fix-login script...${NC}"
+    cd $BACKEND_DIR
+    node scripts/fix-login.js || echo -e "${YELLOW}⚠️  Fix-login script failed, continuing...${NC}"
+else
+    echo -e "${YELLOW}⚠️  fix-login.js not found, creating users manually...${NC}"
+    cd $BACKEND_DIR
+    
+    # Create users using Node.js one-liner
+    node << 'EOF'
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+const prisma = new PrismaClient();
+
+async function createUsers() {
+  const users = [
+    { email: 'admin@hopephysicians.com', password: 'admin123', role: 'admin' },
+    { email: 'doctor@hopephysicians.com', password: 'doctor123', role: 'doctor' },
+    { email: 'patient@example.com', password: 'patient123', role: 'patient' },
+    { email: 'staff@hopephysicians.com', password: 'staff123', role: 'staff' },
+  ];
+
+  for (const userData of users) {
+    try {
+      const existing = await prisma.portalUser.findUnique({
+        where: { email: userData.email },
+      });
+
+      if (existing) {
+        const isValid = await bcrypt.compare(userData.password, existing.passwordHash);
+        if (!isValid) {
+          const newHash = await bcrypt.hash(userData.password, 10);
+          await prisma.portalUser.update({
+            where: { email: userData.email },
+            data: { passwordHash: newHash, isActive: true, canAccessSystem: true },
+          });
+          console.log(`✅ Updated: ${userData.email}`);
+        }
+      } else {
+        const passwordHash = await bcrypt.hash(userData.password, 10);
+        await prisma.portalUser.create({
+          data: {
+            email: userData.email,
+            passwordHash: passwordHash,
+            role: userData.role,
+            isActive: true,
+            canAccessSystem: true,
+          },
+        });
+        console.log(`✅ Created: ${userData.email}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error with ${userData.email}:`, error.message);
+    }
+  }
+  await prisma.$disconnect();
+}
+
+createUsers().catch(console.error);
+EOF
+    echo -e "${GREEN}✅ Users created/verified${NC}"
+fi
+
+# ============================================
 # FRONTEND DEPLOYMENT
 # ============================================
 echo -e "\n${YELLOW}🎨 Deploying Frontend...${NC}"
