@@ -1,13 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as authService from '../services/authService';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { useNavigate } from "react-router-dom";
+import * as authService from "../services/authService";
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
@@ -15,19 +21,17 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if user is already logged in
-    if (token) {
-      fetchUser();
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
+  const logout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+    navigate("/portal/login");
+  }, [navigate]);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const userData = await authService.getCurrentUser();
       if (userData && userData.is_active && userData.can_access_system) {
@@ -36,61 +40,65 @@ export const AuthProvider = ({ children }) => {
         logout();
       }
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      console.error("Failed to fetch user:", error);
       logout();
     } finally {
       setLoading(false);
     }
-  };
+  }, [logout]);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    if (token) {
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
+  }, [token, fetchUser]);
 
   const login = async (email, password, role = null) => {
     try {
       setLoading(true);
       const response = await authService.login(email, password, role);
-      
+
       if (!response || !response.token || !response.user) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
-      
+
       const { token: newToken, user: userData } = response;
-      
+
       if (!userData.is_active || !userData.can_access_system) {
-        throw new Error('Your account is inactive. Please contact administrator.');
+        throw new Error(
+          "Your account is inactive. Please contact administrator."
+        );
       }
 
       setToken(newToken);
       setUser(userData);
-      localStorage.setItem('token', newToken);
-      
+      localStorage.setItem("token", newToken);
+
       // Redirect based on role
       const roleRoutes = {
-        admin: '/admin',
-        doctor: '/doctor',
-        patient: '/patient',
-        staff: '/staff',
-        hr: '/staff'
+        admin: "/admin",
+        doctor: "/doctor",
+        patient: "/patient",
+        staff: "/staff",
+        hr: "/staff",
       };
-      
-      const route = roleRoutes[userData.role] || '/portal';
+
+      const route = roleRoutes[userData.role] || "/portal";
       navigate(route);
-      
+
       return { success: true };
     } catch (error) {
-      console.error('Login error:', error);
-      return { 
-        success: false, 
-        error: error.message || 'Login failed. Please check your credentials.' 
+      console.error("Login error:", error);
+      return {
+        success: false,
+        error: error.message || "Login failed. Please check your credentials.",
       };
     } finally {
       setLoading(false);
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    navigate('/portal/login');
   };
 
   const updateUser = (userData) => {
@@ -113,9 +121,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     hasRole,
-    isAuthenticated: !!user && !!token
+    isAuthenticated: !!user && !!token,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-

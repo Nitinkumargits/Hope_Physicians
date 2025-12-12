@@ -1,33 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import Card from '../../components/shared/Card';
-import Badge from '../../components/shared/Badge';
-import Button from '../../components/shared/Button';
-import { FaClock, FaSearch, FaFilter, FaSpinner, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import * as adminService from '../../services/adminService';
+import React, { useState, useEffect, useCallback } from "react";
+import DashboardLayout from "../../components/portal/DashboardLayout";
+import Card from "../../components/shared/Card";
+import Badge from "../../components/shared/Badge";
+import Button from "../../components/shared/Button";
+import {
+  FaClock,
+  FaSearch,
+  FaFilter,
+  FaSpinner,
+  FaCheckCircle,
+  FaTimesCircle,
+} from "react-icons/fa";
+import * as adminService from "../../services/adminService";
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState(new Date().toISOString().split('T')[0]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
-  useEffect(() => {
-    fetchAttendance();
-  }, [dateFilter]);
-
-  const fetchAttendance = async () => {
+  const fetchAttendance = useCallback(async () => {
     try {
       const data = await adminService.getAttendance({ date: dateFilter });
       setAttendance(data.data || []);
     } catch (error) {
-      console.error('Failed to fetch attendance:', error);
+      console.error("Failed to fetch attendance:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateFilter]);
 
-  const filteredAttendance = attendance.filter(record =>
+  useEffect(() => {
+    fetchAttendance();
+  }, [dateFilter, fetchAttendance]);
+
+  const filteredAttendance = attendance.filter((record) =>
     record.employee_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -36,8 +45,12 @@ const Attendance = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Attendance Management</h1>
-            <p className="text-gray-600 mt-1">Track and manage employee attendance</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Attendance Management
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Track and manage employee attendance
+            </p>
           </div>
         </div>
 
@@ -82,11 +95,12 @@ const Attendance = () => {
               {filteredAttendance.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <p className="font-semibold text-gray-900">{record.employee_name}</p>
+                      <p className="font-semibold text-gray-900">
+                        {record.employee_name}
+                      </p>
                       {record.check_in && record.check_out ? (
                         <Badge variant="success">
                           <FaCheckCircle className="w-3 h-3 mr-1" />
@@ -101,13 +115,21 @@ const Attendance = () => {
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                       {record.check_in && (
-                        <span>Check-in: {new Date(record.check_in).toLocaleTimeString()}</span>
+                        <span>
+                          Check-in:{" "}
+                          {new Date(record.check_in).toLocaleTimeString()}
+                        </span>
                       )}
                       {record.check_out && (
-                        <span>Check-out: {new Date(record.check_out).toLocaleTimeString()}</span>
+                        <span>
+                          Check-out:{" "}
+                          {new Date(record.check_out).toLocaleTimeString()}
+                        </span>
                       )}
                       {record.hours && (
-                        <span className="font-semibold">Hours: {record.hours}</span>
+                        <span className="font-semibold">
+                          Hours: {record.hours}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -122,4 +144,3 @@ const Attendance = () => {
 };
 
 export default Attendance;
-
