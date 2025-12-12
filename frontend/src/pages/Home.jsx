@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import "../styles/Home.css";
 
 import heroImg from "../assets/images/hero2.jpg";
@@ -227,6 +228,17 @@ const Home = () => {
 
   return (
     <>
+      <SEO
+        title="Primary Care & Family Medicine | Kinston, NC"
+        description="Hope Physicians & Urgent Care, PLLC provides comprehensive primary care physician services, family medicine, urgent care, and immediate care in Kinston, NC. Expert doctors offering pediatric care, women's health, geriatric care, occupational health, and wellness care services."
+        keywords={[
+          "Primary care physician",
+          "Family Medicine",
+          "Urgent Care",
+          "Immediate Care",
+          "Kinston NC",
+        ]}
+      />
       {/* HERO SECTION */}
       <section
         className="relative overflow-hidden py-16 md:py-24 reveal-on-scroll"
@@ -235,6 +247,8 @@ const Home = () => {
           backgroundImage: `url(${heroImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          imageRendering: "high-quality",
         }}>
         <div className="hero-overlay"></div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -243,10 +257,13 @@ const Home = () => {
             <div className="space-y-6">
               <div className="bg-primary rounded-3xl p-10 shadow-2xl max-w-lg border border-white/10">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 reveal-on-scroll tracking-tight">
-                  Quality Healthcare Services with a Heart
+                  Expert Primary Care Physicians & Family Medicine in Kinston,
+                  NC
                 </h1>
                 <p className="text-white/90 text-lg md:text-xl mb-8 reveal-on-scroll leading-relaxed">
-                  We treat your loved ones like family
+                  Comprehensive healthcare services including urgent care,
+                  immediate care, pediatric care, women's health, and geriatric
+                  care. We treat your loved ones like family.
                 </p>
                 <Link
                   to="/appointment"
@@ -274,8 +291,12 @@ const Home = () => {
                   aria-hidden="true"></div>
                 <img
                   src={familyImg}
-                  alt="Hope Physicians - Caring for families"
+                  alt="Family Medicine physician providing primary care services at Hope Physicians in Kinston, NC"
                   className="w-full h-[300px] object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
                 />
               </div>
             </div>
@@ -293,9 +314,10 @@ const Home = () => {
               </h2>
               <p className="text-gray-700 text-base leading-relaxed">
                 Leading the way in medical excellence with cutting-edge
-                technology and compassionate care. We provide comprehensive
-                healthcare services for you and your family, ensuring quality
-                medical care with a personal touch.
+                technology and compassionate care. Our primary care physicians
+                provide comprehensive healthcare services including family
+                medicine, urgent care, and immediate care for you and your
+                family, ensuring quality medical care with a personal touch.
               </p>
             </div>
           </div>
@@ -375,7 +397,7 @@ const Home = () => {
                 </p>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Mission Statement
+                Our Mission: Excellence in Primary Care & Family Medicine
               </h2>
             </div>
           </div>
@@ -391,11 +413,14 @@ const Home = () => {
             <div className="relative z-10 space-y-8 max-w-2xl">
               <p className="text-white/95 text-lg md:text-xl leading-relaxed">
                 Leading the way in medical excellence with cutting-edge
-                technology and compassionate care. We are committed to providing
-                comprehensive healthcare services for you and your family,
-                ensuring quality medical care with a personal touch. Our mission
-                is to treat every patient with dignity, respect, and the highest
-                standard of medical expertise.
+                technology and compassionate care. Our primary care physicians
+                are committed to providing comprehensive healthcare services
+                including family medicine, urgent care, immediate care,
+                pediatric care, women's health, geriatric care, and occupational
+                health for you and your family, ensuring quality medical care
+                with a personal touch. Our mission is to treat every patient
+                with dignity, respect, and the highest standard of medical
+                expertise.
               </p>
               <Link
                 to="/about"
@@ -424,9 +449,11 @@ const Home = () => {
             <div className="relative rounded-xl overflow-hidden shadow-2xl">
               <img
                 src={aboutImg}
-                alt="Hope Physicians - Caring healthcare"
+                alt="Primary care physician and doctors providing comprehensive healthcare services at Hope Physicians"
                 className="w-full h-[350px] object-cover"
                 loading="lazy"
+                decoding="async"
+                style={{ imageRendering: "high-quality", objectFit: "cover" }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20"></div>
             </div>
@@ -523,11 +550,13 @@ const Home = () => {
                 Trusted by families
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">
-                Why Choose Hope Physicians?
+                Why Choose Hope Physicians Primary Care?
               </h2>
               <p className="text-slate-200 text-lg leading-relaxed">
                 Leading the way in medical excellence with cutting-edge
-                technology and compassionate care.
+                technology and compassionate care. Our expert primary care
+                physicians and doctors provide comprehensive family medicine,
+                urgent care, and immediate care services.
               </p>
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.25)]">
@@ -575,10 +604,11 @@ const Home = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-white text-center">
-                  24/7 Emergency Care
+                  24/7 Urgent Care & Immediate Care
                 </h3>
                 <p className="text-slate-200 text-center mt-2">
-                  Round-the-clock emergency services with immediate response
+                  Round-the-clock urgent care and immediate care services with
+                  immediate response from our expert physicians
                 </p>
               </div>
 
@@ -599,10 +629,11 @@ const Home = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-white text-center">
-                  Expert Doctors
+                  Expert Primary Care Physicians & Doctors
                 </h3>
                 <p className="text-slate-200 text-center mt-2">
-                  Team of experienced specialists and healthcare professionals
+                  Team of experienced primary care physicians, doctors, and
+                  healthcare professionals specializing in family medicine
                 </p>
               </div>
 
@@ -683,10 +714,12 @@ const Home = () => {
               </p>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-              Our Available Services
+              Our Primary Care & Medical Services
             </h2>
             <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              Comprehensive healthcare services for you and your family,
+              Comprehensive primary care physician services, family medicine,
+              urgent care, immediate care, pediatric care, women's health,
+              geriatric care, and occupational health for you and your family,
               delivered with compassion and expertise.
             </p>
           </div>
@@ -723,8 +756,15 @@ const Home = () => {
                   <img
                     className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                     src={s.img}
-                    alt={s.title}
+                    alt={`${
+                      s.title
+                    } services at Hope Physicians - Primary care physician providing ${s.title.toLowerCase()}`}
                     loading="lazy"
+                    decoding="async"
+                    style={{
+                      imageRendering: "high-quality",
+                      objectFit: "cover",
+                    }}
                   />
                 </div>
               </article>
@@ -759,8 +799,10 @@ const Home = () => {
                 <img
                   className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                   src={doctorImg}
-                  alt="More services"
+                  alt="Primary care physicians and doctors providing comprehensive medical services at Hope Physicians"
                   loading="lazy"
+                  decoding="async"
+                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
                 />
               </div>
             </Link>
@@ -801,8 +843,14 @@ const Home = () => {
                   <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-100 shadow-sm">
                     <img
                       src={t.avatar || doctorImg}
-                      alt={t.name}
+                      alt={`${t.name} - Patient testimonial for Hope Physicians primary care and family medicine services`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      style={{
+                        imageRendering: "high-quality",
+                        objectFit: "cover",
+                      }}
                     />
                   </div>
                   <div>
@@ -858,8 +906,11 @@ const Home = () => {
                 aria-hidden="true"></div>
               <img
                 src={doctorImg}
-                alt="Dr. Okonkwo"
+                alt="Dr. Okonkwo - Primary care physician and family medicine doctor at Hope Physicians"
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                style={{ imageRendering: "high-quality", objectFit: "cover" }}
               />
             </div>
 
@@ -940,9 +991,11 @@ const Home = () => {
                 />
                 <img
                   src={medSupportImg}
-                  alt="Medical Support Team"
+                  alt="Medical support team and healthcare professionals at Hope Physicians providing primary care and family medicine services"
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105 saturate-[1.08] contrast-[1.05] brightness-[1.02]"
+                  decoding="async"
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
                 />
               </div>
               <div className="flex flex-col gap-3 p-5 text-center">
@@ -964,9 +1017,11 @@ const Home = () => {
                 />
                 <img
                   src={adminSupportImg}
-                  alt="Administrative Support Team"
+                  alt="Administrative support team at Hope Physicians assisting with primary care physician appointments and family medicine services"
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105 saturate-[1.08] contrast-[1.05] brightness-[1.02]"
+                  decoding="async"
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
                 />
               </div>
               <div className="flex flex-col gap-3 p-5 text-center">
@@ -1220,7 +1275,13 @@ const Home = () => {
 
       {/* FLOATING BUTTON */}
       <Link to="/appointment" className="floating-btn bounce-btn">
-        <img src={appointmentIcon} alt="" />
+        <img
+          src={appointmentIcon}
+          alt="Book appointment with primary care physician at Hope Physicians"
+          loading="lazy"
+          decoding="async"
+          style={{ imageRendering: "high-quality" }}
+        />
         <span>Book Appointment</span>
       </Link>
     </>
