@@ -4,6 +4,10 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
 import { useConfirm } from "../../hooks/useConfirm";
 import {
+  getUnreadCount as getDoctorUnreadCount,
+  getPatientUnreadCount,
+} from "../../services/notificationService";
+import {
   FaHome,
   FaUserMd,
   FaCalendarAlt,
@@ -25,6 +29,7 @@ import {
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { confirm } = useConfirm();
   const [notificationCounts, setNotificationCounts] = useState({});
@@ -33,16 +38,17 @@ const Sidebar = ({ isOpen, onClose }) => {
     // Fetch notification counts dynamically
     const fetchNotificationCounts = async () => {
       try {
-        // In production, this would call an API
-        // For now, using mock data that updates
-        const counts = {
-          "/admin/notifications": 3,
-          "/admin/kyc-review": 8, // KYC badge count
-          "/doctor/notifications": 5,
-          "/patient/notifications": 2,
-          "/staff/notifications": 1,
-        };
-        setNotificationCounts(counts);
+        let counts = {};
+        if (user?.role === "doctor" && user?.doctorId) {
+          const res = await getDoctorUnreadCount(user.doctorId);
+          counts["/doctor/notifications"] = res?.count || 0;
+        } else if (user?.role === "patient" && user?.patientId) {
+          const res = await getPatientUnreadCount(user.patientId);
+          counts["/patient/notifications"] = res?.count || 0;
+        } else {
+          counts = {};
+        }
+        setNotificationCounts((prev) => ({ ...prev, ...counts }));
       } catch (error) {
         console.error("Failed to fetch notification counts:", error);
       }
@@ -52,7 +58,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     // Refresh counts every 30 seconds
     const interval = setInterval(fetchNotificationCounts, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   const isActive = (path) => {
     if (

@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../components/portal/DashboardLayout';
-import Card from '../../components/shared/Card';
-import Badge from '../../components/shared/Badge';
-import Button from '../../components/shared/Button';
-import Modal from '../../components/shared/Modal';
-import { useAuth } from '../../contexts/AuthContext';
-import * as notificationService from '../../services/notificationService';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/portal/DashboardLayout";
+import Card from "../../components/shared/Card";
+import Badge from "../../components/shared/Badge";
+import Button from "../../components/shared/Button";
+import Modal from "../../components/shared/Modal";
+import { useAuth } from "../../contexts/AuthContext";
+import * as notificationService from "../../services/notificationService";
+import toast from "react-hot-toast";
 import {
   FaBell,
   FaSearch,
@@ -23,22 +23,22 @@ import {
   FaUser,
   FaClock,
   FaTimes,
-  FaEye
-} from 'react-icons/fa';
+  FaEye,
+} from "react-icons/fa";
 
 const DoctorNotifications = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read', 'archived'
-  const [typeFilter, setTypeFilter] = useState('all'); // 'all', 'appointment', 'kyc', 'task', 'event', 'system', 'general'
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all"); // 'all', 'unread', 'read', 'archived'
+  const [typeFilter, setTypeFilter] = useState("all"); // 'all', 'appointment', 'kyc', 'task', 'event', 'system', 'general'
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(null);
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(null);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   // Debounce search term
   useEffect(() => {
@@ -59,29 +59,28 @@ const DoctorNotifications = () => {
     try {
       setLoading(true);
       const filters = {};
-      
-      if (filter !== 'all') {
+
+      if (filter !== "all") {
         filters.status = filter;
       }
-      
-      if (typeFilter !== 'all') {
+
+      if (typeFilter !== "all") {
         filters.type = typeFilter;
       }
-      
+
       if (debouncedSearchTerm) {
         filters.search = debouncedSearchTerm;
       }
 
-      const response = await notificationService.getDoctorNotifications(user.doctorId, filters);
-      
-      if (response.success) {
-        setNotifications(response.data || []);
-      } else {
-        toast.error(response.error || 'Failed to fetch notifications');
-      }
+      const response = await notificationService.getDoctorNotifications(
+        user.doctorId,
+        filters
+      );
+      const data = response?.data || response || [];
+      setNotifications(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      toast.error('Failed to load notifications. Please try again.');
+      console.error("Error fetching notifications:", error);
+      toast.error("Failed to load notifications. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -96,22 +95,22 @@ const DoctorNotifications = () => {
     try {
       setIsMarkingAsRead(notificationId);
       const response = await notificationService.markAsRead(notificationId);
-      
+
       if (response.success) {
-        setNotifications(prev =>
-          prev.map(notif =>
+        setNotifications((prev) =>
+          prev.map((notif) =>
             notif.id === notificationId
-              ? { ...notif, status: 'read', readAt: new Date().toISOString() }
+              ? { ...notif, status: "read", readAt: new Date().toISOString() }
               : notif
           )
         );
-        toast.success('Notification marked as read');
+        toast.success("Notification marked as read");
       } else {
-        toast.error(response.error || 'Failed to mark notification as read');
+        toast.error(response.error || "Failed to mark notification as read");
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
+      console.error("Error marking notification as read:", error);
+      toast.error("Failed to mark notification as read");
     } finally {
       setIsMarkingAsRead(null);
     }
@@ -123,48 +122,54 @@ const DoctorNotifications = () => {
 
     try {
       const response = await notificationService.markAllAsRead(user.doctorId);
-      
+
       if (response.success) {
-        setNotifications(prev =>
-          prev.map(notif => ({
+        setNotifications((prev) =>
+          prev.map((notif) => ({
             ...notif,
-            status: 'read',
-            readAt: new Date().toISOString()
+            status: "read",
+            readAt: new Date().toISOString(),
           }))
         );
-        toast.success(response.message || 'All notifications marked as read');
+        toast.success(response.message || "All notifications marked as read");
       } else {
-        toast.error(response.error || 'Failed to mark all notifications as read');
+        toast.error(
+          response.error || "Failed to mark all notifications as read"
+        );
       }
     } catch (error) {
-      console.error('Error marking all as read:', error);
-      toast.error('Failed to mark all notifications as read');
+      console.error("Error marking all as read:", error);
+      toast.error("Failed to mark all notifications as read");
     }
   };
 
   // Delete notification
   const handleDelete = async (notificationId) => {
-    if (!window.confirm('Are you sure you want to delete this notification?')) {
+    if (!window.confirm("Are you sure you want to delete this notification?")) {
       return;
     }
 
     try {
       setIsDeleting(notificationId);
-      const response = await notificationService.deleteNotification(notificationId);
-      
+      const response = await notificationService.deleteNotification(
+        notificationId
+      );
+
       if (response.success) {
-        setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
-        toast.success('Notification deleted successfully');
+        setNotifications((prev) =>
+          prev.filter((notif) => notif.id !== notificationId)
+        );
+        toast.success("Notification deleted successfully");
         if (selectedNotification?.id === notificationId) {
           setIsModalOpen(false);
           setSelectedNotification(null);
         }
       } else {
-        toast.error(response.error || 'Failed to delete notification');
+        toast.error(response.error || "Failed to delete notification");
       }
     } catch (error) {
-      console.error('Error deleting notification:', error);
-      toast.error('Failed to delete notification');
+      console.error("Error deleting notification:", error);
+      toast.error("Failed to delete notification");
     } finally {
       setIsDeleting(null);
     }
@@ -173,25 +178,29 @@ const DoctorNotifications = () => {
   // Archive notification
   const handleArchive = async (notificationId) => {
     try {
-      const response = await notificationService.archiveNotification(notificationId);
-      
+      const response = await notificationService.archiveNotification(
+        notificationId
+      );
+
       if (response.success) {
-        setNotifications(prev =>
-          prev.map(notif =>
-            notif.id === notificationId ? { ...notif, status: 'archived' } : notif
+        setNotifications((prev) =>
+          prev.map((notif) =>
+            notif.id === notificationId
+              ? { ...notif, status: "archived" }
+              : notif
           )
         );
-        toast.success('Notification archived');
+        toast.success("Notification archived");
         if (selectedNotification?.id === notificationId) {
           setIsModalOpen(false);
           setSelectedNotification(null);
         }
       } else {
-        toast.error(response.error || 'Failed to archive notification');
+        toast.error(response.error || "Failed to archive notification");
       }
     } catch (error) {
-      console.error('Error archiving notification:', error);
-      toast.error('Failed to archive notification');
+      console.error("Error archiving notification:", error);
+      toast.error("Failed to archive notification");
     }
   };
 
@@ -199,9 +208,9 @@ const DoctorNotifications = () => {
   const handleViewDetails = (notification) => {
     setSelectedNotification(notification);
     setIsModalOpen(true);
-    
+
     // Mark as read if unread
-    if (notification.status === 'unread') {
+    if (notification.status === "unread") {
       handleMarkAsRead(notification.id);
     }
   };
@@ -209,10 +218,10 @@ const DoctorNotifications = () => {
   // Get priority color
   const getPriorityColor = (priority) => {
     const colors = {
-      urgent: 'text-red-600 bg-red-100 border-red-300',
-      high: 'text-orange-600 bg-orange-100 border-orange-300',
-      medium: 'text-yellow-600 bg-yellow-100 border-yellow-300',
-      low: 'text-blue-600 bg-blue-100 border-blue-300'
+      urgent: "text-red-600 bg-red-100 border-red-300",
+      high: "text-orange-600 bg-orange-100 border-orange-300",
+      medium: "text-yellow-600 bg-yellow-100 border-yellow-300",
+      low: "text-blue-600 bg-blue-100 border-blue-300",
     };
     return colors[priority] || colors.medium;
   };
@@ -225,14 +234,14 @@ const DoctorNotifications = () => {
       task: FaInfoCircle,
       event: FaCalendarAlt,
       system: FaInfoCircle,
-      general: FaBell
+      general: FaBell,
     };
     return icons[type] || FaBell;
   };
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now - date;
@@ -240,10 +249,12 @@ const DoctorNotifications = () => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60)
+      return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
     return date.toLocaleDateString();
   };
 
@@ -253,9 +264,9 @@ const DoctorNotifications = () => {
   // Statistics
   const stats = {
     total: notifications.length,
-    unread: notifications.filter(n => n.status === 'unread').length,
-    read: notifications.filter(n => n.status === 'read').length,
-    archived: notifications.filter(n => n.status === 'archived').length
+    unread: notifications.filter((n) => n.status === "unread").length,
+    read: notifications.filter((n) => n.status === "read").length,
+    archived: notifications.filter((n) => n.status === "archived").length,
   };
 
   return (
@@ -265,7 +276,9 @@ const DoctorNotifications = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
-            <p className="text-gray-600 mt-1">View and manage your notifications</p>
+            <p className="text-gray-600 mt-1">
+              View and manage your notifications
+            </p>
           </div>
           <div className="flex gap-3">
             {stats.unread > 0 && (
@@ -283,7 +296,9 @@ const DoctorNotifications = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total}
+                </p>
               </div>
               <FaBell className="w-8 h-8 text-gray-400" />
             </div>
@@ -292,7 +307,9 @@ const DoctorNotifications = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Unread</p>
-                <p className="text-2xl font-bold text-red-600">{stats.unread}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {stats.unread}
+                </p>
               </div>
               <FaExclamationCircle className="w-8 h-8 text-red-400" />
             </div>
@@ -301,7 +318,9 @@ const DoctorNotifications = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Read</p>
-                <p className="text-2xl font-bold text-green-600">{stats.read}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.read}
+                </p>
               </div>
               <FaCheck className="w-8 h-8 text-green-400" />
             </div>
@@ -310,7 +329,9 @@ const DoctorNotifications = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Archived</p>
-                <p className="text-2xl font-bold text-gray-600">{stats.archived}</p>
+                <p className="text-2xl font-bold text-gray-600">
+                  {stats.archived}
+                </p>
               </div>
               <FaArchive className="w-8 h-8 text-gray-400" />
             </div>
@@ -338,8 +359,7 @@ const DoctorNotifications = () => {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                 <option value="all">All Status</option>
                 <option value="unread">Unread</option>
                 <option value="read">Read</option>
@@ -352,8 +372,7 @@ const DoctorNotifications = () => {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                 <option value="all">All Types</option>
                 <option value="appointment">Appointment</option>
                 <option value="kyc">KYC</option>
@@ -376,11 +395,13 @@ const DoctorNotifications = () => {
           ) : filteredNotifications.length === 0 ? (
             <div className="text-center py-12">
               <FaBell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg font-medium">No notifications found</p>
+              <p className="text-gray-600 text-lg font-medium">
+                No notifications found
+              </p>
               <p className="text-gray-500 text-sm mt-2">
-                {searchTerm || filter !== 'all' || typeFilter !== 'all'
-                  ? 'Try adjusting your filters'
-                  : 'You have no notifications at the moment'}
+                {searchTerm || filter !== "all" || typeFilter !== "all"
+                  ? "Try adjusting your filters"
+                  : "You have no notifications at the moment"}
               </p>
             </div>
           ) : (
@@ -391,29 +412,28 @@ const DoctorNotifications = () => {
                   <div
                     key={notif.id}
                     className={`flex items-start justify-between p-4 rounded-lg transition-colors border ${
-                      notif.status === 'unread'
-                        ? 'bg-blue-50 border-l-4 border-primary'
-                        : 'bg-gray-50 border-gray-200'
+                      notif.status === "unread"
+                        ? "bg-blue-50 border-l-4 border-primary"
+                        : "bg-gray-50 border-gray-200"
                     } hover:bg-gray-100 cursor-pointer`}
-                    onClick={() => handleViewDetails(notif)}
-                  >
+                    onClick={() => handleViewDetails(notif)}>
                     <div className="flex-1 flex items-start gap-3">
                       <div
                         className={`p-2 rounded-lg ${
-                          notif.status === 'unread'
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-200 text-gray-600'
-                        }`}
-                      >
+                          notif.status === "unread"
+                            ? "bg-primary text-white"
+                            : "bg-gray-200 text-gray-600"
+                        }`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <p
                             className={`font-semibold ${
-                              notif.status === 'unread' ? 'text-gray-900' : 'text-gray-700'
-                            }`}
-                          >
+                              notif.status === "unread"
+                                ? "text-gray-900"
+                                : "text-gray-700"
+                            }`}>
                             {notif.title}
                           </p>
                           <Badge className={getPriorityColor(notif.priority)}>
@@ -421,16 +441,15 @@ const DoctorNotifications = () => {
                           </Badge>
                           <Badge
                             variant={
-                              notif.type === 'appointment'
-                                ? 'primary'
-                                : notif.type === 'kyc'
-                                ? 'danger'
-                                : 'secondary'
-                            }
-                          >
+                              notif.type === "appointment"
+                                ? "primary"
+                                : notif.type === "kyc"
+                                ? "danger"
+                                : "secondary"
+                            }>
                             {notif.type}
                           </Badge>
-                          {notif.status === 'unread' && (
+                          {notif.status === "unread" && (
                             <Badge variant="primary">New</Badge>
                           )}
                         </div>
@@ -457,15 +476,16 @@ const DoctorNotifications = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-4" onClick={(e) => e.stopPropagation()}>
-                      {notif.status === 'unread' && (
+                    <div
+                      className="flex items-center gap-2 ml-4"
+                      onClick={(e) => e.stopPropagation()}>
+                      {notif.status === "unread" && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleMarkAsRead(notif.id)}
                           disabled={isMarkingAsRead === notif.id}
-                          title="Mark as read"
-                        >
+                          title="Mark as read">
                           {isMarkingAsRead === notif.id ? (
                             <FaSpinner className="w-4 h-4 animate-spin" />
                           ) : (
@@ -478,8 +498,7 @@ const DoctorNotifications = () => {
                         size="sm"
                         onClick={() => handleDelete(notif.id)}
                         disabled={isDeleting === notif.id}
-                        title="Delete"
-                      >
+                        title="Delete">
                         {isDeleting === notif.id ? (
                           <FaSpinner className="w-4 h-4 animate-spin" />
                         ) : (
@@ -501,20 +520,18 @@ const DoctorNotifications = () => {
             setIsModalOpen(false);
             setSelectedNotification(null);
           }}
-          title="Notification Details"
-        >
+          title="Notification Details">
           {selectedNotification && (
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div
                   className={`p-3 rounded-lg ${
-                    selectedNotification.status === 'unread'
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
+                    selectedNotification.status === "unread"
+                      ? "bg-primary text-white"
+                      : "bg-gray-200 text-gray-600"
+                  }`}>
                   {React.createElement(getTypeIcon(selectedNotification.type), {
-                    className: 'w-6 h-6'
+                    className: "w-6 h-6",
                   })}
                 </div>
                 <div className="flex-1">
@@ -522,18 +539,20 @@ const DoctorNotifications = () => {
                     <h3 className="text-lg font-semibold text-gray-900">
                       {selectedNotification.title}
                     </h3>
-                    <Badge className={getPriorityColor(selectedNotification.priority)}>
+                    <Badge
+                      className={getPriorityColor(
+                        selectedNotification.priority
+                      )}>
                       {selectedNotification.priority}
                     </Badge>
                     <Badge
                       variant={
-                        selectedNotification.type === 'appointment'
-                          ? 'primary'
-                          : selectedNotification.type === 'kyc'
-                          ? 'danger'
-                          : 'secondary'
-                      }
-                    >
+                        selectedNotification.type === "appointment"
+                          ? "primary"
+                          : selectedNotification.type === "kyc"
+                          ? "danger"
+                          : "secondary"
+                      }>
                       {selectedNotification.type}
                     </Badge>
                   </div>
@@ -551,20 +570,24 @@ const DoctorNotifications = () => {
 
               {selectedNotification.appointment && (
                 <div className="border-t pt-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Related Appointment</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Related Appointment
+                  </h4>
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-sm text-gray-600">
-                      <span className="font-medium">Date:</span>{' '}
-                      {new Date(selectedNotification.appointment.date).toLocaleDateString()}
+                      <span className="font-medium">Date:</span>{" "}
+                      {new Date(
+                        selectedNotification.appointment.date
+                      ).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-600">
-                      <span className="font-medium">Time:</span>{' '}
+                      <span className="font-medium">Time:</span>{" "}
                       {selectedNotification.appointment.time}
                     </p>
                     {selectedNotification.appointment.patient && (
                       <p className="text-sm text-gray-600">
-                        <span className="font-medium">Patient:</span>{' '}
-                        {selectedNotification.appointment.patient.firstName}{' '}
+                        <span className="font-medium">Patient:</span>{" "}
+                        {selectedNotification.appointment.patient.firstName}{" "}
                         {selectedNotification.appointment.patient.lastName}
                       </p>
                     )}
@@ -574,10 +597,12 @@ const DoctorNotifications = () => {
 
               {selectedNotification.patient && (
                 <div className="border-t pt-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Related Patient</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Related Patient
+                  </h4>
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-sm text-gray-600">
-                      {selectedNotification.patient.firstName}{' '}
+                      {selectedNotification.patient.firstName}{" "}
                       {selectedNotification.patient.lastName}
                     </p>
                     <p className="text-sm text-gray-600">
@@ -588,14 +613,13 @@ const DoctorNotifications = () => {
               )}
 
               <div className="flex items-center justify-end gap-3 border-t pt-4">
-                {selectedNotification.status === 'unread' && (
+                {selectedNotification.status === "unread" && (
                   <Button
                     variant="outline"
                     onClick={() => {
                       handleMarkAsRead(selectedNotification.id);
                     }}
-                    disabled={isMarkingAsRead === selectedNotification.id}
-                  >
+                    disabled={isMarkingAsRead === selectedNotification.id}>
                     {isMarkingAsRead === selectedNotification.id ? (
                       <FaSpinner className="w-4 h-4 animate-spin mr-2" />
                     ) : (
@@ -604,13 +628,12 @@ const DoctorNotifications = () => {
                     Mark as Read
                   </Button>
                 )}
-                {selectedNotification.status !== 'archived' && (
+                {selectedNotification.status !== "archived" && (
                   <Button
                     variant="outline"
                     onClick={() => {
                       handleArchive(selectedNotification.id);
-                    }}
-                  >
+                    }}>
                     <FaArchive className="w-4 h-4 mr-2" />
                     Archive
                   </Button>
@@ -620,8 +643,7 @@ const DoctorNotifications = () => {
                   onClick={() => {
                     handleDelete(selectedNotification.id);
                   }}
-                  disabled={isDeleting === selectedNotification.id}
-                >
+                  disabled={isDeleting === selectedNotification.id}>
                   {isDeleting === selectedNotification.id ? (
                     <FaSpinner className="w-4 h-4 animate-spin mr-2" />
                   ) : (
@@ -639,4 +661,3 @@ const DoctorNotifications = () => {
 };
 
 export default DoctorNotifications;
-
