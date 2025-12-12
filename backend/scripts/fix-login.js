@@ -107,9 +107,33 @@ async function fixLogin() {
         }
 
         if (userData.role === "doctor") {
-          const doctor = await prisma.doctor.findFirst({
+          // Try to find doctor by email first
+          let doctor = await prisma.doctor.findFirst({
             where: { email: userData.email },
           });
+
+          // If not found, use Dr. Okonkwo Doctor as default
+          if (!doctor) {
+            doctor = await prisma.doctor.findUnique({
+              where: { email: "doctor@hopephysicians.com" },
+            });
+          }
+
+          // If still not found, find any doctor
+          if (!doctor) {
+            doctor = await prisma.doctor.findFirst({
+              where: {
+                firstName: "Okonkwo",
+                lastName: "Doctor",
+              },
+            });
+          }
+
+          // Last resort: get any doctor
+          if (!doctor) {
+            doctor = await prisma.doctor.findFirst();
+          }
+
           if (doctor) doctorId = doctor.id;
         }
 
