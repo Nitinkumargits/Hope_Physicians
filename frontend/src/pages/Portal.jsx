@@ -100,42 +100,42 @@ const Portal = () => {
   // Handle action click
   const handleActionClick = (actionId) => {
     setActiveSection(actionId);
-    
+
     // If user is logged in, navigate directly to the relevant page
     if (user) {
       switch (actionId) {
         case "login":
           // If already logged in, redirect to dashboard based on role
-          if (user.role === 'patient') {
-            navigate('/patient');
-          } else if (user.role === 'doctor') {
-            navigate('/doctor');
-          } else if (user.role === 'admin') {
-            navigate('/admin');
-          } else if (user.role === 'staff') {
-            navigate('/staff');
+          if (user.role === "patient") {
+            navigate("/patient");
+          } else if (user.role === "doctor") {
+            navigate("/doctor");
+          } else if (user.role === "admin") {
+            navigate("/admin");
+          } else if (user.role === "staff") {
+            navigate("/staff");
           }
           break;
         case "appointment":
-          if (user.role === 'patient') {
-            navigate('/patient/appointments/book');
+          if (user.role === "patient") {
+            navigate("/patient/appointments/book");
           } else {
-            navigate('/appointment');
+            navigate("/appointment");
           }
           break;
         case "televisit":
           // Navigate to televisit page or show message
-          if (user.role === 'patient') {
-            navigate('/patient/appointments');
+          if (user.role === "patient") {
+            navigate("/patient/appointments");
           } else {
-            toast.error('Televisit feature coming soon!');
+            toast.error("Televisit feature coming soon!");
           }
           break;
         case "paybill":
-          if (user.role === 'patient') {
-            navigate('/patient/billing');
+          if (user.role === "patient") {
+            navigate("/patient/billing");
           } else {
-            toast.error('Billing access is only available for patients.');
+            toast.error("Billing access is only available for patients.");
           }
           break;
         default:
@@ -172,10 +172,18 @@ const Portal = () => {
       id: "login",
       icon: "📋",
       title: user ? "Go to Dashboard" : "Login To Patient Portal",
-      description: user ? `Access your ${user.role} dashboard` : "Access your health record",
+      description: user
+        ? `Access your ${user.role} dashboard`
+        : "Access your health record",
       color: "#4A90E2",
-      path: user 
-        ? (user.role === 'patient' ? '/patient' : user.role === 'doctor' ? '/doctor' : user.role === 'admin' ? '/admin' : '/staff')
+      path: user
+        ? user.role === "patient"
+          ? "/patient"
+          : user.role === "doctor"
+          ? "/doctor"
+          : user.role === "admin"
+          ? "/admin"
+          : "/staff"
         : null,
     },
     {
@@ -184,7 +192,10 @@ const Portal = () => {
       title: "Book an appointment",
       description: "Connect with a doctor in minutes",
       color: "#9B59B6",
-      path: user && user.role === 'patient' ? '/patient/appointments/book' : '/appointment',
+      path:
+        user && user.role === "patient"
+          ? "/patient/appointments/book"
+          : "/appointment",
     },
     {
       id: "televisit",
@@ -192,7 +203,7 @@ const Portal = () => {
       title: "Join a Televisit",
       description: "Join a booked consultation",
       color: "#E91E63",
-      path: user && user.role === 'patient' ? '/patient/appointments' : null,
+      path: user && user.role === "patient" ? "/patient/appointments" : null,
     },
     {
       id: "paybill",
@@ -200,7 +211,7 @@ const Portal = () => {
       title: "Pay your bill",
       description: "View and settle your statements",
       color: "#E74C3C",
-      path: user && user.role === 'patient' ? '/patient/billing' : null,
+      path: user && user.role === "patient" ? "/patient/billing" : null,
     },
   ];
 
@@ -230,19 +241,17 @@ const Portal = () => {
             {portalActions.map((action) => {
               const isActive = activeSection === action.id;
               const canNavigate = user && action.path;
-              
+
               return (
                 <div
                   key={action.id}
-                  className={`portal-action-item ${
-                    isActive ? "active" : ""
-                  } ${canNavigate ? "cursor-pointer" : ""}`}
+                  className={`portal-action-item ${isActive ? "active" : ""} ${
+                    canNavigate ? "cursor-pointer" : ""
+                  }`}
                   onClick={() => handleActionClick(action.id)}
                   style={{
-                    backgroundColor:
-                      isActive ? "#E8F4FD" : "transparent",
-                    borderColor:
-                      isActive ? "#4A90E2" : "transparent",
+                    backgroundColor: isActive ? "#E8F4FD" : "transparent",
+                    borderColor: isActive ? "#4A90E2" : "transparent",
                     cursor: canNavigate ? "pointer" : "default",
                   }}>
                   <div className="action-icon">
@@ -276,9 +285,25 @@ const Portal = () => {
           {/* Right Panel - Login Form */}
           <div className="portal-login-panel">
             <div className="login-panel-header">
-              <h2 className="login-panel-title">Login To Patient Portal</h2>
+              <h2 className="login-panel-title">
+                {selectedRole
+                  ? `Login to ${
+                      selectedRole === "doctor"
+                        ? "Doctor"
+                        : selectedRole === "patient"
+                        ? "Patient"
+                        : selectedRole === "staff"
+                        ? "Staff"
+                        : selectedRole === "admin"
+                        ? "Admin"
+                        : "Portal"
+                    } Portal`
+                  : "Login to Portal"}
+              </h2>
               <p className="login-panel-subtitle">
-                Enter your credentials to access your account
+                {selectedRole
+                  ? `Enter your ${selectedRole} credentials to access your account`
+                  : "Enter your credentials to access your account"}
               </p>
             </div>
 
@@ -562,9 +587,12 @@ const Portal = () => {
                     className="trouble-login-link"
                     onClick={(e) => {
                       e.preventDefault();
-                      toast.info("Please contact support at 252-522-3663 for login assistance.", {
-                        duration: 5000,
-                      });
+                      toast.info(
+                        "Please contact support at 252-522-3663 for login assistance.",
+                        {
+                          duration: 5000,
+                        }
+                      );
                     }}>
                     Trouble logging in?
                   </a>
@@ -580,8 +608,7 @@ const Portal = () => {
         isOpen={showLoginPrompt}
         onClose={handleLoginPromptCancel}
         title="Login Required"
-        size="sm"
-      >
+        size="sm">
         <div className="space-y-4">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -589,21 +616,16 @@ const Portal = () => {
             </div>
             <div className="flex-1">
               <p className="text-gray-700">
-                Please login first to access this feature. Would you like to login now?
+                Please login first to access this feature. Would you like to
+                login now?
               </p>
             </div>
           </div>
           <div className="flex items-center justify-end gap-3 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={handleLoginPromptCancel}
-            >
+            <Button variant="outline" onClick={handleLoginPromptCancel}>
               Cancel
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleLoginPromptConfirm}
-            >
+            <Button variant="primary" onClick={handleLoginPromptConfirm}>
               Login Now
             </Button>
           </div>

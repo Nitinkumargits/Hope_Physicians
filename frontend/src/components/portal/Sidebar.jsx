@@ -6,6 +6,9 @@ import { useConfirm } from "../../hooks/useConfirm";
 import {
   getUnreadCount as getDoctorUnreadCount,
   getPatientUnreadCount,
+  getDoctorNotifications,
+  getPatientNotifications,
+  markAsRead as markNotificationAsRead,
 } from "../../services/notificationService";
 import {
   FaHome,
@@ -25,6 +28,7 @@ import {
   FaChartLine,
   FaTasks,
   FaFileAlt,
+  FaSpinner,
 } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -33,6 +37,9 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const { confirm } = useConfirm();
   const [notificationCounts, setNotificationCounts] = useState({});
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [isNotifLoading, setIsNotifLoading] = useState(false);
 
   useEffect(() => {
     // Fetch notification counts dynamically
@@ -41,10 +48,11 @@ const Sidebar = ({ isOpen, onClose }) => {
         let counts = {};
         if (user?.role === "doctor" && user?.doctorId) {
           const res = await getDoctorUnreadCount(user.doctorId);
-          counts["/doctor/notifications"] = res?.count || 0;
+          counts["/doctor/notifications"] = res?.count ?? res?.data?.count ?? 0;
         } else if (user?.role === "patient" && user?.patientId) {
           const res = await getPatientUnreadCount(user.patientId);
-          counts["/patient/notifications"] = res?.count || 0;
+          counts["/patient/notifications"] =
+            res?.count ?? res?.data?.count ?? 0;
         } else {
           counts = {};
         }
@@ -59,6 +67,58 @@ const Sidebar = ({ isOpen, onClose }) => {
     const interval = setInterval(fetchNotificationCounts, 30000);
     return () => clearInterval(interval);
   }, [user]);
+
+  const fetchNotifications = async () => {
+    if (!user) return;
+    try {
+      setIsNotifLoading(true);
+      const filters = { limit: 5 };
+      let data = [];
+      if (user.role === "doctor" && user.doctorId) {
+        const res = await getDoctorNotifications(user.doctorId, filters);
+        data = res?.data?.data || res?.data || res || [];
+      } else if (user.role === "patient" && user.patientId) {
+        const res = await getPatientNotifications(user.patientId, filters);
+        data = res?.data?.data || res?.data || res || [];
+      }
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      toast.error("Failed to load notifications");
+    } finally {
+      setIsNotifLoading(false);
+    }
+  };
+
+  const handleToggleNotifications = (e) => {
+    e.preventDefault();
+    const next = !showNotifications;
+    setShowNotifications(next);
+    if (next) fetchNotifications();
+  };
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      await markNotificationAsRead(notification.id);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+      );
+      // optimistic count update
+      setNotificationCounts((prev) => {
+        const updated = { ...prev };
+        const key =
+          user?.role === "doctor"
+            ? "/doctor/notifications"
+            : user?.role === "patient"
+            ? "/patient/notifications"
+            : null;
+        if (key) updated[key] = Math.max((updated[key] || 1) - 1, 0);
+        return updated;
+      });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
 
   const isActive = (path) => {
     if (
@@ -283,13 +343,127 @@ const Sidebar = ({ isOpen, onClose }) => {
                 const active = isActive(item.path);
                 const handleClick = (e) => {
                   onClose();
-                  // Add click feedback
                   const element = e.currentTarget;
                   element.style.transform = "scale(0.98)";
                   setTimeout(() => {
                     element.style.transform = "";
                   }, 150);
                 };
+
+                if (item.label === "Notifications") {
+                  return (
+                    <li key={item.path} className="relative">
+                      <Link
+                        to={item.path}
+                        onClick={handleToggleNotifications}
+                        className={`
+                          group relative flex items-center gap-3 px-4 py-3 rounded-lg
+                          transition-all duration-200 cursor-pointer
+                          ${
+                            active
+                              ? "bg-primary text-white shadow-md scale-[1.02]"
+                              : "text-gray-700 hover:bg-gray-100 hover:text-primary hover:shadow-sm"
+                          }
+                        `}
+                        aria-current={active ? "page" : undefined}>
+                        {active && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r shadow-sm"></div>
+                        )}
+
+                        <Icon
+                          className={`w-5 h-5 transition-all duration-200 ${
+                            active
+                              ? "text-white"
+                              : "text-gray-500 group-hover:text-primary"
+                          } ${!active && "group-hover:scale-110"}`}
+                        />
+
+                        <span
+                          className={`font-medium flex-1 ${
+                            active
+                              ? "text-white"
+                              : "text-gray-700 group-hover:text-primary"
+                          }`}>
+                          {item.label}
+                        </span>
+
+                        {item.badge && item.badge > 0 && (
+                          <span
+                            className={`
+                              flex items-center justify-center min-w-[20px] h-5 px-2 rounded-full text-xs font-semibold
+                              ${
+                                active
+                                  ? "bg-white text-primary shadow-sm"
+                                  : "bg-primary text-white shadow-sm"
+                              }
+                            `}>
+                            {item.badge > 99 ? "99+" : item.badge}
+                          </span>
+                        )}
+
+                        {!active && (
+                          <div className="absolute inset-0 bg-primary/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                        )}
+                      </Link>
+
+                      {showNotifications && (
+                        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 className="font-semibold text-gray-900">
+                              Notifications
+                            </h3>
+                            <button
+                              className="text-xs text-gray-500 hover:text-primary"
+                              onClick={() => setShowNotifications(false)}>
+                              Close
+                            </button>
+                          </div>
+                          <div className="max-h-96 overflow-y-auto">
+                            {isNotifLoading ? (
+                              <div className="flex items-center justify-center py-6">
+                                <FaSpinner className="w-5 h-5 animate-spin text-primary" />
+                              </div>
+                            ) : notifications.length === 0 ? (
+                              <div className="p-4 text-sm text-gray-500">
+                                No notifications
+                              </div>
+                            ) : (
+                              notifications.map((n) => (
+                                <div
+                                  key={n.id}
+                                  onClick={() => handleNotificationClick(n)}
+                                  className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
+                                    n.isRead ? "" : "bg-blue-50"
+                                  }`}>
+                                  <p className="text-sm text-gray-900">
+                                    {n.title || n.message || "Notification"}
+                                  </p>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {n.createdAt
+                                      ? new Date(n.createdAt).toLocaleString()
+                                      : ""}
+                                  </p>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                          <div className="p-2 border-t border-gray-200">
+                            <button
+                              className="w-full text-sm text-primary hover:underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setShowNotifications(false);
+                                onClose();
+                                navigate(item.path);
+                              }}>
+                              View all notifications
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                }
 
                 return (
                   <li key={item.path}>
