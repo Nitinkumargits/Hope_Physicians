@@ -282,7 +282,9 @@ const JobsCareers = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-              <div className="text-4xl mb-4">🏥</div>
+              <div className="text-4xl mb-4 text-primary">
+                <i className="fas fa-hospital"></i>
+              </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Excellent Benefits
               </h3>
@@ -292,7 +294,9 @@ const JobsCareers = () => {
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-              <div className="text-4xl mb-4">📚</div>
+              <div className="text-4xl mb-4 text-primary">
+                <i className="fas fa-book"></i>
+              </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Professional Development
               </h3>
@@ -302,7 +306,9 @@ const JobsCareers = () => {
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-              <div className="text-4xl mb-4">🤝</div>
+              <div className="text-4xl mb-4 text-primary">
+                <i className="fas fa-handshake"></i>
+              </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Supportive Environment
               </h3>
@@ -312,7 +318,9 @@ const JobsCareers = () => {
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-              <div className="text-4xl mb-4">⚖️</div>
+              <div className="text-4xl mb-4 text-primary">
+                <i className="fas fa-balance-scale"></i>
+              </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Work-Life Balance
               </h3>
