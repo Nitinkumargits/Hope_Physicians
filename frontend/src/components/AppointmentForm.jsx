@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { submitAppointment } from "../api/appointmentApi";
-import '../styles/Home.css';
+import "../styles/Home.css";
 
 export default function AppointmentForm() {
   const [formStatus, setFormStatus] = useState("idle");
@@ -9,7 +9,7 @@ export default function AppointmentForm() {
     email: "",
     phone: "",
     department: "",
-    message: ""
+    message: "",
   });
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
@@ -22,22 +22,22 @@ export default function AppointmentForm() {
     "Men's Health",
     "Women's Health",
     "Occupational Health",
-    "Geriatric Care"
+    "Geriatric Care",
   ];
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -58,7 +58,7 @@ export default function AppointmentForm() {
 
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^[\d\s\-\+\(\)]+$/.test(formData.phone)) {
+    } else if (!/^[\d\s\-+()]+$/.test(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
     }
 
@@ -81,7 +81,7 @@ export default function AppointmentForm() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     if (!validateForm()) {
       showToast("Please fill in all required fields correctly", "error");
@@ -96,31 +96,35 @@ export default function AppointmentForm() {
         email: formData.email,
         phone: formData.phone,
         department: formData.department,
-        message: formData.message || ""
+        message: formData.message || "",
       });
 
       // Success
-      showToast("Appointment request submitted successfully! We will contact you soon.", "success");
-      
+      showToast(
+        "Appointment request submitted successfully! We will contact you soon.",
+        "success"
+      );
+
       // Reset form
       setFormData({
         name: "",
         email: "",
         phone: "",
         department: "",
-        message: ""
+        message: "",
       });
-      
+
       if (formRef.current) {
         formRef.current.reset();
       }
     } catch (err) {
       console.error("Appointment submission error:", err);
-      
+
       // Show error message
-      const errorMessage = err.response?.data?.message || 
-                          err.message || 
-                          "Failed to submit appointment. Please try again or call us at 252-522-3663.";
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to submit appointment. Please try again or call us at 252-522-3663.";
       showToast(errorMessage, "error");
     } finally {
       setFormStatus("idle");
@@ -138,23 +142,27 @@ export default function AppointmentForm() {
   }, []);
 
   return (
-    <section className="section appointment" id="appointment-form" aria-labelledby="appointment-heading">
+    <section
+      className="section appointment"
+      id="appointment-form"
+      aria-labelledby="appointment-heading">
       <div className="container appointment-box reveal-on-scroll">
-        <h2 id="appointment-heading" className="section-title">Book an Appointment</h2>
+        <h2 id="appointment-heading" className="section-title">
+          Book an Appointment
+        </h2>
 
         {/* Toast Notification */}
         {toast.show && (
-          <div 
+          <div
             className={`form-toast ${toast.type}`}
             style={{
-              marginBottom: '20px',
-              padding: '15px',
-              borderRadius: '8px',
-              fontWeight: '600',
-              animation: 'fadeIn 0.3s ease'
+              marginBottom: "20px",
+              padding: "15px",
+              borderRadius: "8px",
+              fontWeight: "600",
+              animation: "fadeIn 0.3s ease",
             }}
-            role="alert"
-          >
+            role="alert">
             {toast.message}
           </div>
         )}
@@ -165,8 +173,7 @@ export default function AppointmentForm() {
           onSubmit={handleSubmit}
           ref={formRef}
           aria-live="polite"
-          noValidate
-        >
+          noValidate>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="name">Your Name *</label>
@@ -182,7 +189,14 @@ export default function AppointmentForm() {
                 aria-describedby={errors.name ? "name-error" : undefined}
               />
               {errors.name && (
-                <span id="name-error" className="error-message" style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>
+                <span
+                  id="name-error"
+                  className="error-message"
+                  style={{
+                    color: "#d32f2f",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}>
                   {errors.name}
                 </span>
               )}
@@ -202,7 +216,14 @@ export default function AppointmentForm() {
                 aria-describedby={errors.email ? "email-error" : undefined}
               />
               {errors.email && (
-                <span id="email-error" className="error-message" style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>
+                <span
+                  id="email-error"
+                  className="error-message"
+                  style={{
+                    color: "#d32f2f",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}>
                   {errors.email}
                 </span>
               )}
@@ -224,7 +245,14 @@ export default function AppointmentForm() {
                 aria-describedby={errors.phone ? "phone-error" : undefined}
               />
               {errors.phone && (
-                <span id="phone-error" className="error-message" style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>
+                <span
+                  id="phone-error"
+                  className="error-message"
+                  style={{
+                    color: "#d32f2f",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}>
                   {errors.phone}
                 </span>
               )}
@@ -239,8 +267,9 @@ export default function AppointmentForm() {
                 onChange={handleChange}
                 required
                 aria-invalid={errors.department ? "true" : "false"}
-                aria-describedby={errors.department ? "department-error" : undefined}
-              >
+                aria-describedby={
+                  errors.department ? "department-error" : undefined
+                }>
                 <option value="">Choose a department</option>
                 {departments.map((dept) => (
                   <option key={dept} value={dept}>
@@ -249,7 +278,14 @@ export default function AppointmentForm() {
                 ))}
               </select>
               {errors.department && (
-                <span id="department-error" className="error-message" style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>
+                <span
+                  id="department-error"
+                  className="error-message"
+                  style={{
+                    color: "#d32f2f",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}>
                   {errors.department}
                 </span>
               )}
@@ -269,18 +305,17 @@ export default function AppointmentForm() {
           </div>
 
           <div className="form-actions">
-            <button 
-              type="submit" 
-              className="form-btn" 
+            <button
+              type="submit"
+              className="form-btn"
               disabled={formStatus === "sending"}
               style={{
                 opacity: formStatus === "sending" ? 0.7 : 1,
-                cursor: formStatus === "sending" ? "not-allowed" : "pointer"
-              }}
-            >
+                cursor: formStatus === "sending" ? "not-allowed" : "pointer",
+              }}>
               {formStatus === "sending" ? (
                 <>
-                  <span style={{ marginRight: '8px' }}>⏳</span>
+                  <span style={{ marginRight: "8px" }}>⏳</span>
                   Sending...
                 </>
               ) : (
@@ -289,13 +324,15 @@ export default function AppointmentForm() {
             </button>
           </div>
 
-          <p style={{ 
-            marginTop: '15px', 
-            fontSize: '13px', 
-            color: '#666', 
-            textAlign: 'center' 
-          }}>
-            By submitting this form, you agree to be contacted by Hope Physicians regarding your appointment request.
+          <p
+            style={{
+              marginTop: "15px",
+              fontSize: "13px",
+              color: "#666",
+              textAlign: "center",
+            }}>
+            By submitting this form, you agree to be contacted by Hope
+            Physicians regarding your appointment request.
           </p>
         </form>
       </div>
