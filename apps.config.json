@@ -4,7 +4,7 @@
       "name": "hope-physicians",
       "displayName": "Hope Physicians",
       "repo": "https://github.com/Shubham96681/hope_physician.git",
-      "directory": "/home/ubuntu/hope-physicians",
+      "directory": "/home/ec2-user/hope-physicians",
       "backend": {
         "directory": "backend",
         "port": 5000,
@@ -23,10 +23,10 @@
       }
     },
     {
-      "name": "app2",
-      "displayName": "Application 2",
-      "repo": "YOUR_SECOND_APP_REPO_URL",
-      "directory": "/home/ubuntu/app2",
+      "name": "ojoto-union",
+      "displayName": "Ojoto Union NA",
+      "repo": "https://github.com/Jeankodex/Ojoto_Union_NA.git",
+      "directory": "/home/ec2-user/ojoto-union",
       "backend": {
         "directory": "backend",
         "port": 5001,
@@ -40,10 +40,11 @@
       },
       "nginx": {
         "serverName": "_",
-        "frontendPath": "/app2",
-        "apiPath": "/app2/api"
+        "frontendPath": "/ojoto-union",
+        "apiPath": "/ojoto-union/api"
       }
     }
   ]
 }
+
 
