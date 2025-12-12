@@ -21,14 +21,59 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
-# Install build tools
-echo -e "${YELLOW}🔧 Installing build tools...${NC}"
+# Clear caches and free up space
+echo -e "${YELLOW}🧹 Clearing caches and freeing up disk space...${NC}"
+
+# Clear npm cache
+if command -v npm &> /dev/null; then
+    echo -e "${YELLOW}   Clearing npm cache...${NC}"
+    npm cache clean --force 2>/dev/null || true
+fi
+
+# Clear package manager caches
 if [ -f /etc/debian_version ]; then
-    sudo apt-get update -qq
-    sudo apt-get install -y build-essential python3 make g++ git || true
+    echo -e "${YELLOW}   Clearing apt cache...${NC}"
+    sudo apt-get clean 2>/dev/null || true
+    sudo apt-get autoclean 2>/dev/null || true
 elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
-    sudo yum groupinstall -y "Development Tools" 2>/dev/null || sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
-    sudo yum install -y python3 make gcc-c++ git 2>/dev/null || sudo dnf install -y python3 make gcc-c++ git 2>/dev/null || true
+    echo -e "${YELLOW}   Clearing yum/dnf cache...${NC}"
+    sudo yum clean all 2>/dev/null || sudo dnf clean all 2>/dev/null || true
+fi
+
+# Clear system logs (keep last 100 lines)
+echo -e "${YELLOW}   Clearing old logs...${NC}"
+sudo journalctl --vacuum-time=1d 2>/dev/null || true
+sudo find /var/log -name "*.log" -type f -mtime +7 -delete 2>/dev/null || true
+
+# Remove old PM2 logs
+if [ -d ~/.pm2/logs ]; then
+    echo -e "${YELLOW}   Clearing old PM2 logs...${NC}"
+    find ~/.pm2/logs -name "*.log" -type f -mtime +3 -delete 2>/dev/null || true
+fi
+
+# Show disk space
+echo -e "${GREEN}📊 Current disk space:${NC}"
+df -h / | tail -1
+
+# Install build tools (only if not already installed)
+echo -e "${YELLOW}🔧 Checking build tools...${NC}"
+if [ -f /etc/debian_version ]; then
+    if ! command -v make &> /dev/null || ! command -v g++ &> /dev/null; then
+        echo -e "${YELLOW}   Installing build tools...${NC}"
+        sudo apt-get update -qq
+        sudo apt-get install -y build-essential python3 make g++ git || true
+    else
+        echo -e "${GREEN}   ✅ Build tools already installed${NC}"
+    fi
+elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
+    if ! command -v make &> /dev/null || ! command -v g++ &> /dev/null; then
+        echo -e "${YELLOW}   Installing build tools...${NC}"
+        # Use timeout to prevent hanging
+        timeout 300 sudo yum groupinstall -y "Development Tools" 2>/dev/null || timeout 300 sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
+        timeout 60 sudo yum install -y python3 make gcc-c++ git 2>/dev/null || timeout 60 sudo dnf install -y python3 make gcc-c++ git 2>/dev/null || true
+    else
+        echo -e "${GREEN}   ✅ Build tools already installed${NC}"
+    fi
 fi
 
 # Install Node.js if needed
@@ -152,15 +197,19 @@ deploy_app() {
             echo -e "${GREEN}✅ [$APP_NAME] Cleanup completed${NC}"
         fi
         
+        # Clear npm cache before install
+        echo -e "${YELLOW}🧹 [$APP_NAME] Clearing npm cache...${NC}"
+        npm cache clean --force 2>/dev/null || true
+        
         # Install dependencies with timeout and progress
         echo -e "${YELLOW}📦 [$APP_NAME] Installing backend dependencies...${NC}"
         echo -e "${YELLOW}⏳ This may take 2-5 minutes, please wait...${NC}"
         echo -e "${YELLOW}💡 Installing packages (this can appear stuck but is working)...${NC}"
         
-        # Use timeout to prevent hanging
-        if timeout 600 npm ci --production=false --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
+        # Use timeout to prevent hanging, with progress indicator
+        if timeout 900 npm ci --production=false --legacy-peer-deps --prefer-offline --no-audit 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
             echo -e "${GREEN}✅ [$APP_NAME] Backend dependencies installed successfully${NC}"
-        elif timeout 600 npm install --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
+        elif timeout 900 npm install --legacy-peer-deps --prefer-offline --no-audit 2>&1 | sed "s/^/[$APP_NAME-BACKEND] /"; then
             echo -e "${GREEN}✅ [$APP_NAME] Backend dependencies installed successfully (using npm install)${NC}"
         else
             echo -e "${RED}❌ [$APP_NAME] Failed to install backend dependencies (timeout or error)${NC}"
@@ -230,15 +279,19 @@ EOF
                 echo -e "${GREEN}✅ [$APP_NAME] Frontend cleanup completed${NC}"
             fi
             
+            # Clear npm cache before install
+            echo -e "${YELLOW}🧹 [$APP_NAME] Clearing npm cache...${NC}"
+            npm cache clean --force 2>/dev/null || true
+            
             # Install dependencies with timeout and progress
             echo -e "${YELLOW}📦 [$APP_NAME] Installing frontend dependencies...${NC}"
             echo -e "${YELLOW}⏳ This may take 2-5 minutes, please wait...${NC}"
             echo -e "${YELLOW}💡 Installing packages (this can appear stuck but is working)...${NC}"
             
-            # Use timeout to prevent hanging
-            if timeout 600 npm ci --legacy-peer-deps --production=false 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
+            # Use timeout to prevent hanging, with progress indicator
+            if timeout 900 npm ci --legacy-peer-deps --production=false --prefer-offline --no-audit 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
                 echo -e "${GREEN}✅ [$APP_NAME] Frontend dependencies installed successfully${NC}"
-            elif timeout 600 npm install --legacy-peer-deps 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
+            elif timeout 900 npm install --legacy-peer-deps --prefer-offline --no-audit 2>&1 | sed "s/^/[$APP_NAME-FRONTEND] /"; then
                 echo -e "${GREEN}✅ [$APP_NAME] Frontend dependencies installed successfully (using npm install)${NC}"
             else
                 echo -e "${RED}❌ [$APP_NAME] Failed to install frontend dependencies (timeout or error)${NC}"
@@ -412,6 +465,18 @@ fi
 # Show PM2 status
 echo -e "\n${YELLOW}📊 PM2 Status:${NC}"
 pm2 list
+
+# Final cleanup
+echo -e "\n${YELLOW}🧹 Final cleanup...${NC}"
+npm cache clean --force 2>/dev/null || true
+if [ -f /etc/debian_version ]; then
+    sudo apt-get clean 2>/dev/null || true
+elif [ -f /etc/redhat-release ] || [ -f /etc/system-release ]; then
+    sudo yum clean all 2>/dev/null || sudo dnf clean all 2>/dev/null || true
+fi
+
+echo -e "\n${GREEN}📊 Final disk space:${NC}"
+df -h / | tail -1
 
 echo -e "\n${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║         MULTI-APPLICATION DEPLOYMENT COMPLETED!                ║${NC}"
