@@ -333,6 +333,10 @@ EOF
 # Read apps from config
 APPS=$(node -e "const config = require('./apps.config.json'); console.log(config.apps.map(a => a.name).join(' '))")
 
+# Show initial disk space
+echo -e "\n${GREEN}📊 Initial disk space:${NC}"
+df -h / | tail -1
+
 echo -e "\n${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║         MULTI-APPLICATION DEPLOYMENT STARTING                   ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════════════╝${NC}"
