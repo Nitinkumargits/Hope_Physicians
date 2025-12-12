@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import SEO from "../components/SEO";
 import "../styles/Home.css";
 
@@ -212,6 +215,52 @@ const Home = () => {
       desc: "Holistic senior care & chronic disease management in Kinston, NC.",
       path: "/geriatric-care",
     },
+  ];
+
+  // Slick Carousel Settings
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
+  // Gradient overlay colors for service cards
+  const overlayGradients = [
+    "bg-gradient-to-br from-primary/80 to-blue-700/80",
+    "bg-gradient-to-br from-teal-500/80 to-teal-600/80",
+    "bg-gradient-to-br from-indigo-500/80 to-indigo-600/80",
+    "bg-gradient-to-br from-blue-600/80 to-primary/80",
+    "bg-gradient-to-br from-cyan-500/80 to-teal-600/80",
+    "bg-gradient-to-br from-primary/80 to-indigo-700/80",
+    "bg-gradient-to-br from-teal-600/80 to-primary/80",
   ];
 
   const testimonials = [
@@ -828,88 +877,99 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Services Grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {services.slice(0, 3).map((s, i) => (
-              <article
-                key={s.path}
-                className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100"
-                aria-labelledby={`svc-${i}`}>
-                {/* Numbered Badge */}
-                <div className="flex items-center justify-between mb-6">
-                  <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 text-white font-bold text-lg shadow-lg">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+          {/* Services Carousel */}
+          <div className="services-carousel-wrapper">
+            <Slider {...carouselSettings}>
+              {services.map((s, i) => (
+                <div key={s.path} className="px-3">
+                  <div className="support-service-box relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    {/* Image with Overlay */}
+                    <div className="relative h-64 overflow-hidden">
+                      <div
+                        className={`service-overlay absolute inset-0 z-10 ${
+                          overlayGradients[i % overlayGradients.length]
+                        }`}></div>
+                      <img
+                        src={s.img}
+                        alt={`${
+                          s.title
+                        } services at Hope Physicians - Primary care physician providing ${s.title.toLowerCase()}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        style={{
+                          imageRendering: "high-quality",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                    {/* Service Details */}
+                    <div className="support-details absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
+                      <h3 className="text-2xl font-bold mb-4">{s.title}</h3>
+                      <Link
+                        to={s.path}
+                        className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-primary font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        Get to know
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
+              ))}
 
-                {/* Service Title */}
-                <h3
-                  id={`svc-${i}`}
-                  className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
-                  {s.title}
-                </h3>
-
-                {/* Service Description */}
-                <p className="text-gray-600 text-base mb-6 leading-relaxed">
-                  {s.desc}
-                </p>
-
-                {/* Service Image */}
-                <div className="relative w-full h-40 rounded-xl overflow-hidden mt-6 border border-gray-100">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent z-10"></div>
-                  <img
-                    className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
-                    src={s.img}
-                    alt={`${
-                      s.title
-                    } services at Hope Physicians - Primary care physician providing ${s.title.toLowerCase()}`}
-                    loading="lazy"
-                    decoding="async"
-                    style={{
-                      imageRendering: "high-quality",
-                      objectFit: "cover",
-                    }}
-                  />
-                </div>
-              </article>
-            ))}
-
-            {/* View More Services Card (Medical Teal) */}
-            <Link
-              to="/departments"
-              className="group relative bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col items-center justify-center text-center border border-teal-400/20">
-              <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+              {/* View More Services Card */}
+              <div className="px-3">
+                <Link
+                  to="/departments"
+                  className="support-service-box relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block">
+                  <div className="relative h-64 overflow-hidden">
+                    <div className="service-overlay absolute inset-0 z-10 bg-gradient-to-br from-teal-500/80 to-teal-600/80"></div>
+                    <img
+                      src={doctorImg}
+                      alt="View all medical services at Hope Physicians"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      style={{
+                        imageRendering: "high-quality",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                  <div className="support-details absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
+                    <h3 className="text-2xl font-bold mb-4">
+                      View More Services
+                    </h3>
+                    <span className="btn btn-white rounded-pill inline-flex items-center gap-2 bg-white text-teal-600 font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+                      Explore All
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">
-                View More Services
-              </h3>
-              <p className="text-white/90 text-base mb-6">
-                Explore our full care options
-              </p>
-              <div className="relative w-full h-40 rounded-xl overflow-hidden mt-4 border border-white/20">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10"></div>
-                <img
-                  className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
-                  src={doctorImg}
-                  alt="Primary care physicians and doctors providing comprehensive medical services at Hope Physicians"
-                  loading="lazy"
-                  decoding="async"
-                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
-                />
-              </div>
-            </Link>
+            </Slider>
           </div>
         </div>
       </section>

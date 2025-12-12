@@ -673,6 +673,177 @@ textarea:focus {
   color: white;
 }
 
+/* ---------- SLICK CAROUSEL STYLES ---------- */
+.services-carousel-wrapper {
+  margin: 2rem 0;
+  padding: 0 1rem;
+}
+
+/* Service card structure matching reference */
+.support-service-box {
+  position: relative;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: white;
+}
+
+.support-service-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.support-service-box:hover img {
+  transform: scale(1.1);
+}
+
+/* Service overlay with gradient */
+.service-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Support details section (title + button) */
+.support-details {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+}
+
+.support-details h3 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Button styling - white rounded pill */
+.btn.btn-white.rounded-pill {
+  background: white;
+  color: var(--primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  cursor: pointer;
+}
+
+.btn.btn-white.rounded-pill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Slick carousel dots customization */
+.services-carousel-wrapper .slick-dots {
+  bottom: -3rem;
+  text-align: center;
+}
+
+.services-carousel-wrapper .slick-dots li {
+  margin: 0 0.5rem;
+}
+
+.services-carousel-wrapper .slick-dots li button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.services-carousel-wrapper .slick-dots li button:before {
+  display: none;
+}
+
+.services-carousel-wrapper .slick-dots li.slick-active button {
+  background: white;
+  border-color: white;
+  width: 32px;
+  border-radius: 6px;
+}
+
+/* Slick arrows customization */
+.services-carousel-wrapper .slick-prev,
+.services-carousel-wrapper .slick-next {
+  z-index: 30;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.services-carousel-wrapper .slick-prev:hover,
+.services-carousel-wrapper .slick-next:hover {
+  background: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.services-carousel-wrapper .slick-prev {
+  left: -20px;
+}
+
+.services-carousel-wrapper .slick-next {
+  right: -20px;
+}
+
+.services-carousel-wrapper .slick-prev:before,
+.services-carousel-wrapper .slick-next:before {
+  color: var(--primary);
+  font-size: 20px;
+  opacity: 1;
+}
+
+/* Responsive adjustments for carousel */
+@media (max-width: 1024px) {
+  .services-carousel-wrapper .slick-prev {
+    left: -10px;
+  }
+  .services-carousel-wrapper .slick-next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+  .support-service-box {
+    min-height: 350px;
+  }
+  .support-details h3 {
+    font-size: 1.25rem;
+  }
+  .services-carousel-wrapper .slick-prev,
+  .services-carousel-wrapper .slick-next {
+    display: none !important;
+  }
+}
+
+/* Ensure carousel slides have proper spacing */
+.services-carousel-wrapper .slick-slide > div {
+  padding: 0 0.5rem;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1000px) {
   .services-grid {

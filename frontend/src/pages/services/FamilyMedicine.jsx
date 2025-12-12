@@ -548,16 +548,16 @@ const FamilyMedicine = () => {
                     className="position-relative overflow-hidden"
                     style={{
                       height: 190,
-                      background: `linear-gradient(180deg, rgba(15,23,42,0.65), rgba(15,23,42,0.9)), url('${
+                      background: `linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.9)), url('${
                         serviceImages[item.key] ||
                         "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=900&auto=format&fit=crop"
-                      }') center/cover`,
+                      }') center center / cover`,
                     }}>
                     <div
                       className="position-absolute inset-0"
                       style={{
                         background:
-                          "linear-gradient(180deg, rgba(15,23,42,0.35), rgba(15,23,42,0.85))",
+                          "linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.85))",
                       }}></div>
                   </div>
                   <div className="flex flex-col gap-2 p-5">
@@ -569,22 +569,20 @@ const FamilyMedicine = () => {
                       team with proactive guidance, timely follow-ups, and
                       compassionate support.
                     </p>
-                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                    <div className="mt-3 flex items-center justify-between">
                       <button
                         type="button"
-                        className="btn btn-sm btn-primary px-3 fw-semibold"
+                        className="bg-primary hover:bg-blue-700 text-white text-sm font-semibold px-3 py-1.5 rounded-md transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={() => handleBook(item.label)}>
                         Book
                       </button>
                       <button
                         type="button"
-                        className="btn btn-sm btn-primary rounded-circle d-flex align-items-center justify-content-center"
+                        className="bg-primary hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105"
                         style={{
                           width: 44,
                           height: 44,
-                          boxShadow: "0 10px 26px rgba(37,99,235,0.28)",
-                          transition:
-                            "transform 0.25s ease, box-shadow 0.25s ease",
+                          boxShadow: "rgba(37, 99, 235, 0.28) 0px 10px 26px",
                         }}
                         aria-label={`Learn more about ${item.label}`}
                         onClick={() => handleLearnMore(item.label)}>
