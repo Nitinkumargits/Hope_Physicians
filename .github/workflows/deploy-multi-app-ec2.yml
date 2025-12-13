@@ -37,12 +37,24 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         echo "🔍 Verifying SSH key format..."
         head -1 ~/.ssh/id_rsa | grep -q "BEGIN" && echo "✅ SSH key format looks correct" || echo "⚠️  SSH key might be missing BEGIN line"
+        tail -1 ~/.ssh/id_rsa | grep -q "END" && echo "✅ SSH key has END line" || echo "⚠️  SSH key might be missing END line"
+        echo "🔍 SSH key file size: $(wc -c < ~/.ssh/id_rsa) bytes"
         echo "🔍 Testing SSH key file..."
         test -f ~/.ssh/id_rsa && echo "✅ SSH key file exists" || echo "❌ SSH key file not found"
+        echo "🔍 Testing SSH key permissions..."
+        ls -la ~/.ssh/id_rsa
         echo "🔍 Getting EC2 host fingerprint..."
         ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts 2>&1 || echo "⚠️  Could not get host fingerprint (might be normal)"
-        echo "🔍 Testing basic connectivity..."
-        timeout 5 nc -zv $EC2_HOST 22 2>&1 || echo "⚠️  Port 22 not reachable (might be normal if security group blocks)"
+        echo "🔍 Testing basic connectivity with netcat..."
+        timeout 10 nc -zv -w 5 $EC2_HOST 22 2>&1 || echo "⚠️  Port 22 not reachable via netcat"
+        echo "🔍 Testing with telnet..."
+        timeout 5 bash -c "echo > /dev/tcp/$EC2_HOST/22" 2>/dev/null && echo "✅ Port 22 is reachable via TCP" || echo "❌ Port 22 is NOT reachable via TCP"
+        echo "🔍 Testing DNS resolution..."
+        host $EC2_HOST 2>&1 || nslookup $EC2_HOST 2>&1 || echo "⚠️  DNS resolution test"
+        echo "🔍 Testing ping..."
+        timeout 3 ping -c 1 $EC2_HOST 2>&1 || echo "⚠️  Ping test"
+        echo "🔍 Testing SSH with verbose output (first attempt)..."
+        ssh -vvv -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes $EC2_USER@$EC2_HOST "echo 'test'" 2>&1 | head -20 || echo "⚠️  SSH verbose test failed"
         
     # Deploy configuration and scripts to EC2
     - name: Deploy deployment scripts to EC2
@@ -75,43 +87,74 @@ jobs:
           echo ""
         fi
         
-        # Retry SSH connection up to 3 times
-        MAX_RETRIES=3
+        # Retry SSH connection up to 5 times with increasing timeouts
+        MAX_RETRIES=5
         RETRY_COUNT=0
         while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
           echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
-          if ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 -o ServerAliveCountMax=3 $EC2_USER@$EC2_HOST "echo 'SSH connection successful'" 2>&1; then
+          CONNECT_TIMEOUT=$((10 + RETRY_COUNT * 5))
+          echo "   Using ConnectTimeout=$CONNECT_TIMEOUT seconds..."
+          
+          # Try SSH with explicit key file and enhanced options
+          if ssh -o StrictHostKeyChecking=no \
+                 -o UserKnownHostsFile=~/.ssh/known_hosts \
+                 -o ConnectTimeout=$CONNECT_TIMEOUT \
+                 -o ServerAliveInterval=10 \
+                 -o ServerAliveCountMax=3 \
+                 -o TCPKeepAlive=yes \
+                 -o BatchMode=yes \
+                 -i ~/.ssh/id_rsa \
+                 $EC2_USER@$EC2_HOST "echo 'SSH connection successful'" 2>&1; then
             echo "✅ SSH connection verified"
             break
           else
+            SSH_EXIT_CODE=$?
+            echo "   SSH exit code: $SSH_EXIT_CODE"
             RETRY_COUNT=$((RETRY_COUNT + 1))
             if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-              echo "⏳ Retrying in 5 seconds..."
-              sleep 5
+              WAIT_TIME=$((5 + RETRY_COUNT * 2))
+              echo "⏳ Retrying in $WAIT_TIME seconds..."
+              sleep $WAIT_TIME
             else
               echo "❌ SSH connection failed after $MAX_RETRIES attempts"
               echo ""
-              echo "🔍 Diagnostic Information:"
+              echo "🔍 Final Diagnostic Information:"
               echo "   EC2_HOST: $EC2_HOST"
               echo "   EC2_USER: $EC2_USER"
-              echo "   Testing port 22 connectivity..."
-              timeout 5 bash -c "echo > /dev/tcp/$EC2_HOST/22" 2>/dev/null && echo "   ✅ Port 22 is reachable" || echo "   ❌ Port 22 is NOT reachable"
+              echo "   Last SSH exit code: $SSH_EXIT_CODE"
+              echo ""
+              echo "🔍 Network Connectivity Tests:"
+              echo "   Testing port 22 with netcat..."
+              timeout 10 nc -zv -w 5 $EC2_HOST 22 2>&1 || echo "   ❌ Port 22 NOT reachable via netcat"
+              echo "   Testing port 22 with TCP..."
+              timeout 5 bash -c "echo > /dev/tcp/$EC2_HOST/22" 2>/dev/null && echo "   ✅ Port 22 is reachable via TCP" || echo "   ❌ Port 22 is NOT reachable via TCP"
+              echo "   Testing DNS..."
+              host $EC2_HOST 2>&1 | head -3 || nslookup $EC2_HOST 2>&1 | head -5
+              echo "   Testing ping..."
+              timeout 3 ping -c 1 $EC2_HOST 2>&1 | head -3 || echo "   ❌ Ping failed"
+              echo ""
+              echo "🔍 SSH Key Verification:"
+              echo "   Key file exists: $(test -f ~/.ssh/id_rsa && echo 'YES' || echo 'NO')"
+              echo "   Key file size: $(wc -c < ~/.ssh/id_rsa 2>/dev/null || echo '0') bytes"
+              echo "   Key permissions: $(ls -l ~/.ssh/id_rsa 2>/dev/null | awk '{print $1}')"
+              echo "   Key starts with BEGIN: $(head -1 ~/.ssh/id_rsa 2>/dev/null | grep -q BEGIN && echo 'YES' || echo 'NO')"
               echo ""
               echo "⚠️  Since SSH works locally but not from GitHub Actions:"
-              echo "   1. Verify EC2_HOST secret matches the IP you use locally"
+              echo "   1. Verify EC2_HOST secret matches the IP you use locally (exact match)"
               echo "   2. Verify EC2_SSH_KEY secret is the SAME key that works locally"
-              echo "   3. Check if security group change has propagated (wait 30 seconds)"
+              echo "   3. Check if security group allows from GitHub Actions IP ranges"
               echo "   4. Verify Network ACLs allow traffic (if using VPC)"
-              echo "   5. Check if instance has iptables/firewall: ssh into instance and run 'sudo iptables -L'"
-              echo "   6. If using Elastic IP, verify it's attached to the instance"
+              echo "   5. Check if instance has iptables/firewall blocking"
+              echo "   6. Try using Elastic IP if instance IP changes"
+              echo "   7. Check VPC route tables allow internet gateway"
               echo ""
               echo "🔧 AWS Console Checks:"
-              echo "   • EC2 Dashboard → Instances → Check instance state (should be 'running')"
-              echo "   • Security Groups → Inbound Rules → Ensure port 22 allows:"
-              echo "     - Type: SSH, Protocol: TCP, Port: 22"
-              echo "     - Source: 0.0.0.0/0 (or GitHub Actions IP ranges)"
-              echo "   • Network Interfaces → Check if instance has a public IP"
-              echo "   • If instance was stopped/started, public IP may have changed"
+              echo "   • EC2 → Instances → State = 'running'"
+              echo "   • EC2 → Instances → Public IPv4 = matches EC2_HOST secret"
+              echo "   • EC2 → Security Groups → Inbound Rules → SSH (22) from 0.0.0.0/0"
+              echo "   • VPC → Network ACLs → Allow SSH (if using VPC)"
+              echo "   • VPC → Route Tables → Has route to Internet Gateway"
+              echo "   • EC2 → Network Interfaces → Has public IP"
               exit 1
             fi
           fi
@@ -144,6 +187,28 @@ jobs:
           exit 1
         }
         echo "✅ ecosystem.config.js copied"
+        
+        # Copy optimization scripts
+        if [ -f "optimize-low-memory-ec2.sh" ]; then
+          echo "📤 Copying optimize-low-memory-ec2.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 optimize-low-memory-ec2.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy optimize-low-memory-ec2.sh (non-critical)"
+          } || true
+        fi
+        
+        if [ -f "setup-cron-restart.sh" ]; then
+          echo "📤 Copying setup-cron-restart.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 setup-cron-restart.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy setup-cron-restart.sh (non-critical)"
+          } || true
+        fi
+        
+        if [ -f "monitor-memory.sh" ]; then
+          echo "📤 Copying monitor-memory.sh..."
+          timeout 60 scp -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=5 monitor-memory.sh $EC2_USER@$EC2_HOST:~/deployment/ || {
+            echo "⚠️  Failed to copy monitor-memory.sh (non-critical)"
+          } || true
+        fi
         
         echo "✅ All deployment scripts copied successfully"
         

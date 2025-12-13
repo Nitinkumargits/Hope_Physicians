@@ -24,8 +24,8 @@ function createPM2Config() {
         merge_logs: true,
         autorestart: true,
         watch: false,
-        max_memory_restart: '1G',
-        node_args: '--max-old-space-size=1024'
+        max_memory_restart: '400M',  // Strict limit for low-memory EC2
+        node_args: '--max-old-space-size=384'  // 384MB heap limit (leaves room for other processes)
       });
     }
   });
