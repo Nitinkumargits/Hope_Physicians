@@ -46,6 +46,23 @@ const BookAppointment = () => {
       setTimeout(() => navigate('/patient/appointments'), 2000);
     } catch (error) {
       console.error('Failed to book appointment:', error);
+      
+      // Show error message with better handling for 502 errors
+      let errorMessage;
+      if (error.status === 502 || error.isGatewayError) {
+        errorMessage =
+          "The server is temporarily unavailable. Please try again in a few moments or call us at 252-522-3663.";
+      } else if (error.isConnectionError) {
+        errorMessage = error.message || "Unable to connect to the server. Please check your internet connection and try again.";
+      } else {
+        errorMessage = error.response?.data?.message || 
+                      error.response?.data?.error ||
+                      error.message || 
+                      "Failed to submit appointment. Please try again or call us at 252-522-3663.";
+      }
+      
+      // You might want to add a toast notification here if available
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

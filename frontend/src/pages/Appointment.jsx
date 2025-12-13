@@ -211,13 +211,23 @@ const Appointment = () => {
     } catch (err) {
       console.error("Appointment submission error:", err);
 
-      // Show error message
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "Failed to submit appointment. Please try again or call us at 252-522-3663.";
+      // Show error message with better handling for 502 errors
+      let errorMessage;
+      if (err.status === 502 || err.isGatewayError) {
+        errorMessage =
+          "The server is temporarily unavailable. Please try again in a few moments or call us at 252-522-3663.";
+      } else if (err.isConnectionError) {
+        errorMessage = err.message || "Unable to connect to the server. Please check your internet connection and try again.";
+      } else {
+        errorMessage =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to submit appointment. Please try again or call us at 252-522-3663.";
+      }
+
       toast.error(errorMessage, {
-        duration: 5000,
+        duration: 7000, // Longer duration for error messages
       });
     } finally {
       setFormStatus("idle");
