@@ -157,8 +157,25 @@ const DoctorDashboard = () => {
       showNotification("Appointment accepted successfully!", "success");
     } catch (error) {
       console.error("Failed to accept appointment:", error);
-      toast.error("Failed to accept appointment. Please try again.");
-      showNotification("Failed to accept appointment", "error");
+      
+      // Show specific error messages based on error type
+      let errorMessage;
+      if (error.status === 502 || error.isGatewayError) {
+        errorMessage = "The server is temporarily unavailable. Please try again in a few moments.";
+      } else if (error.status === 404 || error.isNotFoundError) {
+        errorMessage = "Appointment not found. It may have been deleted or already processed.";
+      } else if (error.status === 400 || error.isBadRequestError) {
+        errorMessage = error.message || "Invalid request. Please check the appointment details.";
+      } else if (error.status === 500 || error.isServerError) {
+        errorMessage = "Server error occurred. Please try again or contact support.";
+      } else if (error.isConnectionError) {
+        errorMessage = error.message || "Unable to connect to the server. Please check your internet connection.";
+      } else {
+        errorMessage = error.message || "Failed to accept appointment. Please try again.";
+      }
+      
+      toast.error(errorMessage, { duration: 5000 });
+      showNotification(errorMessage, "error");
     } finally {
       setIsAccepting(null);
     }

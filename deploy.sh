@@ -146,7 +146,11 @@ if [ ! -f "server.js" ]; then
     exit 1
 fi
 
-# Start with PM2 using absolute path
+# Stop existing process if running
+pm2 stop "hope-physicians-backend" 2>/dev/null || true
+pm2 delete "hope-physicians-backend" 2>/dev/null || true
+
+# Start with PM2 using absolute path (with production settings)
 pm2 start "$BACKEND_DIR/server.js" \
     --name "hope-physicians-backend" \
     --cwd "$BACKEND_DIR" \
@@ -154,10 +158,43 @@ pm2 start "$BACKEND_DIR/server.js" \
     --env production \
     --log "$APP_DIR/logs/backend-out.log" \
     --error "$APP_DIR/logs/backend-error.log" \
-    --time
+    --time \
+    --max-memory-restart 400M \
+    --node-args="--max-old-space-size=384" \
+    --autorestart \
+    --max-restarts 10 \
+    --min-uptime 10000
 
 pm2 save --force
 echo -e "${GREEN}✅ Backend started${NC}"
+
+# Wait for backend to be ready
+echo -e "${YELLOW}⏳ Waiting for backend to be ready...${NC}"
+sleep 5
+
+# Health check
+MAX_RETRIES=10
+RETRY_COUNT=0
+HEALTHY=false
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if curl -s -f "http://localhost:$BACKEND_PORT/health" > /dev/null 2>&1; then
+        echo -e "${GREEN}✅ Backend health check passed${NC}"
+        HEALTHY=true
+        break
+    else
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        echo -e "${YELLOW}  Retry $RETRY_COUNT/$MAX_RETRIES...${NC}"
+        sleep 2
+    fi
+done
+
+if [ "$HEALTHY" = false ]; then
+    echo -e "${RED}⚠️  Backend health check failed after $MAX_RETRIES retries${NC}"
+    echo -e "${YELLOW}📋 Checking backend logs:${NC}"
+    pm2 logs "hope-physicians-backend" --lines 20 --nostream 2>/dev/null || tail -20 "$APP_DIR/logs/backend-error.log" 2>/dev/null || true
+    echo -e "${YELLOW}⚠️  Continuing deployment, but backend may not be fully ready${NC}"
+fi
 
 # ============================================
 # CREATE/VERIFY TEST USERS

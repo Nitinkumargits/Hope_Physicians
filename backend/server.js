@@ -116,21 +116,130 @@ app.use("/api/patient/chat", patientChatRoutes);
 app.use("/api/patient/admission", patientAdmissionRoutes);
 app.use("/api/patient/feedback", patientFeedbackRoutes);
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("HOPE PHYSICIAN API is running...");
+// Health check endpoint (for monitoring and load balancers)
+app.get("/health", async (req, res) => {
+  try {
+    // Test database connection
+    const { prisma } = require("./src/lib/prisma.js");
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.status(200).json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development",
+      database: "connected",
+    });
+  } catch (error) {
+    console.error("Health check failed:", error);
+    res.status(503).json({
+      status: "unhealthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development",
+      database: "disconnected",
+      error: error.message,
+    });
+  }
 });
 
-// Start server
+// Root route
+app.get("/", (req, res) => {
+  res.json({
+    message: "HOPE PHYSICIAN API is running...",
+    version: "1.0.0",
+    health: "/health",
+    docs: "/api",
+  });
+});
+
+// Error handling middleware (must be after all routes)
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(err.status || 500).json({
+    error: err.message || "Internal server error",
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Route not found",
+    path: req.path,
+  });
+});
+
+// Start server with proper error handling
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || "0.0.0.0"; // Listen on all interfaces for external access
 
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
-  console.log(
-    `📡 CORS enabled for origins: ${
-      process.env.CORS_ORIGINS || "default (localhost + 52.66.236.157)"
-    }`
-  );
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-});
+// Test database connection before starting server
+async function startServer() {
+  try {
+    // Test database connection
+    console.log("🔌 Testing database connection...");
+    const { prisma } = require("./src/lib/prisma.js");
+    await prisma.$connect();
+    console.log("✅ Database connected successfully");
+
+    // Start HTTP server
+    const server = app.listen(PORT, HOST, () => {
+      console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+      console.log(
+        `📡 CORS enabled for origins: ${
+          process.env.CORS_ORIGINS || "default (localhost + 52.66.236.157)"
+        }`
+      );
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(`💚 Health check: http://${HOST}:${PORT}/health`);
+    });
+
+    // Graceful shutdown
+    const gracefulShutdown = async (signal) => {
+      console.log(`\n${signal} received. Starting graceful shutdown...`);
+      server.close(async () => {
+        console.log("HTTP server closed");
+        try {
+          await prisma.$disconnect();
+          console.log("Database connection closed");
+          process.exit(0);
+        } catch (error) {
+          console.error("Error during shutdown:", error);
+          process.exit(1);
+        }
+      });
+
+      // Force shutdown after 10 seconds
+      setTimeout(() => {
+        console.error("Forced shutdown after timeout");
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+    // Handle uncaught exceptions
+    process.on("uncaughtException", (error) => {
+      console.error("Uncaught Exception:", error);
+      gracefulShutdown("uncaughtException");
+    });
+
+    // Handle unhandled promise rejections
+    process.on("unhandledRejection", (reason, promise) => {
+      console.error("Unhandled Rejection at:", promise, "reason:", reason);
+      gracefulShutdown("unhandledRejection");
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    console.error("Error details:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();

@@ -137,28 +137,101 @@ export const getDoctorStats = async (doctorId) => {
  */
 export const acceptAppointment = async (appointmentId) => {
   try {
+    console.log(`📤 Accepting appointment ${appointmentId} at: ${API_BASE}/doctor/appointments/${appointmentId}/accept`);
+    
     const response = await axios.patch(
       `${API_BASE}/doctor/appointments/${appointmentId}/accept`,
       {},
       {
-        timeout: 3000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: 30000, // 30 second timeout (increased for database operations and email sending)
       }
     );
+    
+    console.log(`✅ Appointment ${appointmentId} accepted successfully:`, response.data);
     return response.data;
   } catch (error) {
-    // Fallback to mock success
+    console.error("❌ Failed to accept appointment:", {
+      appointmentId,
+      code: error.code,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      message: error.message,
+      url: `${API_BASE}/doctor/appointments/${appointmentId}/accept`,
+      response: error.response?.data,
+    });
+
+    // Handle 502 Bad Gateway - Backend not reachable
+    if (error.response?.status === 502) {
+      const enhancedError = new Error(
+        "The server is temporarily unavailable. Please try again in a few moments."
+      );
+      enhancedError.status = 502;
+      enhancedError.isGatewayError = true;
+      enhancedError.appointmentId = appointmentId;
+      throw enhancedError;
+    }
+
+    // Handle 404 - Appointment not found
+    if (error.response?.status === 404) {
+      const enhancedError = new Error(
+        "Appointment not found. It may have been deleted or already processed."
+      );
+      enhancedError.status = 404;
+      enhancedError.isNotFoundError = true;
+      enhancedError.appointmentId = appointmentId;
+      throw enhancedError;
+    }
+
+    // Handle 400 - Bad request
+    if (error.response?.status === 400) {
+      const enhancedError = new Error(
+        error.response?.data?.error || "Invalid request. Please check the appointment details."
+      );
+      enhancedError.status = 400;
+      enhancedError.isBadRequestError = true;
+      enhancedError.appointmentId = appointmentId;
+      throw enhancedError;
+    }
+
+    // Handle 500 - Server error
+    if (error.response?.status === 500) {
+      const enhancedError = new Error(
+        "Server error occurred while accepting appointment. Please try again or contact support."
+      );
+      enhancedError.status = 500;
+      enhancedError.isServerError = true;
+      enhancedError.appointmentId = appointmentId;
+      throw enhancedError;
+    }
+
+    // Handle connection refused or network errors
     if (
       error.code === "ECONNREFUSED" ||
-      error.response?.status === 404 ||
-      error.message.includes("Network Error")
+      error.code === "ERR_NETWORK" ||
+      error.code === "ECONNABORTED" ||
+      error.message.includes("Network Error") ||
+      error.message.includes("timeout")
     ) {
-      console.warn("API not available, simulating appointment acceptance");
-      return {
-        success: true,
-        message: "Appointment accepted successfully",
-      };
+      const enhancedError = new Error(
+        "Unable to connect to the server. Please check your internet connection and try again."
+      );
+      enhancedError.code = error.code;
+      enhancedError.isConnectionError = true;
+      enhancedError.appointmentId = appointmentId;
+      throw enhancedError;
     }
-    throw error;
+
+    // Re-throw other errors with enhanced information
+    const enhancedError = new Error(
+      error.response?.data?.error || error.message || "Failed to accept appointment. Please try again."
+    );
+    enhancedError.status = error.response?.status;
+    enhancedError.code = error.code;
+    enhancedError.appointmentId = appointmentId;
+    throw enhancedError;
   }
 };
 

@@ -375,7 +375,39 @@ const doctorController = {
       });
     } catch (error) {
       console.error('❌ Error accepting appointment:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      
+      // Handle Prisma errors
+      if (error.code === 'P2025') {
+        // Record not found
+        return res.status(404).json({ 
+          error: 'Appointment not found',
+          message: 'The appointment you are trying to accept does not exist or has been deleted.'
+        });
+      }
+      
+      if (error.code === 'P2002') {
+        // Unique constraint violation
+        return res.status(409).json({ 
+          error: 'Conflict',
+          message: 'This appointment cannot be accepted due to a conflict. Please refresh and try again.'
+        });
+      }
+      
+      // Handle database connection errors
+      if (error.code === 'P1001' || error.message?.includes('connect')) {
+        return res.status(503).json({ 
+          error: 'Service unavailable',
+          message: 'Database connection error. Please try again in a few moments.'
+        });
+      }
+      
+      // Generic server error with more details in development
+      return res.status(500).json({ 
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' 
+          ? error.message 
+          : 'An error occurred while accepting the appointment. Please try again or contact support.'
+      });
     }
   },
 
