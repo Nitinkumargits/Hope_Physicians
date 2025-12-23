@@ -482,9 +482,9 @@ const PediatricCare = () => {
             </div>
             <Link
               to="/appointment"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-primary font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              Book Appointment
-              <span className="ml-2">→</span>
+              className="cta-primary-btn inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold transition duration-200">
+              <span>Book Appointment</span>
+              <span className="cta-arrow ml-2">→</span>
             </Link>
           </div>
         </div>

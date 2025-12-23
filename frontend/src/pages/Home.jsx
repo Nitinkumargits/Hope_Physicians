@@ -1291,8 +1291,9 @@ const Home = () => {
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link
                   to="/appointment"
-                  className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition duration-200">
-                  Book Appointment
+                  className="cta-primary-btn inline-flex items-center justify-center px-5 py-3 rounded-full font-semibold transition duration-200">
+                  <span>Book Appointment</span>
+                  <span className="cta-arrow ml-2">→</span>
                 </Link>
                 <a
                   href="mailto:doctor@hopephysicians.com"
