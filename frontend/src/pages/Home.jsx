@@ -37,6 +37,32 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
 
+  // Hero carousel images from Unsplash (hospital/medical related) - optimized URLs
+  const heroImages = [
+    "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=85&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1920&q=85&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1920&q=85&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=85&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=1920&q=85&auto=format&fit=crop",
+  ];
+
+  // Hero carousel settings - enhanced with smoother transitions
+  const heroCarouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 1200,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 6000,
+    pauseOnHover: true,
+    fade: true,
+    arrows: true,
+    cssEase: "cubic-bezier(0.4, 0, 0.2, 1)",
+    adaptiveHeight: false,
+    lazyLoad: "ondemand",
+  };
+
   useEffect(() => {
     // Reveal on scroll
     const reveals = document.querySelectorAll(".reveal-on-scroll");
@@ -343,92 +369,100 @@ const Home = () => {
           "urgent care Kinston NC",
         ]}
       />
-      {/* HERO SECTION */}
+      {/* HERO SECTION - CAROUSEL */}
       <section
-        className="relative overflow-hidden py-16 md:py-24 reveal-on-scroll"
-        role="banner"
-        style={{
-          backgroundImage: `url(${heroImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          imageRendering: "high-quality",
-        }}>
-        <div className="hero-overlay"></div>
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-2 items-start min-h-[500px]">
-            {/* Left: Blue Overlay with Text */}
-            <div className="space-y-6">
-              <div className="bg-primary rounded-3xl p-10 shadow-2xl max-w-lg border border-white/10">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 reveal-on-scroll tracking-tight">
-                  Urgent Care in Kinston, NC | Walk-In Immediate Care
-                </h1>
-                <p className="text-white/90 text-lg md:text-xl mb-8 reveal-on-scroll leading-relaxed">
-                  Walk-in urgent care and immediate care services in Kinston,
-                  NC. No appointment needed. Located at 2104 North Herritage
-                  Street, Kinston, NC 28501. We also provide family medicine,
-                  pediatric care, women's health, and geriatric care. We treat
-                  your loved ones like family.
-                </p>
-                <Link
-                  to="/appointment"
-                  className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 reveal-on-scroll">
-                  <span>Visit Urgent Care - Walk-In Welcome</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </Link>
-              </div>
-            </div>
+        className="relative overflow-hidden py-16 md:py-20 lg:py-24 reveal-on-scroll hero-carousel-section"
+        role="banner">
+        <Slider {...heroCarouselSettings} className="hero-carousel">
+          {heroImages.map((imageUrl, index) => (
+            <div key={index}>
+              <div
+                className="hero-slide"
+                style={{
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}>
+                <div className="hero-overlay"></div>
+                <div className="hero-overlay-pattern" aria-hidden="true"></div>
+                <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+                  <div className="grid gap-6 md:gap-8 lg:grid-cols-2 items-center w-full py-8 md:py-12">
+                    {/* Left: Primary Content Card */}
+                    <div className="space-y-6 hero-content-left">
+                      <article className="hero-primary-card">
+                        <h1 className="hero-title">
+                          Urgent Care in Kinston, NC | Walk-In Immediate Care
+                        </h1>
+                        <p className="hero-description">
+                          Walk-in urgent care and immediate care services in
+                          Kinston, NC. No appointment needed. Located at 2104
+                          North Herritage Street, Kinston, NC 28501. We also
+                          provide family medicine, pediatric care, women's
+                          health, and geriatric care. We treat your loved ones
+                          like family.
+                        </p>
+                        <Link
+                          to="/appointment"
+                          className="hero-cta-button">
+                          <span>Visit Urgent Care - Walk-In Welcome</span>
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                          </svg>
+                        </Link>
+                      </article>
+                    </div>
 
-            {/* Right: Welcome Text */}
-            <div className="space-y-6">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-lg">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-primary"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    {/* Right: Welcome Card & Image */}
+                    <div className="space-y-6 hero-content-right">
+                      <article className="hero-welcome-card">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-3 h-3 rounded-full bg-primary"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                        </div>
+                        <h2 className="hero-welcome-title">
+                          Hello & Welcome to Hope Physicians
+                        </h2>
+                        <p className="hero-welcome-text">
+                          Leading the way in medical excellence with cutting-edge
+                          technology and compassionate care. Our primary care
+                          physicians provide comprehensive healthcare services
+                          including family medicine, urgent care, and immediate
+                          care for you and your family, ensuring quality medical
+                          care with a personal touch.
+                        </p>
+                      </article>
+
+                      {/* Image Card */}
+                      <div className="hero-image-card">
+                        <div
+                          className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30"
+                          aria-hidden="true"></div>
+                        <img
+                          src={familyImg}
+                          alt="Family Medicine physician providing primary care services at Hope Physicians in Kinston, NC"
+                          className="w-full h-[280px] md:h-[300px] object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h2
-                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-                  style={{ fontFamily: "serif" }}>
-                  Hello & Welcome to Hope Physicians
-                </h2>
-                <p className="text-gray-700 text-base leading-relaxed">
-                  Leading the way in medical excellence with cutting-edge
-                  technology and compassionate care. Our primary care physicians
-                  provide comprehensive healthcare services including family
-                  medicine, urgent care, and immediate care for you and your
-                  family, ensuring quality medical care with a personal touch.
-                </p>
-              </div>
-
-              {/* Image Overlay Below */}
-              <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-white/20">
-                <div
-                  className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30"
-                  aria-hidden="true"></div>
-                <img
-                  src={familyImg}
-                  alt="Family Medicine physician providing primary care services at Hope Physicians in Kinston, NC"
-                  className="w-full h-[300px] object-cover"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
-                />
               </div>
             </div>
-          </div>
-        </div>
+          ))}
+        </Slider>
       </section>
 
       {/* CONSULTATION TIMING BANNER */}
