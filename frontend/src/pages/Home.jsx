@@ -70,7 +70,13 @@ const Home = () => {
     setFormStatus({ type: "", message: "" });
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.subject || !formData.message) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.subject ||
+      !formData.message
+    ) {
       setFormStatus({
         type: "error",
         message: "Please fill in all required fields.",
@@ -93,11 +99,12 @@ const Home = () => {
     try {
       const { submitContactForm } = await import("../services/contactService");
       const result = await submitContactForm(formData);
-      
+
       if (result.success) {
         setFormStatus({
           type: "success",
-          message: "Thank you! Your message has been sent successfully. We'll get back to you soon.",
+          message:
+            "Thank you! Your message has been sent successfully. We'll get back to you soon.",
         });
         setFormData({
           firstName: "",
@@ -110,7 +117,8 @@ const Home = () => {
       } else {
         setFormStatus({
           type: "error",
-          message: result.error || "Failed to send message. Please try again later.",
+          message:
+            result.error || "Failed to send message. Please try again later.",
         });
       }
     } catch (error) {
@@ -153,7 +161,7 @@ const Home = () => {
   ];
 
   const renderConsultationIcon = (icon) => {
-    const stroke = "#bfdbfe";
+    const stroke = "#ffffff";
     switch (icon) {
       case "clock":
         return (
@@ -478,57 +486,175 @@ const Home = () => {
       {/* CONSULTATION TIMING BANNER */}
       <section className="relative overflow-hidden py-12 md:py-14 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white -mt-12 rounded-b-[28px]">
         <div className="pointer-events-none absolute inset-0">
-          <span
-            className="absolute -left-16 top-6 h-60 w-60 rounded-full bg-blue-500/25 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute inset-4 rounded-3xl border border-white/10 opacity-40"
-            aria-hidden="true"></span>
-          <span
-            className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
-            aria-hidden="true"></span>
+          {/* Structured decorative boxes matching reference style */}
+          <div
+            className="absolute left-0 top-0 w-32 h-32 rounded-2xl bg-blue-500/20 border border-white/15 opacity-60"
+            aria-hidden="true"></div>
+          <div
+            className="absolute left-8 top-16 w-24 h-24 rounded-xl bg-blue-400/15 border border-white/10 opacity-50"
+            aria-hidden="true"></div>
+          <div
+            className="absolute right-0 bottom-0 w-40 h-40 rounded-2xl bg-indigo-500/20 border border-white/15 opacity-60"
+            aria-hidden="true"></div>
+          <div
+            className="absolute right-8 bottom-16 w-28 h-28 rounded-xl bg-indigo-400/15 border border-white/10 opacity-50"
+            aria-hidden="true"></div>
+          {/* Structured border frame */}
+          <div
+            className="absolute inset-4 rounded-2xl border-2 border-white/20 opacity-50"
+            aria-hidden="true"></div>
+          {/* Top accent line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            aria-hidden="true"></div>
+          {/* Bottom accent line */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            aria-hidden="true"></div>
         </div>
-        <div className="container relative z-10">
-          <div className="flex flex-col items-center gap-3 text-center mb-8">
-            <p className="text-white/80 text-sm md:text-base tracking-wide uppercase">
-              Here when you need us
-            </p>
-            <div className="h-1.5 w-16 rounded-full bg-white/60 blur-[1px] shadow-[0_0_20px_rgba(255,255,255,0.35)]"></div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {consultationItems.map((item) => (
-              <div
-                key={item.key}
-                className="flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur px-4 py-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,0.32)] hover:border-white/20">
-                <div className="relative flex items-center justify-center h-14 w-14 rounded-full bg-white/10 border border-white/15 shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
-                  <span className="absolute inset-0 rounded-full bg-white/10 blur-lg"></span>
-                  {renderConsultationIcon(item.icon)}
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="flex flex-col gap-0">
+            {/* Contact Numbers Banner */}
+            <div className="w-full mb-6">
+              <div className="newnum box_bg_1">
+                <div className="lefttext">
+                  Our Contact Numbers Have Changed
+                  <span>To contact us please call on these numbers.</span>
                 </div>
-                <div>
-                  <h5 className="m-0 mb-1 text-sm font-semibold tracking-wide uppercase text-white">
-                    {item.title}
-                  </h5>
-                  <p className="m-0 text-sm text-white/90 leading-6">
-                    {item.lines.map((line, idx) => (
-                      <span key={idx} className="block">
+                <div className="right-num">252-522-3663</div>
+              </div>
+            </div>
+
+            {/* Service Boxes Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-0">
+              <div className="md:col-span-1">
+                <div className="service-box box_bg_1 box-bor-rdius-1">
+                  <span className="icon-22">
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <polyline points="12 7 12 12 15 14"></polyline>
+                    </svg>
+                  </span>
+                  <div className="title1">Urgent Care Hours</div>
+                  <p>
+                    {consultationItems[0].lines.map((line, idx) => (
+                      <span key={idx}>
                         {line}
+                        {idx < consultationItems[0].lines.length - 1 && <br />}
                       </span>
                     ))}
                   </p>
+                  <Link to="/appointment" className="text-btn">
+                    Read more
+                  </Link>
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="mt-8 flex justify-center">
-            <Link
-              to="/appointment"
-              className="inline-flex items-center gap-2 rounded-xl bg-white text-blue-900 font-semibold text-sm px-5 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(0,0,0,0.22)] transition">
-              <i className="fas fa-calendar-check text-blue-700"></i>
-              Book an appointment
-            </Link>
+
+              <div className="md:col-span-1">
+                <div className="service-box box_bg_2">
+                  <span className="icon-20">
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.15 9.8 19.8 19.8 0 0 1 .08 1.18 2 2 0 0 1 2.05-.99h3a2 2 0 0 1 2 1.72c.12.92.37 1.82.73 2.67a2 2 0 0 1-.45 2.11L6.1 6.89a16 16 0 0 0 7 7l1.37-1.22a2 2 0 0 1 2.11-.45c.85.36 1.75.61 2.67.73A2 2 0 0 1 22 16.92Z" />
+                    </svg>
+                  </span>
+                  <div className="title1">Emergency Contact</div>
+                  <p>
+                    {consultationItems[1].lines.map((line, idx) => (
+                      <span key={idx}>
+                        {line}
+                        {idx < consultationItems[1].lines.length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                  <Link to="/contact" className="text-btn">
+                    Read more
+                  </Link>
+                </div>
+              </div>
+
+              <div className="md:col-span-1">
+                <div className="service-box box_bg_3">
+                  <span className="icon-21">
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                      <path d="M16 2v4"></path>
+                      <path d="M8 2v4"></path>
+                      <path d="M3 10h18"></path>
+                    </svg>
+                  </span>
+                  <div className="title1">Location & Contact</div>
+                  <p>
+                    {consultationItems[2].lines.map((line, idx) => (
+                      <span key={idx}>
+                        {line}
+                        {idx < consultationItems[2].lines.length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                  <Link to="/contact" className="text-btn">
+                    Read more
+                  </Link>
+                </div>
+              </div>
+
+              <div className="md:col-span-1">
+                <div className="service-box box_bg_4 box-bor-rdius-2">
+                  <span className="icon-23">
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                      <path d="M16 2v4"></path>
+                      <path d="M8 2v4"></path>
+                      <path d="M3 10h18"></path>
+                    </svg>
+                  </span>
+                  <div className="title1">Appointment Schedule</div>
+                  <hr />
+                  <Link to="/appointment" className="text-btn">
+                    Book Appointment <i className="las la-arrow-right"></i>
+                  </Link>
+                  <p>
+                    For appointments <br /> Call: 252-522-3663
+                  </p>
+                  <hr />
+                  <Link to="/contact" className="text-btn">
+                    Contact Us <i className="las la-arrow-right"></i>
+                  </Link>
+                  <p>We're here to help you</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
