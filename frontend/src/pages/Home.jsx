@@ -85,15 +85,43 @@ const Home = () => {
         title: "Annual Wellness Exams",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 6c-8 0-14 4-14 14 0 10 14 22 14 22s14-12 14-22c0-10-6-14-14-14z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M16 8v12c0 4.4 3.6 8 8 8s8-3.6 8-8V8"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <circle cx="24" cy="34" r="4" stroke="#1e3a8a" strokeWidth="2" />
+            <path
+              d="M24 28v2"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g stroke="#1e3a8a" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M14 12h4M14 16h4M30 12h4M30 16h4" opacity="0.4" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M21 34h1.5l1-2 1 4 1-2h1.5" />
+              <path d="M38 10l2 2M40 10l-2 2" />
+            </g>
+            <path
+              d="M34 32c2 2 4 6 0 10"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="2 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -101,17 +129,37 @@ const Home = () => {
         title: "Immunizations",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            <circle cx="12" cy="12" r="2"></circle>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 8c-6 0-12 3-12 12 0 10 12 20 12 20s12-10 12-20c0-9-6-12-12-12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <g
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round">
+              <path d="M24 4v6" strokeWidth="1.5" />
+              <rect x="21" y="10" width="6" height="12" rx="1" />
+              <path d="M22 14h4M22 18h4" strokeWidth="1" opacity="0.5" />
+              <path d="M24 22v4M21 26h6" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M12 20l-3-2M14 26l-3 1M34 20l3-2M36 26l3 1" />
+              <circle cx="24" cy="34" r="3" strokeDasharray="2 2" />
+            </g>
+            <path
+              d="M24 38v4M20 42l4 4 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -119,16 +167,52 @@ const Home = () => {
         title: "Diabetes Management",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 6v6l4 2"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 4c0 0-14 10-14 22a14 14 0 0 0 28 0c0-12-14-22-14-22z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M14 26h20"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M24 14v12"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <rect
+              x="22"
+              y="8"
+              width="4"
+              height="6"
+              rx="1"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+            />
+            <g fill="#1e3a8a">
+              <circle cx="18" cy="22" r="2" />
+              <circle cx="30" cy="30" r="2" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M38 18l-3-3-3 3M35 15v8" />
+              <path d="M10 30l3 3 3-3M13 25v8" />
+            </g>
+            <path
+              d="M21 26l2-3 2 6 2-3"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         ),
       },
@@ -136,15 +220,38 @@ const Home = () => {
         title: "Hypertension",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 42s-14-8.5-14-18c0-5.5 4.5-8.5 8.5-8.5 2.5 0 4.5 1.5 5.5 3.5 1-2 3-3.5 5.5-3.5 4 0 8.5 3 8.5 8.5 0 9.5-14 18-14 18z"
+              fill="#1e3a8a"
+              opacity="0.15"
+            />
+
+            <circle cx="24" cy="24" r="10" stroke="#1e3a8a" stroke-width="4" />
+
+            <g stroke="#b91c1c" stroke-width="2" stroke-linecap="round">
+              <line x1="24" y1="10" x2="24" y2="6" />
+              <line x1="24" y1="38" x2="24" y2="42" />
+              <line x1="10" y1="24" x2="6" y2="24" />
+              <line x1="38" y1="24" x2="42" y2="24" />
+              <line x1="14" y1="14" x2="11" y2="11" />
+              <line x1="34" y1="34" x2="37" y2="37" />
+              <line x1="14" y1="34" x2="11" y2="37" />
+              <line x1="34" y1="14" x2="37" y2="11" />
+            </g>
+
+            <circle
+              cx="24"
+              cy="24"
+              r="7"
+              stroke="#1e3a8a"
+              stroke-width="1"
+              opacity="0.5"
+            />
           </svg>
         ),
       },
@@ -152,15 +259,12 @@ const Home = () => {
         title: "Chronic Kidney Disease",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M9 2v20M15 2v20M3 7h6M15 7h6M3 17h6M15 17h6"></path>
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
+            fill="#1e3a8a"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M35 11a6 6 0 0 0-4.38 10.09A11.13 11.13 0 0 0 27 22.21V1a1 1 0 0 0-2 0v22.54c-2.62 2.17-2 4.25-2-22.54a1 1 0 0 0-2 0v21.62a12 12 0 0 0-3.74-1.4A6 6 0 0 0 13 11 13 13 0 0 0 0 24c0 13.15 18 17.21 18 8a5.06 5.06 0 0 0-2.2-4.14c.1-.1.44-.51.51-.61.24-.36 4.69 1.36 4.69 5.75v14a1 1 0 0 0 2 0V33a8 8 0 0 0-6-7.74 3.6 3.6 0 0 0-.46-2.13A10 10 0 0 1 25 33v14a1 1 0 0 0 2 0V32a5 5 0 0 1 4.58-5 5.39 5.39 0 0 0 .62.82A5.05 5.05 0 0 0 30 32c0 9.14 18 5.19 18-8a13 13 0 0 0-13-13zM2 24c0-11 15-14.46 15-7a4 4 0 0 1-4 4 1 1 0 0 0 0 2 2 2 0 0 1 0 4 1 1 0 0 0 0 2 3 3 0 0 1 3 3c0 6.13-14 2.59-14-8zm24.05 4.33A11.41 11.41 0 0 0 25 26.38 8.94 8.94 0 0 1 31.54 23a3.72 3.72 0 0 0-.53 2 7 7 0 0 0-4.96 3.33zM32 32a3 3 0 0 1 3-3 1 1 0 0 0 0-2 2 2 0 0 1 0-4 1 1 0 0 0 0-2 4 4 0 0 1-4-4c0-7.43 15-4.07 15 7 0 10.62-14 14.12-14 8z" />
           </svg>
         ),
       },
@@ -168,15 +272,49 @@ const Home = () => {
         title: "Coronary Artery Disease",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
+            fill="#1e3a8a"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M35 11c-3.1 0-5.8 2.1-6.7 5.1-.9-3-3.6-5.1-6.7-5.1-4.2 0-7.6 3.4-7.6 7.6 0 8.2 12 16.4 14.3 17.4.2.1.4.1.6 0 2.3-1 14.3-9.2 14.3-17.4 0-4.2-3.4-7.6-7.6-7.6z"
+              opacity="0.2"
+            />
+            <path
+              d="M24 2v10M27 2v8M21 2v8"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            <path
+              d="M28 16c2 4 6 6 6 12s-4 10-6 12"
+              fill="none"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <circle cx="33.5" cy="23" r="3" fill="#1e3a8a" />
+            <path
+              d="M31 23h5"
+              stroke="white"
+              strokeWidth="0.8"
+              strokeLinecap="round"
+            />
+            <path
+              d="M34 28c0 3-2 6-4 8M18 16c-2 4-6 6-6 12s4 10 6 12"
+              fill="none"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="2 2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M16 22a4 4 0 0 1-4 4M32 32a4 4 0 0 0 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -184,16 +322,42 @@ const Home = () => {
         title: "Neurological Diseases",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44L2 18.5a2.5 2.5 0 0 1 0-5l5.04-1.44A2.5 2.5 0 0 1 9.5 2z"></path>
-            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44L22 18.5a2.5 2.5 0 0 0 0-5l-5.04-1.44A2.5 2.5 0 0 0 14.5 2z"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 18c-2-2-6-2-8 0s-2 6 0 8 5 2 7 0"
+              stroke="#1e3a8a"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+
+            <path
+              d="M12 18l-4-4M10 22l-5 1M14 26l-3 4"
+              stroke="#1e3a8a"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+
+            <path
+              d="M25 21c4 1 8 5 10 12"
+              stroke="#1e3a8a"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-dasharray="4 2"
+            />
+
+            <circle cx="37" cy="35" r="2" fill="#1e3a8a" />
+            <circle cx="41" cy="31" r="1.5" fill="#1e3a8a" opacity="0.6" />
+
+            <g stroke="#b91c1c" stroke-width="1.5" stroke-linecap="round">
+              <path d="M28 20l2-3M32 23l3-2" />
+              <path d="M18 14l-2-2M38 38l2 2" />
+            </g>
+
+            <circle cx="18" cy="22" r="2" fill="#1e3a8a" />
           </svg>
         ),
       },
@@ -201,15 +365,44 @@ const Home = () => {
         title: "Stroke",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 40c-8 0-14-6-14-14s4-13 10-14 4 2 4 4v24z"
+              fill="#1e3a8a"
+              opacity="0.2"
+            />
+            <path
+              d="M24 12c6-1 10 6 10 14s-6 14-10 14"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g transform="translate(30, 24)">
+              <path
+                d="M-4 -4l-2-2M4 -4l2-2M-4 4l-2 2M4 4l2 2"
+                stroke="#b91c1c"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <circle cx="0" cy="0" r="3" fill="#b91c1c" />
+            </g>
+            <path
+              d="M24 44V34M24 34c0-4 4-6 6-10"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="3 2"
+            />
+            <path
+              d="M22 14l3 6-4 4 5 8"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
           </svg>
         ),
       },
@@ -217,15 +410,38 @@ const Home = () => {
         title: "Neuropathy",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16 8c2 0 4 4 4 10s-2 18-6 22-8 2-8-2 4-12 6-18 2-12 4-12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M24 4v12"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round">
+              <path d="M24 16c-4 4-8 8-10 14" strokeDasharray="3 2" />
+              <path d="M24 16c4 4 8 8 10 14" strokeDasharray="3 2" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M12 32l-3 4M16 35l-2 5M36 32l3 4M32 35l2 5" />
+              <circle cx="24" cy="28" r="1" fill="#b91c1c" />
+              <circle cx="20" cy="32" r="1" fill="#b91c1c" />
+              <circle cx="28" cy="32" r="1" fill="#b91c1c" />
+            </g>
+            <path
+              d="M14 30c-1 2-2 6 0 8M34 30c1 2 2 6 0 8"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              opacity="0.5"
+            />
           </svg>
         ),
       },
@@ -233,16 +449,38 @@ const Home = () => {
         title: "Congestive Heart Failure",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            <path d="M12 8v8M8 12h8"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 42c-10 0-18-8-18-18 0-6 5-11 11-11 3 0 5 2 7 5 2-3 4-5 7-5 6 0 11 5 11 11 0 10-8 18-18 18z"
+              fill="#1e3a8a"
+              opacity="0.15"
+            />
+            <path
+              d="M12 24c0 8 6 14 12 14s12-6 12-14"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="4 2"
+              strokeLinecap="round"
+            />
+            <g fill="#1e3a8a">
+              <circle cx="20" cy="34" r="2" opacity="0.6" />
+              <circle cx="28" cy="34" r="2" opacity="0.6" />
+              <circle cx="24" cy="38" r="1.5" opacity="0.4" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M14 18l-2-3-2 3M12 15v8" />
+              <path d="M34 18l2-3 2 3M36 15v8" />
+            </g>
+            <path
+              d="M22 24h4M24 22v4"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -252,16 +490,32 @@ const Home = () => {
         title: "Obstructive Sleep Apnea",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <path d="M7 8h10M7 12h10M7 16h5"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M38 42c-2-6-4-8-10-8s-8-4-8-10 4-12 12-12"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              opacity="0.2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M26 10c-4 0-8 2-10 6s-2 8 0 10"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path d="M16 26c1 3 5 5 8 5s6-2 7-5" fill="#1e3a8a" />
+            <g stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round">
+              <path d="M12 14c-2 2-2 6 0 8" strokeDasharray="2 2" />
+              <path d="M24 36v6" strokeDasharray="1 3" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M20 20l2-2 2 2M28 20l-2-2-2 2" />
+            </g>
           </svg>
         ),
       },
@@ -269,16 +523,43 @@ const Home = () => {
         title: "COPD",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            <path d="M3 12h18"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 12c-6 0-12 4-12 12s4 14 10 14h2V12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M26 12c6 0 12 4 12 12s-4 14-10 14h-2V12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M24 8v10m0 0l-6 6m6-6l6 6"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M18 24c-2 2-4 8-2 10"
+              stroke="#1e3a8a"
+              strokeWidth="3"
+              strokeLinecap="round"
+              opacity="0.8"
+            />
+            <circle cx="16" cy="34" r="2.5" fill="#b91c1c" />
+            <g stroke="#1e3a8a" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M30 24l4 4" />
+              <circle cx="36" cy="30" r="2" strokeDasharray="1 1" />
+              <circle cx="34" cy="35" r="3" strokeDasharray="2 1" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.2">
+              <path d="M22 18l-3-2M26 18l3-2" />
+            </g>
           </svg>
         ),
       },
@@ -286,16 +567,52 @@ const Home = () => {
         title: "Asthma",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0z"></path>
-            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 12c-6 0-10 4-10 10s4 14 10 14h2V12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M26 12c6 0 10 4 10 10s-4 14-10 14h-2V12z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M24 6v8m0 0l-6 6m6-6l6 6"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g transform="translate(14, 24)">
+              <path
+                d="M0 0c2 2 2 6 0 8"
+                stroke="#1e3a8a"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              <path
+                d="M4 0c-2 2-2 6 0 8"
+                stroke="#1e3a8a"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M10 22l-3-2M10 30l-3 2M38 22l3-2M38 30l3 2" />
+              <path d="M22 28h4" />
+            </g>
+            <path
+              d="M24 34v6"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeDasharray="2 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -303,16 +620,58 @@ const Home = () => {
         title: "Thyroid Disorders",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <path d="M7 8h10M7 12h10M7 16h5"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 6v36"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.2"
+            />
+            <path
+              d="M21 10h6M21 14h6M21 18h6"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              strokeLinecap="round"
+              opacity="0.3"
+            />
+            <path
+              d="M22 26c-4-1-8-4-10-10 0 0-2 8 2 14s8 6 8 6"
+              fill="#1e3a8a"
+              fillOpacity="0.8"
+            />
+            <path
+              d="M26 26c4-1 9-3 11-8 0 0 3 10-1 16s-10 4-10 4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g fill="#b91c1c">
+              <circle cx="32" cy="30" r="2.5" />
+              <path
+                d="M38 20l3-2M39 25l4 1"
+                stroke="#b91c1c"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </g>
+            <path
+              d="M22 28c1 1 3 1 4 0"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M12 20l-3-2M11 25l-4 1"
+              stroke="#b91c1c"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity="0.6"
+            />
           </svg>
         ),
       },
@@ -320,16 +679,42 @@ const Home = () => {
         title: "Depression",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
-            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M34 40c-2-4-4-6-4-14 0-8-6-14-14-14s-12 6-12 14c0 4 2 8 4 12"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              opacity="0.2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M18 22c-2 0-4 2-4 4s2 4 4 4h12c2 0 4-2 4-4s-2-4-4-4h-8z"
+              fill="#1e3a8a"
+              fillOpacity="0.8"
+            />
+            <path
+              d="M24 30v12M20 38l4 4 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <g
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              strokeLinecap="round"
+              opacity="0.5">
+              <path d="M16 18c2-2 6-2 8 0" />
+              <path d="M28 18c2-2 4 0 4 2" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M14 34v2M34 34v2" />
+              <path d="M21 44h6" />
+            </g>
           </svg>
         ),
       },
@@ -337,20 +722,41 @@ const Home = () => {
         title: "Anxiety",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M3 12h18M3 6h18M3 18h18"></path>
-            <path d="M6 3v18M18 3v18"></path>
-            <circle cx="9" cy="9" r="1"></circle>
-            <circle cx="15" cy="9" r="1"></circle>
-            <circle cx="9" cy="15" r="1"></circle>
-            <circle cx="15" cy="15" r="1"></circle>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M36 40c-2-4-4-6-4-14 0-8-6-14-14-14s-12 6-12 14c0 4 2 8 4 12"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              opacity="0.15"
+              strokeLinecap="round"
+            />
+            <path
+              d="M18 20c4-4 8 8 12 0s-8-8-4 4 12 0 4 4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M20 36l2-3 2 6 2-3h4" />
+              <path d="M10 16l-3-2M12 12l-2-3M38 16l3-2M36 12l2-3" />
+            </g>
+            <g fill="#1e3a8a">
+              <circle cx="24" cy="22" r="1.5" />
+              <circle cx="30" cy="26" r="1" opacity="0.6" />
+              <circle cx="18" cy="26" r="1" opacity="0.6" />
+            </g>
+            <path
+              d="M24 44c0-4 4-6 0-10s-4-6 0-10"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="2 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -358,17 +764,45 @@ const Home = () => {
         title: "Gastrointestinal Diseases",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 2v20M2 12h20"></path>
-            <circle cx="12" cy="12" r="3"></circle>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M32 12c-4-4-10-2-12 2s-2 10 4 14 12 4 14-2-2-10-6-14z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M22 4v8c0 2 2 4 4 4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M26 26c-2 0-6 2-6 6s4 6 8 6 6-2 6-6-4-6-8-6-6 2-6 6c0 4 4 6 4 6"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M14 28l-3 2M16 24l-4-1M34 36l3 2M38 32l4-1" />
+              <path d="M22 32l2-2 2 2" strokeLinejoin="round" />
+            </g>
+            <g fill="#1e3a8a" opacity="0.6">
+              <circle cx="18" cy="20" r="1.5" />
+              <circle cx="32" cy="24" r="1" />
+              <circle cx="28" cy="18" r="1" />
+            </g>
+            <path
+              d="M26 40v4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeDasharray="2 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -376,16 +810,45 @@ const Home = () => {
         title: "Infectious Diseases",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
-            <circle cx="12" cy="12" r="10"></circle>
+            xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="14" fill="#1e3a8a" opacity="0.1" />
+            <path
+              d="M24 14v20M14 24h20"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.4"
+            />
+            <g fill="#1e3a8a">
+              <circle cx="12" cy="12" r="2" />
+              <path
+                d="M12 8v2M8 12h2m4 0h2m-4 4v2"
+                stroke="#1e3a8a"
+                strokeWidth="1"
+              />
+              <circle cx="36" cy="16" r="1.5" />
+              <path
+                d="M36 13v1.5M39 16h-1.5M36 19v-1.5M33 16h1.5"
+                stroke="#1e3a8a"
+                strokeWidth="1"
+              />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M18 18l-3-3M30 30l3 3" />
+              <circle cx="24" cy="24" r="3" strokeDasharray="2 2" />
+              <path d="M22 24h4M24 22v4" />
+            </g>
+            <path
+              d="M24 38v6M20 42l4 4 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -393,16 +856,48 @@ const Home = () => {
         title: "Skin Diseases",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M12 2v20M2 12h20"></path>
-            <circle cx="12" cy="12" r="3"></circle>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M6 24c8-2 12 2 18 2s10-6 18-4"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M6 30c8-2 12 2 18 2s10-6 18-4"
+              stroke="#1e3a8a"
+              strokeWidth="1"
+              opacity="0.2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M20 25c0-4 4-8 8-8s6 4 6 8"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="#1e3a8a"
+              fillOpacity="0.1"
+            />
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M22 14l2 3M28 12v4M34 14l-2 3" />
+              <path d="M24 22l2 4M30 20l-1 5" />
+            </g>
+            <g fill="#1e3a8a">
+              <circle cx="20" cy="20" r="1" />
+              <circle cx="34" cy="22" r="1" />
+              <circle cx="28" cy="25" r="0.8" />
+            </g>
+            <path
+              d="M24 32v10M20 38l4 4 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+              strokeLinecap="round"
+            />
           </svg>
         ),
       },
@@ -410,16 +905,44 @@ const Home = () => {
         title: "Pulmonary Diseases",
         icon: (
           <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
+            width="72"
+            height="72"
+            viewBox="0 0 48 48"
             fill="none"
-            stroke="#1e3a8a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 14c-6 0-11 4-11 10s4 14 10 14h2V14z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M26 14c6 0 11 4 11 10s-4 14-10 14h-2V14z"
+              fill="#1e3a8a"
+              opacity="0.1"
+            />
+            <path
+              d="M24 6v10M24 16l-6 6M24 16l6 6"
+              stroke="#1e3a8a"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <g fill="#1e3a8a" fillOpacity="0.8">
+              <circle cx="16" cy="28" r="3" />
+              <circle cx="32" cy="32" r="2.5" />
+              <circle cx="30" cy="24" r="2" opacity="0.5" />
+            </g>
+            <g stroke="#b91c1c" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M10 20l-3-2M38 20l3-2" />
+              <path d="M15 34l2 2M33 38l2 2" />
+            </g>
+            <path
+              d="M24 38v6M20 42l4 4 4-4"
+              stroke="#1e3a8a"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         ),
       },

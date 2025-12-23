@@ -2165,8 +2165,8 @@ textarea:focus {
 
 /* Department icon */
 .dept-icon {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2177,8 +2177,8 @@ textarea:focus {
 }
 
 .dept-icon svg {
-  width: 48px;
-  height: 48px;
+  width: 72px;
+  height: 72px;
   position: relative;
   z-index: 2;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
