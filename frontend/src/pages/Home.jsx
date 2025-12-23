@@ -54,13 +54,17 @@ const Home = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 6000,
+    autoplaySpeed: 5000,
     pauseOnHover: true,
+    pauseOnFocus: false,
     fade: true,
     arrows: true,
     cssEase: "cubic-bezier(0.4, 0, 0.2, 1)",
     adaptiveHeight: false,
     lazyLoad: "ondemand",
+    swipe: true,
+    touchMove: true,
+    waitForAnimate: true,
   };
 
   useEffect(() => {
