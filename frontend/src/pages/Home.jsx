@@ -1384,31 +1384,24 @@ const Home = () => {
       </section>
 
       {/* CTA */}
-      <section className="relative overflow-hidden py-14 md:py-16 reveal-on-scroll bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700">
-        <div className="pointer-events-none absolute inset-0">
-          <span
-            className="absolute -left-16 top-0 h-48 w-48 rounded-full bg-white/10 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute right-0 -bottom-12 h-56 w-56 rounded-full bg-white/12 blur-3xl"
-            aria-hidden="true"></span>
-        </div>
+      <section className="cta-enhanced relative overflow-hidden py-14 md:py-16 reveal-on-scroll bg-slate-50">
+        <div className="pointer-events-none absolute inset-0"></div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
+          <div className="cta-card flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="cta-copy space-y-2">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
                 Ready to Book Your Appointment?
               </h2>
-              <p className="text-blue-50 text-lg">
+              <p className="text-slate-600 text-lg">
                 We make booking simple — choose a time and see a specialist you
                 trust.
               </p>
             </div>
             <Link
               to="/appointment"
-              className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-white text-blue-700 font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition duration-200">
-              Book Appointment
-              <span className="ml-2">→</span>
+              className="cta-primary-btn inline-flex items-center justify-center px-5 py-3 rounded-full font-semibold transition duration-200">
+              <span>Book Appointment</span>
+              <span className="cta-arrow ml-2">→</span>
             </Link>
           </div>
         </div>
