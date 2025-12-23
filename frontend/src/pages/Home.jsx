@@ -6,7 +6,6 @@ import "slick-carousel/slick/slick-theme.css";
 import SEO from "../components/SEO";
 import "../styles/Home.css";
 
-import heroImg from "../assets/images/hero2.jpg";
 import aboutImg from "../assets/images/about.jpg";
 import familyImg from "../assets/images/family.jpeg";
 import mensImg from "../assets/images/mens.jpeg";
@@ -406,9 +405,7 @@ const Home = () => {
                           health, and geriatric care. We treat your loved ones
                           like family.
                         </p>
-                        <Link
-                          to="/appointment"
-                          className="hero-cta-button">
+                        <Link to="/appointment" className="hero-cta-button">
                           <span>Visit Urgent Care - Walk-In Welcome</span>
                           <svg
                             className="w-5 h-5"
@@ -438,12 +435,12 @@ const Home = () => {
                           Hello & Welcome to Hope Physicians
                         </h2>
                         <p className="hero-welcome-text">
-                          Leading the way in medical excellence with cutting-edge
-                          technology and compassionate care. Our primary care
-                          physicians provide comprehensive healthcare services
-                          including family medicine, urgent care, and immediate
-                          care for you and your family, ensuring quality medical
-                          care with a personal touch.
+                          Leading the way in medical excellence with
+                          cutting-edge technology and compassionate care. Our
+                          primary care physicians provide comprehensive
+                          healthcare services including family medicine, urgent
+                          care, and immediate care for you and your family,
+                          ensuring quality medical care with a personal touch.
                         </p>
                       </article>
 
@@ -546,7 +543,7 @@ const Home = () => {
 
               <div className="md:col-span-1">
                 <div className="service-box box_bg_2">
-                  <span className="icon-20">
+                  <span className="icon-20 ">
                     <svg
                       width="64"
                       height="64"
@@ -576,7 +573,7 @@ const Home = () => {
 
               <div className="md:col-span-1">
                 <div className="service-box box_bg_3">
-                  <span className="icon-21">
+                  <span className="icon-20">
                     <svg
                       width="64"
                       height="64"
@@ -586,10 +583,8 @@ const Home = () => {
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                      <path d="M16 2v4"></path>
-                      <path d="M8 2v4"></path>
-                      <path d="M3 10h18"></path>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
                     </svg>
                   </span>
                   <div className="title1">Location & Contact</div>
