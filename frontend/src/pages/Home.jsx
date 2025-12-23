@@ -1281,18 +1281,15 @@ const Home = () => {
       <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
         <div className="pointer-events-none absolute inset-0">
           <span
-            className="absolute -top-24 left-1/5 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl"
+            className="absolute -top-24 left-1/5 h-80 w-80 rounded-full bg-blue-500/16 blur-3xl"
             aria-hidden="true"></span>
           <span
-            className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-500/18 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute inset-6 rounded-3xl border border-white/5 opacity-40"
+            className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-500/14 blur-3xl"
             aria-hidden="true"></span>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-3 mb-10">
+          <div className="text-center space-y-2 mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-white">
               Our Support Team
             </h2>
@@ -1301,56 +1298,85 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur shadow-xl transition duration-200 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/60 opacity-90"
-                />
-                <img
-                  src={medSupportImg}
-                  alt="Medical support team and healthcare professionals at Hope Physicians providing primary care and family medicine services"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
-                />
-              </div>
-              <div className="flex flex-col gap-3 p-5 text-center">
-                <h3 className="text-xl font-semibold text-white">
-                  Medical Support Team
-                </h3>
-                <p className="text-slate-200 leading-relaxed">
+          <div className="support-ref-grid">
+            <div className="support-ref-left">
+              <div className="support-title-vertical">Quick Reference</div>
+
+              <div className="support-quick-box top-bor">
+                <div className="support-ward-type">
+                  <span>Medical Support Team</span>
                   Our dedicated team of healthcare professionals working
                   together to provide exceptional patient care
-                </p>
+                </div>
+                <div className="support-access-row">
+                  <Link to="/appointment">Make Appointment</Link>
+                  <Link
+                    to="/appointment"
+                    aria-label="make appointment"
+                    className="support-round-btn">
+                    →
+                  </Link>
+                </div>
+              </div>
+
+              <div className="support-quick-box">
+                <div className="support-ward-type">
+                  <span>Administrative Support Team</span>
+                  Our administrative staff ensuring smooth operations and
+                  excellent patient experience
+                </div>
+                <div className="support-access-row">
+                  <Link to="/appointment">Contact Team</Link>
+                  <Link
+                    to="/appointment"
+                    aria-label="contact team"
+                    className="support-round-btn">
+                    →
+                  </Link>
+                </div>
               </div>
             </div>
 
-            <div className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur shadow-xl transition duration-200 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/60 opacity-90"
-                />
-                <img
-                  src={adminSupportImg}
-                  alt="Administrative support team at Hope Physicians assisting with primary care physician appointments and family medicine services"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                  style={{ imageRendering: "high-quality", objectFit: "cover" }}
-                />
-              </div>
-              <div className="flex flex-col gap-3 p-5 text-center">
-                <h3 className="text-xl font-semibold text-white">
-                  Administrative Support Team
-                </h3>
-                <p className="text-slate-200 leading-relaxed">
-                  Our administrative staff ensuring smooth operations and
-                  excellent patient experience
-                </p>
+            <div className="support-ref-right">
+              <div className="support-gallery">
+                <div className="support-gallery-item">
+                  <Link to="/appointment">
+                    <div className="content-overlay"></div>
+                    <img
+                      src={medSupportImg}
+                      alt="Medical support team and healthcare professionals at Hope Physicians providing primary care and family medicine services"
+                      loading="lazy"
+                      decoding="async"
+                      className="support-gallery-img"
+                      style={{
+                        imageRendering: "high-quality",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div className="content-details">
+                      <span>Medical Support Team</span>
+                    </div>
+                  </Link>
+                </div>
+                <div className="support-gallery-item">
+                  <Link to="/appointment">
+                    <div className="content-overlay"></div>
+                    <img
+                      src={adminSupportImg}
+                      alt="Administrative support team at Hope Physicians assisting with primary care physician appointments and family medicine services"
+                      loading="lazy"
+                      decoding="async"
+                      className="support-gallery-img"
+                      style={{
+                        imageRendering: "high-quality",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div className="content-details">
+                      <span>Administrative Support Team</span>
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
