@@ -25,6 +25,7 @@ import Reports from "./pages/admin/Reports";
 import Notifications from "./pages/admin/Notifications";
 import Settings from "./pages/admin/Settings";
 import PatientForms from "./pages/admin/PatientForms";
+import AdminContactMessages from "./pages/admin/ContactMessages";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
@@ -35,6 +36,7 @@ import DoctorPrescriptions from "./pages/doctor/DoctorPrescriptions";
 import DoctorNotifications from "./pages/doctor/DoctorNotifications";
 import PrescriptionEditor from "./pages/doctor/PrescriptionEditor";
 import PatientProfile from "./pages/doctor/PatientProfile";
+import DoctorContactMessages from "./pages/doctor/ContactMessages";
 
 // Patient Pages
 import PatientDashboard from "./pages/patient/PatientDashboard";
@@ -202,6 +204,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/contact-messages"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminContactMessages />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Doctor Routes */}
         <Route
@@ -289,6 +299,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["doctor", "admin"]}>
               <DoctorNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/contact-messages"
+          element={
+            <ProtectedRoute allowedRoles={["doctor", "admin"]}>
+              <DoctorContactMessages />
             </ProtectedRoute>
           }
         />

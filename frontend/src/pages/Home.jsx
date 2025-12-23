@@ -26,10 +26,12 @@ import viewMoreServicesImg from "../assets/images/view-more-services.jpg";
 
 const Home = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    phone: "",
+    subject: "",
     message: "",
-    privacy: false,
   });
   const [formStatus, setFormStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,10 +57,10 @@ const Home = () => {
   }, []);
 
   const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
@@ -67,20 +69,54 @@ const Home = () => {
     setIsSubmitting(true);
     setFormStatus({ type: "", message: "" });
 
-    try {
-      // TODO: Connect to backend API when available
-      // For now, simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setFormStatus({
-        type: "success",
-        message: "Thank you! Your message has been sent successfully.",
-      });
-      setFormData({ name: "", email: "", message: "", privacy: false });
-    } catch {
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.subject || !formData.message) {
       setFormStatus({
         type: "error",
-        message: "Failed to send message. Please try again later.",
+        message: "Please fill in all required fields.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setFormStatus({
+        type: "error",
+        message: "Please enter a valid email address.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const { submitContactForm } = await import("../services/contactService");
+      const result = await submitContactForm(formData);
+      
+      if (result.success) {
+        setFormStatus({
+          type: "success",
+          message: "Thank you! Your message has been sent successfully. We'll get back to you soon.",
+        });
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setFormStatus({
+          type: "error",
+          message: result.error || "Failed to send message. Please try again later.",
+        });
+      }
+    } catch (error) {
+      setFormStatus({
+        type: "error",
+        message: "An error occurred. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -257,6 +293,41 @@ const Home = () => {
     ],
   };
 
+  // Testimonials Carousel Settings
+  const testimonialsCarouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   const testimonials = [
     {
       name: "Brenda Watson",
@@ -278,6 +349,27 @@ const Home = () => {
         "The facility is a little dated; however, the professionalism and courtesy of the staff is exceptional. My wife had called just about every physician in town and everyone was full. The receptionist was caring and 'fit' me in the next day due to the severity of my condition. None of the other offices would. The wait was a little long, but I saw so many patients coming out who had been seen before me. All of the patients looked satisfied, and I was impressed with the fact that many of the patients knew the staff by name. It caused me to reminisce of my childhood when our family physician knew us by name and cared. Hats off to Hope Physicians for outstanding customer service in an age of impatience.",
       rating: 5,
       avatar: mensImg,
+    },
+    {
+      name: "Sarah Mitchell",
+      feedback:
+        "I've been bringing my children to Hope Physicians for pediatric care for over three years now. The doctors are patient, thorough, and truly care about my kids' wellbeing. The staff always makes us feel welcome, and I appreciate how they take time to explain everything clearly. Highly recommend for families in Kinston!",
+      rating: 5,
+      avatar: familyImg,
+    },
+    {
+      name: "James Thompson",
+      feedback:
+        "As someone who needs regular check-ups for chronic conditions, I appreciate the comprehensive care I receive here. Dr. Okonkwo and his team are knowledgeable, professional, and always available when I need urgent care. The walk-in option is a lifesaver for unexpected health issues.",
+      rating: 5,
+      avatar: mensImg,
+    },
+    {
+      name: "Maria Rodriguez",
+      feedback:
+        "The women's health services at Hope Physicians are exceptional. The staff is respectful, understanding, and provides excellent care. I feel comfortable discussing any health concerns, and I always leave feeling well-informed about my health. Thank you for providing such compassionate healthcare in our community.",
+      rating: 5,
+      avatar: womensImg,
     },
   ];
 
@@ -340,6 +432,28 @@ const Home = () => {
                   </svg>
                 </Link>
               </div>
+            </div>
+
+            {/* Right: Welcome Text */}
+            <div className="space-y-6">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-primary"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                </div>
+                <h2
+                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+                  style={{ fontFamily: "serif" }}>
+                  Hello & Welcome to Hope Physicians
+                </h2>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  Leading the way in medical excellence with cutting-edge
+                  technology and compassionate care. Our primary care physicians
+                  provide comprehensive healthcare services including family
+                  medicine, urgent care, and immediate care for you and your
+                  family, ensuring quality medical care with a personal touch.
+                </p>
+              </div>
 
               {/* Image Overlay Below */}
               <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-white/20">
@@ -356,26 +470,6 @@ const Home = () => {
                   style={{ imageRendering: "high-quality", objectFit: "cover" }}
                 />
               </div>
-            </div>
-
-            {/* Right: Welcome Text */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-lg">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-3 h-3 rounded-full bg-primary"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-              </div>
-              <h2
-                className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-                style={{ fontFamily: "serif" }}>
-                Hello & Welcome to Hope Physicians
-              </h2>
-              <p className="text-gray-700 text-base leading-relaxed">
-                Leading the way in medical excellence with cutting-edge
-                technology and compassionate care. Our primary care physicians
-                provide comprehensive healthcare services including family
-                medicine, urgent care, and immediate care for you and your
-                family, ensuring quality medical care with a personal touch.
-              </p>
             </div>
           </div>
         </div>
@@ -989,43 +1083,45 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-slate-200 bg-white/90 backdrop-blur-md p-5 shadow-lg flex flex-col gap-4 transition duration-200 hover:-translate-y-1 hover:shadow-2xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-100 shadow-sm">
-                    <img
-                      src={t.avatar || doctorImg}
-                      alt={`${t.name} - Patient testimonial for Hope Physicians primary care and family medicine services`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                      style={{
-                        imageRendering: "high-quality",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <h5 className="text-base font-semibold text-slate-900">
-                      {t.name}
-                    </h5>
-                    <div className="text-amber-400 text-sm flex">
-                      {Array(t.rating)
-                        .fill(0)
-                        .map((_, idx) => (
-                          <span key={idx}>★</span>
-                        ))}
+          <div className="testimonials-carousel-wrapper">
+            <Slider {...testimonialsCarouselSettings}>
+              {testimonials.map((t, i) => (
+                <div key={i} className="px-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 backdrop-blur-md p-5 shadow-lg flex flex-col gap-4 transition duration-200 hover:-translate-y-1 hover:shadow-2xl h-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-100 shadow-sm">
+                        <img
+                          src={t.avatar || doctorImg}
+                          alt={`${t.name} - Patient testimonial for Hope Physicians primary care and family medicine services`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                          style={{
+                            imageRendering: "high-quality",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <h5 className="text-base font-semibold text-slate-900">
+                          {t.name}
+                        </h5>
+                        <div className="text-amber-400 text-sm flex">
+                          {Array(t.rating)
+                            .fill(0)
+                            .map((_, idx) => (
+                              <span key={idx}>★</span>
+                            ))}
+                        </div>
+                      </div>
                     </div>
+                    <p className="text-slate-700 leading-relaxed italic">
+                      "{t.feedback}"
+                    </p>
                   </div>
                 </div>
-                <p className="text-slate-700 leading-relaxed italic">
-                  "{t.feedback}"
-                </p>
-              </div>
-            ))}
+              ))}
+            </Slider>
           </div>
         </div>
       </section>
@@ -1261,33 +1357,79 @@ const Home = () => {
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  required
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
-                  placeholder="Enter your full name"
-                />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleFormChange}
+                    required
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Jane"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleFormChange}
+                    required
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    required
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleFormChange}
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="+234 900 000 0000"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Email Address
+                  Subject
                 </label>
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  name="subject"
+                  value={formData.subject}
                   onChange={handleFormChange}
                   required
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white"
-                  placeholder="Enter your email address"
+                  placeholder="How can we help you?"
                 />
               </div>
 
@@ -1303,35 +1445,6 @@ const Home = () => {
                   required
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-vertical bg-gray-50 focus:bg-white"
                   placeholder="Enter your message"></textarea>
-              </div>
-
-              {/* Privacy Policy Checkbox */}
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  id="privacy"
-                  name="privacy"
-                  checked={formData.privacy}
-                  onChange={handleFormChange}
-                  required
-                  className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                />
-                <label htmlFor="privacy" className="text-sm text-gray-600">
-                  By submitting this form you agree to the terms of the{" "}
-                  <Link
-                    to="/privacy-policy"
-                    className="text-primary hover:underline">
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
-
-              {/* reCAPTCHA Placeholder */}
-              <div className="bg-gray-200 rounded-lg p-4 text-center text-sm text-gray-600">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-6 h-6 border-2 border-gray-400 rounded"></div>
-                  <span>I'm not a Robot</span>
-                </div>
               </div>
 
               {/* Submit Button */}

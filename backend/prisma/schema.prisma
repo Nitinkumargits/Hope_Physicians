@@ -1525,6 +1525,29 @@ model SurgeryCostEstimation {
   @@index([status])
 }
 
+// ============================================
+// CONTACT MESSAGE MODEL
+// ============================================
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    String   @default("new") // new, read, replied, archived
+  readAt    DateTime?
+  repliedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
 // Update existing models to include new relations
 // Add to Patient model
 // Add to Appointment model

@@ -13,6 +13,7 @@ const patientFormRoutes = require("./routes/patientFormRoutes");
 const prescriptionRoutes = require("./routes/prescriptionRoutes");
 const medicalRecordRoutes = require("./routes/medicalRecordRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 // Staff dashboard routes
 const receptionRoutes = require("./routes/staff/receptionRoutes");
@@ -93,6 +94,7 @@ app.use("/api/patient-forms", patientFormRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/medical-records", medicalRecordRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Staff dashboard routes
 app.use("/api/staff/reception", receptionRoutes);

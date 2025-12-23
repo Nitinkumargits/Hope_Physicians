@@ -1,9 +1,90 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import '../styles/Contact.css';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import heroImg from "../assets/images/hero2.jpg";
+import { submitContactForm } from "../services/contactService";
+import toast from "react-hot-toast";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ type: "", message: "" });
+
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.subject || !formData.message) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please fill in all required fields.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter a valid email address.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const result = await submitContactForm(formData);
+      if (result.success) {
+        setSubmitStatus({
+          type: "success",
+          message: "Thank you! Your message has been sent successfully. We'll get back to you soon.",
+        });
+        toast.success("Message sent successfully!");
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message: result.error || "Failed to send message. Please try again later.",
+        });
+        toast.error(result.error || "Failed to send message");
+      }
+    } catch (error) {
+      setSubmitStatus({
+        type: "error",
+        message: "An error occurred. Please try again later.",
+      });
+      toast.error("Failed to send message");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const contactCards = [
     {
       key: "location",
@@ -129,7 +210,17 @@ const Contact = () => {
                   Live support
                 </div>
               </div>
-              <form className="grid gap-4 md:gap-5">
+              <form onSubmit={handleSubmit} className="grid gap-4 md:gap-5">
+                {submitStatus.message && (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      submitStatus.type === "success"
+                        ? "bg-green-50 text-green-800 border border-green-200"
+                        : "bg-red-50 text-red-800 border border-red-200"
+                    }`}>
+                    {submitStatus.message}
+                  </div>
+                )}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
                     <label className="text-sm text-slate-700 font-semibold">
@@ -138,6 +229,8 @@ const Contact = () => {
                     <input
                       type="text"
                       name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
                       placeholder="Jane"
                       required
                       className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
@@ -150,6 +243,8 @@ const Contact = () => {
                     <input
                       type="text"
                       name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
                       placeholder="Doe"
                       required
                       className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
@@ -164,6 +259,8 @@ const Contact = () => {
                     <input
                       type="email"
                       name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       placeholder="you@example.com"
                       required
                       className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
@@ -176,8 +273,9 @@ const Contact = () => {
                     <input
                       type="tel"
                       name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                       placeholder="+234 900 000 0000"
-                      required
                       className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
                     />
                   </div>
@@ -189,6 +287,8 @@ const Contact = () => {
                   <input
                     type="text"
                     name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
                     placeholder="How can we help you?"
                     required
                     className="rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
@@ -200,6 +300,8 @@ const Contact = () => {
                   </label>
                   <textarea
                     name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
                     rows="5"
                     placeholder="Your message..."
                     required
@@ -209,9 +311,22 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-3 mt-2">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-4 py-3 transition shadow-[0_14px_30px_rgba(59,130,246,0.25)]">
-                    <i className="fas fa-paper-plane me-2"></i>
-                    Send Message
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold text-sm px-4 py-3 transition shadow-[0_14px_30px_rgba(59,130,246,0.25)]">
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-paper-plane me-2"></i>
+                        Send Message
+                      </>
+                    )}
                   </button>
                   <a
                     href="tel:252-522-3663"

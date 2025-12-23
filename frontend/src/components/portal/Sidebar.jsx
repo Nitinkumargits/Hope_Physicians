@@ -25,6 +25,7 @@ import {
   FaChartLine,
   FaTasks,
   FaFileAlt,
+  FaEnvelope,
 } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -139,6 +140,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         label: "Notifications",
         badge: notificationCounts["/admin/notifications"] || 3,
       },
+      {
+        path: "/admin/contact-messages",
+        icon: FaEnvelope,
+        label: "Contact Messages",
+        badge: null,
+      },
       { path: "/admin/settings", icon: FaCog, label: "Settings", badge: null },
     ],
     doctor: [
@@ -178,6 +185,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         icon: FaBell,
         label: "Notifications",
         badge: notificationCounts["/doctor/notifications"],
+      },
+      {
+        path: "/doctor/contact-messages",
+        icon: FaEnvelope,
+        label: "Contact Messages",
+        badge: null,
       },
     ],
     patient: [

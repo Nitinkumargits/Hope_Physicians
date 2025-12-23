@@ -679,6 +679,113 @@ textarea:focus {
   padding: 0 1rem;
 }
 
+/* Testimonials Carousel Styles */
+.testimonials-carousel-wrapper {
+  margin: 2rem 0;
+  padding: 0 1rem;
+}
+
+.testimonials-carousel-wrapper .slick-slide > div {
+  padding: 0 0.5rem;
+  height: 100%;
+}
+
+.testimonials-carousel-wrapper .slick-slide {
+  height: auto;
+}
+
+.testimonials-carousel-wrapper .slick-list {
+  margin: 0 -0.5rem;
+}
+
+.testimonials-carousel-wrapper .slick-track {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Testimonials carousel dots customization */
+.testimonials-carousel-wrapper .slick-dots {
+  bottom: -3rem;
+  text-align: center;
+}
+
+.testimonials-carousel-wrapper .slick-dots li {
+  margin: 0 0.5rem;
+}
+
+.testimonials-carousel-wrapper .slick-dots li button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(0, 102, 204, 0.3);
+  border: 2px solid rgba(0, 102, 204, 0.5);
+  transition: all 0.3s ease;
+}
+
+.testimonials-carousel-wrapper .slick-dots li button:before {
+  display: none;
+}
+
+.testimonials-carousel-wrapper .slick-dots li.slick-active button {
+  background: var(--primary);
+  border-color: var(--primary);
+  width: 32px;
+  border-radius: 6px;
+}
+
+/* Testimonials carousel arrows customization */
+.testimonials-carousel-wrapper .slick-prev,
+.testimonials-carousel-wrapper .slick-next {
+  z-index: 30;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.testimonials-carousel-wrapper .slick-prev:hover,
+.testimonials-carousel-wrapper .slick-next:hover {
+  background: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.testimonials-carousel-wrapper .slick-prev {
+  left: -20px;
+}
+
+.testimonials-carousel-wrapper .slick-next {
+  right: -20px;
+}
+
+.testimonials-carousel-wrapper .slick-prev:before,
+.testimonials-carousel-wrapper .slick-next:before {
+  color: var(--primary);
+  font-size: 20px;
+  opacity: 1;
+}
+
+/* Responsive adjustments for testimonials carousel */
+@media (max-width: 1024px) {
+  .testimonials-carousel-wrapper .slick-prev {
+    left: -10px;
+  }
+  .testimonials-carousel-wrapper .slick-next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+  .testimonials-carousel-wrapper .slick-prev,
+  .testimonials-carousel-wrapper .slick-next {
+    display: none !important;
+  }
+}
+
 /* Service card structure matching reference */
 .support-service-box {
   position: relative;
