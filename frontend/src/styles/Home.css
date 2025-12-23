@@ -976,6 +976,420 @@ textarea:focus {
   align-items: stretch;
 }
 
+/* ---------- DEPARTMENT CAROUSEL STYLES ---------- */
+.department-carousel-wrapper {
+  margin: 2.5rem 0 2rem;
+  padding: 0 1rem;
+}
+
+.department-carousel-cta {
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.department-carousel-cta .view-all-services-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dept-carousel-container {
+  border: 2px solid #1e3a8a;
+  border-radius: 12px;
+  padding: 0;
+  background: #f0f9ff;
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.1);
+  overflow: visible; /* allow slick arrows to show outside */
+  position: relative;
+}
+
+.dept-carousel-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.3), transparent);
+  animation: shimmer 3s infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.department-carousel-wrapper .slick-slide {
+  height: auto;
+}
+
+.department-carousel-wrapper .slick-slide > div {
+  padding: 0;
+}
+
+.department-carousel-wrapper .slick-list {
+  margin: 0;
+  border-radius: 10px;
+}
+
+.department-carousel-wrapper .slick-track {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Departments row - grid layout for items */
+.departments-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 2px solid #1e3a8a;
+  background: #f0f9ff;
+}
+
+/* Department item - styled as link */
+.dept-item {
+  background: white;
+  padding: 2rem 1.5rem;
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+  border-right: 1px solid #1e3a8a;
+  border-bottom: 1px solid #1e3a8a;
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* Remove right border for last column */
+.departments-row .dept-item:nth-child(5n) {
+  border-right: none;
+}
+
+/* Remove bottom border for last row items (items 6-10 in a 10-item slide) */
+.departments-row .dept-item:nth-child(n+6) {
+  border-bottom: none;
+}
+
+.dept-item:hover {
+  background: #f8fafc;
+  text-decoration: none;
+  color: inherit;
+  z-index: 1;
+}
+
+.dept-item:focus {
+  outline: 3px solid rgba(37, 99, 235, 0.4);
+  outline-offset: -3px;
+  z-index: 2;
+}
+
+/* Department icon */
+.dept-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.dept-icon svg {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  stroke: #1e3a8a;
+}
+
+.dept-item:hover .dept-icon {
+  transform: translateY(-3px);
+}
+
+.dept-item:hover .dept-icon svg {
+  stroke: #2563eb;
+}
+
+/* Department title - using title2 class */
+.title2 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.dept-item:hover .title2 {
+  color: #0f172a;
+}
+
+/* Department description - hidden to match reference design */
+.dept-item p {
+  display: none;
+}
+
+/* Department carousel dots customization */
+.department-carousel-wrapper .slick-dots {
+  bottom: -3.5rem;
+  text-align: center;
+}
+
+.department-carousel-wrapper .slick-dots li {
+  margin: 0 0.5rem;
+}
+
+.department-carousel-wrapper .slick-dots li button {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid #dc2626;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.6;
+}
+
+.department-carousel-wrapper .slick-dots li button:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.department-carousel-wrapper .slick-dots li button:before {
+  display: none;
+}
+
+.department-carousel-wrapper .slick-dots li.slick-active button {
+  background: #dc2626;
+  border-color: #dc2626;
+  width: 32px;
+  border-radius: 7px;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Department carousel arrows customization */
+.department-carousel-wrapper .slick-prev,
+.department-carousel-wrapper .slick-next {
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(30, 58, 138, 0.1);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.department-carousel-wrapper .slick-prev:hover,
+.department-carousel-wrapper .slick-next:hover {
+  background: #2563eb;
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.3);
+  transform: scale(1.1);
+  border-color: #2563eb;
+}
+
+.department-carousel-wrapper .slick-prev {
+  left: -64px; /* push outside carousel */
+}
+
+.department-carousel-wrapper .slick-next {
+  right: -64px; /* push outside carousel */
+}
+
+.department-carousel-wrapper .slick-prev:before,
+.department-carousel-wrapper .slick-next:before {
+  color: #1e3a8a;
+  font-size: 22px;
+  opacity: 1;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.department-carousel-wrapper .slick-prev:hover:before,
+.department-carousel-wrapper .slick-next:hover:before {
+  color: white;
+}
+
+/* View All Services Button Enhancement */
+.view-all-services-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.view-all-services-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.view-all-services-btn:hover::before {
+  left: 100%;
+}
+
+.view-all-services-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.view-all-services-btn:hover svg {
+  transform: translateX(4px);
+}
+
+/* Search Bar Enhancement */
+.d-flex.justify-content-center {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive adjustments for department carousel */
+@media (max-width: 1200px) {
+  .departments-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .departments-row .dept-item:nth-child(5n) {
+    border-right: 1px solid #1e3a8a;
+  }
+  .departments-row .dept-item:nth-child(3n) {
+    border-right: none;
+  }
+  .departments-row .dept-item:nth-child(n+4):nth-child(-n+6) {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .department-carousel-wrapper .slick-prev {
+    left: -12px;
+    width: 40px;
+    height: 40px;
+  }
+  .department-carousel-wrapper .slick-next {
+    right: -12px;
+    width: 40px;
+    height: 40px;
+  }
+  .department-carousel-wrapper .slick-prev:before,
+  .department-carousel-wrapper .slick-next:before {
+    font-size: 18px;
+  }
+  .dept-item {
+    min-height: 200px;
+    padding: 2rem 1.25rem;
+  }
+  .dept-icon {
+    width: 60px;
+    height: 60px;
+  }
+  .dept-icon i {
+    font-size: 32px;
+  }
+  .title2 {
+    font-size: 0.9375rem;
+  }
+  .dept-item p {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .department-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+  .department-carousel-wrapper .slick-prev,
+  .department-carousel-wrapper .slick-next {
+    display: none !important;
+  }
+  .departments-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .departments-row .dept-item:nth-child(3n) {
+    border-right: 1px solid #1e3a8a;
+  }
+  .departments-row .dept-item:nth-child(2n) {
+    border-right: none;
+  }
+  .departments-row .dept-item:nth-child(n+3):nth-child(-n+4) {
+    border-bottom: none;
+  }
+  .dept-item {
+    min-height: 180px;
+    padding: 1.25rem 0.75rem;
+  }
+  .dept-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .dept-icon i {
+    font-size: 26px;
+  }
+  .title2 {
+    font-size: 0.875rem;
+  }
+  .dept-item p {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .departments-row {
+    grid-template-columns: 1fr;
+  }
+  .departments-row .dept-item {
+    border-right: none;
+    border-bottom: 1px solid #1e3a8a;
+  }
+  .departments-row .dept-item:last-child {
+    border-bottom: none;
+  }
+  .dept-item {
+    min-height: 160px;
+    padding: 1rem;
+  }
+  .dept-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.75rem;
+  }
+  .dept-icon i {
+    font-size: 22px;
+  }
+  .title2 {
+    font-size: 0.8125rem;
+  }
+  .dept-item p {
+    font-size: 0.6875rem;
+  }
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1000px) {
   .services-grid {

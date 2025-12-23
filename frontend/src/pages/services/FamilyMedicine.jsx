@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "../../styles/Home.css";
 // High-quality image from Unsplash - Family Medicine (Doctor with family)
 const familyImg =
@@ -76,6 +79,28 @@ const FamilyMedicine = () => {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
 
+  // Carousel configuration - 1 slide at a time, each slide contains multiple items
+  const departmentCarouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3500,
+    pauseOnHover: true,
+    arrows: true,
+  };
+
+  // Group services into chunks of 10 items per slide
+  const chunkArray = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
   useEffect(() => {
     // Reveal on scroll animation
     const reveals = document.querySelectorAll(".reveal-on-scroll");
@@ -102,6 +127,518 @@ const FamilyMedicine = () => {
 
   const handleLearnMore = (serviceLabel) => {
     navigate(`/contact?topic=${encodeURIComponent(serviceLabel)}`);
+  };
+
+  // Render SVG icon for each department
+  const renderDeptIcon = (iconKey) => {
+    const stroke = "#1e3a8a";
+    const strokeWidth = "1.5";
+
+    switch (iconKey) {
+      case "acute":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        );
+      case "diabetes":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        );
+      case "hypertension":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        );
+      case "kidney":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9 2v20M15 2v20M3 7h6M15 7h6M3 17h6M15 17h6" />
+          </svg>
+        );
+      case "cardiac":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        );
+      case "neuro":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44L2 18.5a2.5 2.5 0 0 1 0-5l5.04-1.44A2.5 2.5 0 0 1 9.5 2z" />
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44L22 18.5a2.5 2.5 0 0 0 0-5l-5.04-1.44A2.5 2.5 0 0 0 14.5 2z" />
+          </svg>
+        );
+      case "stroke":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        );
+      case "neuropathy":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
+          </svg>
+        );
+      case "heart-failure":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+        );
+      case "pulmonary":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0z" />
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+          </svg>
+        );
+      case "sleep-apnea":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M7 8h10M7 12h10M7 16h5" />
+          </svg>
+        );
+      case "copd":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <path d="M3 12h18" />
+          </svg>
+        );
+      case "asthma":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0z" />
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+          </svg>
+        );
+      case "thyroid":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        );
+      case "depression":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+          </svg>
+        );
+      case "anxiety":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+          </svg>
+        );
+      case "gastro":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M3 12h18M3 6h18M3 18h18" />
+            <path d="M6 3v18M18 3v18" />
+            <circle cx="9" cy="9" r="1" />
+            <circle cx="15" cy="9" r="1" />
+            <circle cx="9" cy="15" r="1" />
+            <circle cx="15" cy="15" r="1" />
+          </svg>
+        );
+      case "infectious":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 2v20M2 12h20" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        );
+      case "skin":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12h8M12 8v8" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        );
+      case "orthopedic":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <path d="M8 8l4-4 4 4M8 16l4 4 4-4" />
+          </svg>
+        );
+      case "arthritis":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        );
+      case "trigger-point":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        );
+      case "cortisone":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        );
+      case "weight":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M6 2h12M6 22h12M6 2v20M18 2v20M9 6h6M9 10h6M9 14h6M9 18h6" />
+          </svg>
+        );
+      case "surgery":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <path d="M8 8l2-2M16 8l-2-2M8 16l2 2M16 16l-2 2" />
+          </svg>
+        );
+      case "mens-health":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+            <circle cx="12" cy="12" r="1" />
+          </svg>
+        );
+      case "womens-health":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+            <circle cx="10" cy="12" r="1" />
+            <circle cx="14" cy="12" r="1" />
+          </svg>
+        );
+      case "pediatric":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="8" r="3" />
+            <path d="M5 20c0-2.5 2-4.5 4.5-4.5h5c2.5 0 4.5 2 4.5 4.5" />
+            <circle cx="12" cy="12" r="1" />
+          </svg>
+        );
+      case "preventative":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        );
+      case "well-child":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="8" r="3" />
+            <path d="M5 20c0-2.5 2-4.5 4.5-4.5h5c2.5 0 4.5 2 4.5 4.5" />
+            <path d="M9 12h6M12 9v6" />
+          </svg>
+        );
+      case "wellness":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            <circle cx="12" cy="12" r="2" />
+            <path d="M8 8l4-4 4 4M8 16l4 4 4-4" />
+          </svg>
+        );
+      case "immunizations":
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        );
+      default:
+        return (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+        );
+    }
   };
 
   const services = [
@@ -334,6 +871,13 @@ const FamilyMedicine = () => {
   const filteredServices = services.filter((s) =>
     s.label.toLowerCase().includes(search.trim().toLowerCase())
   );
+
+  // Group filtered services into slides of 10 items each
+  const serviceSlides = chunkArray(
+    filteredServices.length ? filteredServices : services,
+    10
+  );
+
   return (
     <>
       {/* HERO SECTION */}
@@ -435,15 +979,9 @@ const FamilyMedicine = () => {
       </section>
 
       {/* SERVICES OFFERED */}
-      <section className="relative py-20 md:py-28 reveal-on-scroll bg-gradient-to-b from-blue-50 to-white">
-        <div className="pointer-events-none absolute inset-0">
-          <span
-            className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute -bottom-24 right-1/5 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl"
-            aria-hidden="true"></span>
-        </div>
+      <section
+        className="relative py-20 md:py-28 reveal-on-scroll"
+        style={{ background: "#f0f9ff" }}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
@@ -532,69 +1070,53 @@ const FamilyMedicine = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto pr-2">
-            {(filteredServices.length ? filteredServices : services).map(
-              (item) => (
-                <article
-                  key={item.key}
-                  tabIndex={0}
-                  aria-label={item.label}
-                  className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col relative text-start cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2"
-                  onMouseEnter={() => setHovered(item.key)}
-                  onMouseLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(item.key)}
-                  onBlur={() => setHovered(null)}>
-                  <div
-                    className="position-relative overflow-hidden"
-                    style={{
-                      height: 190,
-                      background: `linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.9)), url('${
-                        serviceImages[item.key] ||
-                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=900&auto=format&fit=crop"
-                      }') center center / cover`,
-                    }}>
-                    <div
-                      className="position-absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.85))",
-                      }}></div>
-                  </div>
-                  <div className="flex flex-col gap-2 p-5">
-                    <h5 className="font-bold mb-1 text-gray-900 text-lg leading-tight">
-                      {item.label}
-                    </h5>
-                    <p className="mb-0 text-gray-600 leading-relaxed text-base">
-                      Tailored care and coordination from our family medicine
-                      team with proactive guidance, timely follow-ups, and
-                      compassionate support.
-                    </p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <button
-                        type="button"
-                        className="bg-primary hover:bg-blue-700 text-white text-sm font-semibold px-3 py-1.5 rounded-md transition-all duration-200 shadow-sm hover:shadow-md"
-                        onClick={() => handleBook(item.label)}>
-                        Book
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-primary hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105"
-                        style={{
-                          width: 44,
-                          height: 44,
-                          boxShadow: "rgba(37, 99, 235, 0.28) 0px 10px 26px",
-                        }}
-                        aria-label={`Learn more about ${item.label}`}
-                        onClick={() => handleLearnMore(item.label)}>
-                        <i
-                          className="fas fa-arrow-right"
-                          aria-hidden="true"></i>
-                      </button>
+          <div className="department-carousel-wrapper">
+            <div className="dept-carousel-container">
+              <Slider {...departmentCarouselSettings}>
+                {serviceSlides.map((slide, slideIndex) => (
+                  <div key={slideIndex}>
+                    <div className="departments-row">
+                      {slide.map((item) => (
+                        <a
+                          key={item.key}
+                          href="#"
+                          className="dept-item"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleBook(item.label);
+                          }}
+                          onMouseEnter={() => setHovered(item.key)}
+                          onMouseLeave={() => setHovered(null)}>
+                          <div className="dept-icon">
+                            {renderDeptIcon(item.key)}
+                          </div>
+                          <div className="title2">{item.label}</div>
+                        </a>
+                      ))}
                     </div>
                   </div>
-                </article>
-              )
-            )}
+                ))}
+              </Slider>
+            </div>
+          </div>
+          <div className="department-carousel-cta">
+            <Link
+              to="/departments"
+              className="view-all-services-btn inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              <span>View All Services</span>
+              <svg
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
