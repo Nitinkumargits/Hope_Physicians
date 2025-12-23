@@ -35,6 +35,7 @@ const Home = () => {
   });
   const [formStatus, setFormStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
 
   useEffect(() => {
     // Reveal on scroll
@@ -121,10 +122,10 @@ const Home = () => {
             result.error || "Failed to send message. Please try again later.",
         });
       }
-    } catch (error) {
+    } catch (err) {
       setFormStatus({
         type: "error",
-        message: "An error occurred. Please try again later.",
+        message: err?.message || "An error occurred. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -159,66 +160,6 @@ const Home = () => {
       icon: "calendar",
     },
   ];
-
-  const renderConsultationIcon = (icon) => {
-    const stroke = "#ffffff";
-    switch (icon) {
-      case "clock":
-        return (
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true">
-            <circle cx="12" cy="12" r="9"></circle>
-            <polyline points="12 7 12 12 15 14"></polyline>
-          </svg>
-        );
-      case "phone":
-        return (
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.15 9.8 19.8 19.8 0 0 1 .08 1.18 2 2 0 0 1 2.05-.99h3a2 2 0 0 1 2 1.72c.12.92.37 1.82.73 2.67a2 2 0 0 1-.45 2.11L6.1 6.89a16 16 0 0 0 7 7l1.37-1.22a2 2 0 0 1 2.11-.45c.85.36 1.75.61 2.67.73A2 2 0 0 1 22 16.92Z" />
-          </svg>
-        );
-      case "calendar":
-        return (
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4" />
-            <path d="M8 2v4" />
-            <path d="M3 10h18" />
-            <path d="M8 14h.01" />
-            <path d="M12 14h.01" />
-            <path d="M16 14h.01" />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  };
 
   // Services (drives the dynamic Services section)
   const services = [
@@ -311,6 +252,7 @@ const Home = () => {
     autoplay: true,
     autoplaySpeed: 4000,
     pauseOnHover: true,
+    arrows: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -343,6 +285,7 @@ const Home = () => {
         "Dr. Okonkwo is an awesome doctor that is willing to listen to me about my health concerns. Most importantly, he believes in me as a patient and gives me an opportunity to get healthier with medication or without. I feel comfortable talking with him because he listens to me.",
       rating: 5,
       avatar: womensImg,
+      year: "2024",
     },
     {
       name: "Lu McMurtry",
@@ -350,6 +293,7 @@ const Home = () => {
         "Very friendly staff. Always knows my Mom's name and makes her feel welcome. The wait time to see the doctor can be long, but he does a good job listening to her concerns once he is with her. Most doctors want to get you in and out, but I hear him with his patients asking questions and listening to what is bothering them. When I take my Mom for her appointment with him, I plan my day accordingly. Yes, it may be a long day at the doctor's office, but I like the attentiveness he gives to her needs. So waiting to get that type of service, I don't mind.",
       rating: 5,
       avatar: familyImg,
+      year: "2024",
     },
     {
       name: "Deacon Hull",
@@ -357,6 +301,7 @@ const Home = () => {
         "The facility is a little dated; however, the professionalism and courtesy of the staff is exceptional. My wife had called just about every physician in town and everyone was full. The receptionist was caring and 'fit' me in the next day due to the severity of my condition. None of the other offices would. The wait was a little long, but I saw so many patients coming out who had been seen before me. All of the patients looked satisfied, and I was impressed with the fact that many of the patients knew the staff by name. It caused me to reminisce of my childhood when our family physician knew us by name and cared. Hats off to Hope Physicians for outstanding customer service in an age of impatience.",
       rating: 5,
       avatar: mensImg,
+      year: "2024",
     },
     {
       name: "Sarah Mitchell",
@@ -364,6 +309,7 @@ const Home = () => {
         "I've been bringing my children to Hope Physicians for pediatric care for over three years now. The doctors are patient, thorough, and truly care about my kids' wellbeing. The staff always makes us feel welcome, and I appreciate how they take time to explain everything clearly. Highly recommend for families in Kinston!",
       rating: 5,
       avatar: familyImg,
+      year: "2025",
     },
     {
       name: "James Thompson",
@@ -371,6 +317,7 @@ const Home = () => {
         "As someone who needs regular check-ups for chronic conditions, I appreciate the comprehensive care I receive here. Dr. Okonkwo and his team are knowledgeable, professional, and always available when I need urgent care. The walk-in option is a lifesaver for unexpected health issues.",
       rating: 5,
       avatar: mensImg,
+      year: "2025",
     },
     {
       name: "Maria Rodriguez",
@@ -378,6 +325,7 @@ const Home = () => {
         "The women's health services at Hope Physicians are exceptional. The staff is respectful, understanding, and provides excellent care. I feel comfortable discussing any health concerns, and I always leave feeling well-informed about my health. Thank you for providing such compassionate healthcare in our community.",
       rating: 5,
       avatar: womensImg,
+      year: "2025",
     },
   ];
 
@@ -1188,62 +1136,56 @@ const Home = () => {
       {/* TESTIMONIALS */}
       <section className="relative overflow-hidden py-16 md:py-20 reveal-on-scroll bg-gradient-to-b from-slate-50 to-slate-100">
         <div className="pointer-events-none absolute inset-0">
-          <span
-            className="absolute -top-24 left-1/5 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-indigo-400/12 blur-3xl"
-            aria-hidden="true"></span>
-          <span
-            className="absolute inset-6 rounded-3xl border border-slate-200/50"
-            aria-hidden="true"></span>
+          <div className="patient-stories-band" aria-hidden="true"></div>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-3 mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              What Our Patients Say
-            </h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              Real experiences from our valued patients
+          <div className="text-center space-y-2 mb-10">
+            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+              Testimonials
             </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Patient Stories
+            </h2>
           </div>
 
-          <div className="testimonials-carousel-wrapper">
+          <div className="patient-stories testimonials-carousel-wrapper">
             <Slider {...testimonialsCarouselSettings}>
               {testimonials.map((t, i) => (
-                <div key={i} className="px-3">
-                  <div className="rounded-2xl border border-slate-200 bg-white/90 backdrop-blur-md p-5 shadow-lg flex flex-col gap-4 transition duration-200 hover:-translate-y-1 hover:shadow-2xl h-full">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-100 shadow-sm">
-                        <img
-                          src={t.avatar || doctorImg}
-                          alt={`${t.name} - Patient testimonial for Hope Physicians primary care and family medicine services`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                          decoding="async"
-                          style={{
-                            imageRendering: "high-quality",
-                            objectFit: "cover",
-                          }}
+                <div key={i}>
+                  <div className="stories-item">
+                    <div className="quote-badge">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"
+                          fill="#ffffff"
                         />
-                      </div>
-                      <div>
-                        <h5 className="text-base font-semibold text-slate-900">
-                          {t.name}
-                        </h5>
-                        <div className="text-amber-400 text-sm flex">
-                          {Array(t.rating)
-                            .fill(0)
-                            .map((_, idx) => (
-                              <span key={idx}>★</span>
-                            ))}
-                        </div>
-                      </div>
+                        <path
+                          d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"
+                          fill="#ffffff"
+                        />
+                      </svg>
                     </div>
-                    <p className="text-slate-700 leading-relaxed italic">
-                      "{t.feedback}"
-                    </p>
+                    <p className="story-text">{t.feedback}</p>
+                    <div className="title2 story-name">{t.name}</div>
+                    <span className="story-year">{t.year || "2024"}</span>
+                    <a
+                      className="view-details"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedTestimonial(t);
+                      }}
+                      data-description={t.feedback}
+                      data-patientname={t.name}
+                      data-recorddate={t.year || "2024"}>
+                      Read More
+                    </a>
                   </div>
                 </div>
               ))}
@@ -1666,6 +1608,49 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* TESTIMONIAL MODAL */}
+      {selectedTestimonial && (
+        <div
+          className="testimonial-modal-overlay"
+          onClick={() => setSelectedTestimonial(null)}>
+          <div
+            className="testimonial-modal-content"
+            onClick={(e) => e.stopPropagation()}>
+            <button
+              className="testimonial-modal-close"
+              onClick={() => setSelectedTestimonial(null)}>
+              ×
+            </button>
+            <div className="testimonial-modal-quote">
+              <div className="quote-badge">
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"
+                    fill="#ffffff"
+                  />
+                  <path
+                    d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"
+                    fill="#ffffff"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p className="testimonial-modal-text">
+              {selectedTestimonial.feedback}
+            </p>
+            <div className="testimonial-modal-footer">
+              <div className="title2">{selectedTestimonial.name}</div>
+              <span>{selectedTestimonial.year || "2024"}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FLOATING BUTTON */}
       <Link to="/appointment" className="floating-btn bounce-btn">

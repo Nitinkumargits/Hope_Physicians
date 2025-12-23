@@ -703,10 +703,323 @@ textarea:focus {
   align-items: stretch;
 }
 
+/* ---------- PATIENT STORIES / TESTIMONIALS STYLING ---------- */
+.patient-stories {
+  margin: 2rem 0;
+  padding: 0 1rem;
+  position: relative;
+}
+
+.stories-item {
+  position: relative;
+  background: #ffffff;
+  padding: 1.25rem 1.5rem 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.stories-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+.patient-stories-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 120px;
+  background: #ffd800;
+  opacity: 0.9;
+}
+
+.quote-badge {
+  width: 42px;
+  height: 42px;
+  background: #ff2d1a;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  margin: 0 auto 0.5rem;
+  position: relative;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.quote-badge svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.stories-item p {
+  color: #1f2937;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  flex-grow: 1;
+  font-style: normal;
+}
+
+.story-text {
+  margin-top: 0.25rem;
+}
+
+.stories-item .title2 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.stories-item span {
+  color: #475569;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.stories-item .view-details {
+  color: #111827;
+  text-decoration: underline;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: auto;
+  display: inline-block;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.stories-item .view-details:hover {
+  color: #d00000;
+}
+
+/* Testimonial Modal */
+.testimonial-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.testimonial-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.testimonial-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.testimonial-modal-close:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.testimonial-modal-quote {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-modal-text {
+  color: #1f2937;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.testimonial-modal-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.testimonial-modal-footer .title2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.testimonial-modal-footer span {
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.story-name {
+  line-height: 1.4;
+}
+
+.story-year {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Patient stories carousel slides */
+.patient-stories .slick-slide > div {
+  padding: 0 0.5rem;
+  height: 100%;
+  display: flex;
+}
+
+.patient-stories .slick-slide {
+  height: auto;
+}
+
+.patient-stories .slick-list {
+  margin: 0 -0.5rem;
+}
+
+.patient-stories .slick-track {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Patient stories carousel arrows */
+.patient-stories .slick-prev,
+.patient-stories .slick-next {
+  z-index: 30;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.patient-stories .slick-prev:hover,
+.patient-stories .slick-next:hover {
+  background: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.patient-stories .slick-prev {
+  left: -20px;
+}
+
+.patient-stories .slick-next {
+  right: -20px;
+}
+
+.patient-stories .slick-prev:before,
+.patient-stories .slick-next:before {
+  color: #d00000;
+  font-size: 18px;
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .patient-stories .slick-prev {
+    left: -10px;
+  }
+  .patient-stories .slick-next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .patient-stories {
+    padding: 0 0.5rem;
+  }
+  .patient-stories .slick-prev,
+  .patient-stories .slick-next {
+    display: none !important;
+  }
+}
+
 /* Testimonials carousel dots customization */
-.testimonials-carousel-wrapper .slick-dots {
+.testimonials-carousel-wrapper .slick-dots,
+.patient-stories .slick-dots {
   bottom: -3rem;
   text-align: center;
+}
+
+.patient-stories .slick-dots li {
+  margin: 0 0.4rem;
+}
+
+.patient-stories .slick-dots li button {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid #ff2d1a;
+  transition: all 0.3s ease;
+}
+
+.patient-stories .slick-dots li button:before {
+  display: none;
+}
+
+.patient-stories .slick-dots li.slick-active button {
+  background: #ff2d1a;
+  border-color: #ff2d1a;
+  width: 32px;
+  border-radius: 8px;
 }
 
 .testimonials-carousel-wrapper .slick-dots li {
