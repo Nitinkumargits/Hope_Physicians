@@ -293,16 +293,10 @@ const Doctors = () => {
                   }}>
                     <Link 
                       to="/appointment"
-                      className="form-btn" 
-                      style={{
-                        padding: '12px 30px',
-                        fontSize: '16px',
-                        fontWeight: '600',
-                        textDecoration: 'none',
-                        display: 'inline-block'
-                      }}
+                      className="cta-primary-btn inline-flex items-center justify-center px-5 py-3 rounded-full font-semibold transition duration-200"
                     >
-                      Book Appointment
+                      <span>Book Appointment</span>
+                      <span className="cta-arrow ml-2">→</span>
                     </Link>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <a 

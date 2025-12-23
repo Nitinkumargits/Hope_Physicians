@@ -788,20 +788,9 @@ const Home = () => {
               </p>
               <Link
                 to="/appointment"
-                className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                className="cta-primary-btn inline-flex items-center justify-center px-5 py-3 rounded-full font-semibold transition duration-200">
                 <span>Book Appointment or Walk-In</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
+                <span className="cta-arrow ml-2">→</span>
               </Link>
             </div>
           </div>

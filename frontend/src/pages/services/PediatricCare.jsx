@@ -469,20 +469,21 @@ const PediatricCare = () => {
       </section>
 
       {/* CTA */}
-      <section className="relative py-14 md:py-16 reveal-on-scroll bg-gradient-to-r from-primary via-blue-700 to-indigo-700">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="space-y-2">
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
+      <section className="cta-enhanced relative overflow-hidden py-14 md:py-16 reveal-on-scroll bg-slate-50">
+        <div className="pointer-events-none absolute inset-0"></div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="cta-card flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="cta-copy space-y-2">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
                 Schedule Your Child's Next Visit
               </h2>
-              <p className="text-blue-50 text-lg">
+              <p className="text-slate-600 text-lg">
                 Book an appointment with our pediatric care team today.
               </p>
             </div>
             <Link
               to="/appointment"
-              className="cta-primary-btn inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold transition duration-200">
+              className="cta-primary-btn inline-flex items-center justify-center px-5 py-3 rounded-full font-semibold transition duration-200">
               <span>Book Appointment</span>
               <span className="cta-arrow ml-2">→</span>
             </Link>

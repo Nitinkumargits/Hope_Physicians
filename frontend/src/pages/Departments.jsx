@@ -344,23 +344,15 @@ const Departments = () => {
         zIndex: 1000
       }}>
         <button 
-          className="form-btn"
+          className="cta-primary-btn inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition duration-200"
           onClick={() => setShowModal(true)}
           style={{
-            padding: '12px 30px',
-            fontWeight: '600',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-            borderRadius: '50px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
             minWidth: '200px',
-            justifyContent: 'center',
             animation: 'float 3s ease-in-out infinite'
           }}
         >
-          <i className="fas fa-calendar-plus"></i>
           <span>Book Appointment</span>
+          <span className="cta-arrow ml-2">→</span>
         </button>
       </div>
 
