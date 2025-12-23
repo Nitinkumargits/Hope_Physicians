@@ -2654,3 +2654,67 @@ textarea:focus {
     border-radius: 12px;
   }
 }
+
+/* ---------- ECG / HEARTBEAT ANIMATION - FULL WIDTH ---------- */
+.ecg-overlay-full {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 400px;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ecg-svg-full {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ecg-path-full {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: ecg-draw-full 8s ease-in-out infinite;
+  stroke-width: 6;
+}
+
+@keyframes ecg-draw-full {
+  0% {
+    stroke-dashoffset: 2000;
+    opacity: 0.5;
+  }
+  20% {
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+  40% {
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+  60% {
+    stroke-dashoffset: -2000;
+    opacity: 0.5;
+  }
+  80% {
+    stroke-dashoffset: -2000;
+    opacity: 0.5;
+  }
+  100% {
+    stroke-dashoffset: 2000;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 768px) {
+  .ecg-overlay-full {
+    height: 300px;
+  }
+  
+  .ecg-path-full {
+    stroke-width: 4;
+  }
+}

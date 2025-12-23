@@ -1442,7 +1442,38 @@ const Home = () => {
 
       {/* CONTACT FORM SECTION */}
       <section className="relative overflow-hidden py-20 md:py-28 reveal-on-scroll bg-gradient-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ECG / Heartbeat background animation - Full width */}
+        <div className="ecg-overlay-full" aria-hidden="true">
+          <svg
+            className="ecg-svg-full"
+            viewBox="0 0 1440 400"
+            preserveAspectRatio="none">
+            <defs>
+              <linearGradient
+                id="ecg-grad-full"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%">
+                <stop offset="0%" stopColor="rgba(220,38,38,0.6)" />
+                <stop offset="25%" stopColor="rgba(14,165,233,0.6)" />
+                <stop offset="50%" stopColor="rgba(34,197,94,0.6)" />
+                <stop offset="75%" stopColor="rgba(14,165,233,0.6)" />
+                <stop offset="100%" stopColor="rgba(220,38,38,0.6)" />
+              </linearGradient>
+            </defs>
+            <path
+              className="ecg-path-full"
+              d="M0 200 L100 200 L120 160 L140 240 L160 120 L180 280 L220 200 L280 200 L300 140 L320 260 L340 180 L380 200 L440 200 L460 120 L480 300 L500 220 L560 200 L640 200 L660 140 L680 260 L700 180 L760 200 L840 200 L860 120 L880 300 L900 220 L960 200 L1040 200 L1060 140 L1080 260 L1100 180 L1160 200 L1240 200 L1260 140 L1280 260 L1300 180 L1360 200 L1440 200"
+              fill="none"
+              stroke="url(#ecg-grad-full)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-2xl mx-auto">
             {/* Section Header */}
             <div className="text-center mb-12">
