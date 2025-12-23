@@ -2734,3 +2734,36 @@ textarea:focus {
     stroke-width: 4;
   }
 }
+
+/* Mobile adjustments for hero carousel */
+@media (max-width: 768px) {
+  .hero-carousel .slick-prev,
+  .hero-carousel .slick-next {
+    display: none !important;
+  }
+
+  .hero-slide {
+    min-height: 520px;
+    padding: 1.5rem 0;
+  }
+
+  .hero-primary-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .hero-welcome-card {
+    padding: 1.25rem;
+  }
+
+  .hero-image-card img {
+    height: 220px;
+  }
+}
