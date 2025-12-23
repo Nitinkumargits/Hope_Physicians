@@ -66,6 +66,366 @@ const Home = () => {
     waitForAnimate: true,
   };
 
+  // Services carousel settings and data (mirrors department carousel UX)
+  const departmentCarouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3500,
+    pauseOnHover: true,
+    arrows: true,
+  };
+
+  const serviceSlides = [
+    [
+      {
+        title: "Annual Wellness Exams",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Immunizations",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+        ),
+      },
+      {
+        title: "Diabetes Management",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Hypertension",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Chronic Kidney Disease",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9 2v20M15 2v20M3 7h6M15 7h6M3 17h6M15 17h6"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Coronary Artery Disease",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Neurological Diseases",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44L2 18.5a2.5 2.5 0 0 1 0-5l5.04-1.44A2.5 2.5 0 0 1 9.5 2z"></path>
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44L22 18.5a2.5 2.5 0 0 0 0-5l-5.04-1.44A2.5 2.5 0 0 0 14.5 2z"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Stroke",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Neuropathy",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Congestive Heart Failure",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            <path d="M12 8v8M8 12h8"></path>
+          </svg>
+        ),
+      },
+    ],
+    [
+      {
+        title: "Obstructive Sleep Apnea",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M7 8h10M7 12h10M7 16h5"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "COPD",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            <path d="M3 12h18"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Asthma",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0z"></path>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Thyroid Disorders",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M7 8h10M7 12h10M7 16h5"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Depression",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
+          </svg>
+        ),
+      },
+      {
+        title: "Anxiety",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M3 12h18M3 6h18M3 18h18"></path>
+            <path d="M6 3v18M18 3v18"></path>
+            <circle cx="9" cy="9" r="1"></circle>
+            <circle cx="15" cy="9" r="1"></circle>
+            <circle cx="9" cy="15" r="1"></circle>
+            <circle cx="15" cy="15" r="1"></circle>
+          </svg>
+        ),
+      },
+      {
+        title: "Gastrointestinal Diseases",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2v20M2 12h20"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        ),
+      },
+      {
+        title: "Infectious Diseases",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        ),
+      },
+      {
+        title: "Skin Diseases",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M12 2v20M2 12h20"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        ),
+      },
+      {
+        title: "Pulmonary Diseases",
+        icon: (
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e3a8a"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+          </svg>
+        ),
+      },
+    ],
+  ];
+
   useEffect(() => {
     // Reveal on scroll
     const reveals = document.querySelectorAll(".reveal-on-scroll");
@@ -797,69 +1157,135 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Referral & Request Cards */}
-      <section className="relative py-20 md:py-28 reveal-on-scroll bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-32 lg:mt-0">
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Physician Referral Form Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center border border-primary/20">
-                  <svg
-                    className="w-7 h-7 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Physician Referral Form
-                </h3>
-              </div>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                Refer patients for quality care and comprehensive medical
-                services.
+      {/* Services / Departments Carousel Section */}
+      <section
+        className="relative overflow-hidden py-20 md:py-28 reveal-on-scroll"
+        style={{ background: "rgb(240, 249, 255)" }}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+              <div className="w-2 h-2 rounded-full bg-primary"></div>
+              <p className="text-primary text-sm uppercase tracking-wider font-semibold">
+                What We Offer
               </p>
             </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+              Our Services
+            </h2>
+            <p className="text-gray-700 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+              Comprehensive medical care tailored to your family's needs
+            </p>
+          </div>
 
-            {/* Request Card (Medical Teal) */}
-            <Link
-              to="/appointment"
-              className="bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block border border-teal-400/20">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                  <svg
-                    className="w-7 h-7 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
+          {/* Search Bar */}
+          <div className="d-flex justify-content-center mb-5">
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "520px",
+                position: "relative",
+              }}>
+              <div
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.98) 100%)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "16px",
+                  padding: "4px",
+                  boxShadow:
+                    "rgba(15, 23, 42, 0.08) 0px 4px 20px, rgba(255, 255, 255, 0.9) 0px 1px 0px inset",
+                  border: "1px solid rgba(226, 232, 240, 0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  transition: "0.3s",
+                }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    paddingLeft: "16px",
+                    flexShrink: 0,
+                  }}>
+                  <i
+                    className="fas fa-search"
+                    aria-hidden="true"
+                    style={{
+                      color: "rgb(15, 23, 42)",
+                      fontSize: "18px",
+                      fontWeight: 500,
+                    }}></i>
+                  <span
+                    style={{
+                      color: "rgb(71, 85, 105)",
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                    }}>
+                    Search services
+                  </span>
                 </div>
-                <h3 className="text-2xl font-bold text-white">
-                  Book Appointment
-                </h3>
+                <input
+                  placeholder="Search services..."
+                  aria-label="Search services"
+                  type="search"
+                  style={{
+                    flex: "1 1 0%",
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    padding: "14px 16px 14px 0px",
+                    fontSize: "15px",
+                    color: "rgb(15, 23, 42)",
+                    fontWeight: 400,
+                  }}
+                />
               </div>
-              <p className="text-white/95 text-lg leading-relaxed">
-                Schedule your visit with our expert medical team.
-              </p>
+            </div>
+          </div>
+
+          {/* Departments Carousel */}
+          <div className="department-carousel-wrapper">
+            <div className="dept-carousel-container">
+              <Slider {...departmentCarouselSettings}>
+                {serviceSlides.map((slide, slideIndex) => (
+                  <div key={slideIndex}>
+                    <div className="departments-row">
+                      {slide.map((service, idx) => (
+                        <Link
+                          key={idx}
+                          to={service.link || "#"}
+                          className="dept-item">
+                          <div className="dept-icon">{service.icon}</div>
+                          <div className="title2">{service.title}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          </div>
+
+          {/* CTA below carousel */}
+          <div className="department-carousel-cta">
+            <Link
+              to="/departments"
+              className="view-all-services-btn inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              <span>View All Services</span>
+              <svg
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
             </Link>
           </div>
         </div>
