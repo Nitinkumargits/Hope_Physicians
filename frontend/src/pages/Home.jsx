@@ -1281,11 +1281,30 @@ const Home = () => {
             <div className="grid gap-6 md:gap-8 lg:grid-cols-2 items-center w-full py-8 md:py-12">
               {/* Left: Primary Content Card */}
               <div className="space-y-6 hero-content-left">
-                <article className="hero-primary-card">
-                  <h1 className="hero-title">
+                <article
+                  className="hero-primary-card"
+                  style={{
+                    background: "rgba(0, 0, 0, 0.3)",
+                    backdropFilter: "blur(10px)",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "2rem",
+                    padding: "2.5rem 2rem",
+                  }}>
+                  <h1
+                    className="hero-title"
+                    style={{
+                      textShadow:
+                        "0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3)",
+                    }}>
                     Urgent Care in Kinston, NC | Walk-In Immediate Care
                   </h1>
-                  <p className="hero-description">
+                  <p
+                    className="hero-description"
+                    style={{
+                      textShadow:
+                        "0 1px 5px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3)",
+                    }}>
                     Walk-in urgent care and immediate care services in Kinston,
                     NC. No appointment needed. Located at 2104 North Herritage
                     Street, Kinston, NC 28501. We also provide family medicine,
@@ -1313,15 +1332,36 @@ const Home = () => {
 
               {/* Right: Welcome Card & Image */}
               <div className="space-y-6 hero-content-right">
-                <article className="hero-welcome-card">
+                <article
+                  className="hero-welcome-card"
+                  style={{
+                    background: "rgba(0, 0, 0, 0.3)",
+                    backdropFilter: "blur(10px)",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "1.5rem",
+                    padding: "2rem",
+                  }}>
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-3 h-3 rounded-full bg-primary"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                   </div>
-                  <h2 className="hero-welcome-title">
+                  <h2
+                    className="hero-welcome-title"
+                    style={{
+                      color: "white",
+                      textShadow:
+                        "0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3)",
+                    }}>
                     Hello & Welcome to Hope Physicians
                   </h2>
-                  <p className="hero-welcome-text">
+                  <p
+                    className="hero-welcome-text"
+                    style={{
+                      color: "rgba(255, 255, 255, 0.95)",
+                      textShadow:
+                        "0 1px 5px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3)",
+                    }}>
                     Leading the way in medical excellence with cutting-edge
                     technology and compassionate care. Our primary care
                     physicians provide comprehensive healthcare services
