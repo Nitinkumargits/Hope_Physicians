@@ -1372,17 +1372,76 @@ const Home = () => {
                 </article>
 
                 {/* Image Card */}
-                <div className="hero-image-card">
+                <div
+                  className="hero-image-card"
+                  style={{
+                    borderRadius: "1.5rem",
+                    overflow: "hidden",
+                    boxShadow:
+                      "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2) inset",
+                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    position: "relative",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const img = e.currentTarget.querySelector("img");
+                    const overlay =
+                      e.currentTarget.querySelector(".overlay-gradient");
+                    const shine =
+                      e.currentTarget.querySelector(".shine-effect");
+                    if (img) img.style.transform = "scale(1.05)";
+                    if (overlay) overlay.style.opacity = "0.7";
+                    if (shine) shine.style.opacity = "1";
+                  }}
+                  onMouseLeave={(e) => {
+                    const img = e.currentTarget.querySelector("img");
+                    const overlay =
+                      e.currentTarget.querySelector(".overlay-gradient");
+                    const shine =
+                      e.currentTarget.querySelector(".shine-effect");
+                    if (img) img.style.transform = "scale(1)";
+                    if (overlay) overlay.style.opacity = "1";
+                    if (shine) shine.style.opacity = "0";
+                  }}>
                   <div
-                    className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30"
+                    className="overlay-gradient absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"
+                    style={{
+                      zIndex: 10,
+                      transition: "opacity 0.5s ease",
+                    }}
                     aria-hidden="true"></div>
                   <img
-                    src={familyImg}
+                    src={urgentCareImg}
                     alt="Family Medicine physician providing primary care services at Hope Physicians in Kinston, NC"
-                    className="w-full h-[280px] md:h-[300px] object-cover"
+                    className="w-full h-[320px] md:h-[380px] object-cover"
+                    style={{
+                      transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+                      filter: "brightness(1.05) contrast(1.1)",
+                    }}
                     loading="lazy"
                     decoding="async"
                   />
+                  {/* Decorative overlay with glassmorphism effect */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, transparent 50%, rgba(20, 184, 166, 0.15) 100%)",
+                      backdropFilter: "blur(1px)",
+                      zIndex: 5,
+                    }}
+                    aria-hidden="true"></div>
+                  {/* Shine effect on hover */}
+                  <div
+                    className="shine-effect absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%)",
+                      zIndex: 6,
+                      opacity: 0,
+                      transition: "opacity 0.5s ease",
+                    }}
+                    aria-hidden="true"></div>
                 </div>
               </div>
             </div>
