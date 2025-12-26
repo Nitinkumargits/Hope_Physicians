@@ -1403,20 +1403,14 @@ const Home = () => {
                     if (overlay) overlay.style.opacity = "1";
                     if (shine) shine.style.opacity = "0";
                   }}>
-                  <div
-                    className="overlay-gradient absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"
-                    style={{
-                      zIndex: 10,
-                      transition: "opacity 0.5s ease",
-                    }}
-                    aria-hidden="true"></div>
                   <img
                     src={urgentCareImg}
                     alt="Family Medicine physician providing primary care services at Hope Physicians in Kinston, NC"
                     className="w-full h-[320px] md:h-[380px] object-cover"
                     style={{
                       transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
-                      filter: "brightness(1.05) contrast(1.1)",
+                      filter: "brightness(1.1) contrast(1.2) saturate(1.1)",
+                      imageRendering: "crisp-edges",
                     }}
                     loading="lazy"
                     decoding="async"
