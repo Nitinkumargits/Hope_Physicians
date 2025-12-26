@@ -53,7 +53,7 @@ This means GitHub Actions **cannot reach** your EC2 instance at all.
 ### Step 3: Verify GitHub Secrets
 
 **In GitHub:**
-1. Go to: https://github.com/Shubham96681/hope_physician/settings/secrets/actions
+1. Go to: https://github.com/infofitsoftwaresolution/hope_physician/settings/secrets/actions
 2. Check these secrets:
 
    **EC2_HOST:**

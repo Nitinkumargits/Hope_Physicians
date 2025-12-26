@@ -55,7 +55,7 @@ Connection to *** port 22 timed out
 ### 3. Verify GitHub Secrets ⚡⚡
 
 **In GitHub:**
-1. Go to: https://github.com/Shubham96681/hope_physician/settings/secrets/actions
+1. Go to: https://github.com/infofitsoftwaresolution/hope_physician/settings/secrets/actions
 2. Check these secrets:
 
    **EC2_HOST:**
@@ -135,7 +135,7 @@ After making changes, verify:
 ## 🚀 After Fixing
 
 1. **Re-run the workflow:**
-   - Go to: https://github.com/Shubham96681/hope_physician/actions
+   - Go to: https://github.com/infofitsoftwaresolution/hope_physician/actions
    - Click on failed workflow
    - Click **"Re-run all jobs"**
 

@@ -1,11 +1,11 @@
 # GitHub Repository Secrets Setup Guide
 
 ## 📍 Repository
-**https://github.com/Shubham96681/hope_physician**
+**https://github.com/infofitsoftwaresolution/hope_physician**
 
 ## 🔐 How to Add Secrets
 
-1. Go to: **https://github.com/Shubham96681/hope_physician/settings/secrets/actions**
+1. Go to: **https://github.com/infofitsoftwaresolution/hope_physician/settings/secrets/actions**
 2. Click **"New repository secret"**
 3. Add each secret with the **exact name** (case-sensitive)
 4. Click **"Add secret"**
@@ -168,7 +168,7 @@
 
 1. **Go to Secrets Page**:
    ```
-   https://github.com/Shubham96681/hope_physician/settings/secrets/actions
+   https://github.com/infofitsoftwaresolution/hope_physician/settings/secrets/actions
    ```
 
 2. **Add EC2 Connection Secrets**:
@@ -218,7 +218,7 @@ After adding secrets, test by:
    ```
 
 2. **Check GitHub Actions**:
-   - Go to: https://github.com/Shubham96681/hope_physician/actions
+   - Go to: https://github.com/infofitsoftwaresolution/hope_physician/actions
    - Click on the latest workflow run
    - Check if deployment succeeds
 
@@ -312,5 +312,5 @@ If CI/CD is not working:
 
 ---
 
-**Last Updated**: Based on repository at https://github.com/Shubham96681/hope_physician
+**Last Updated**: Based on repository at https://github.com/infofitsoftwaresolution/hope_physician
 

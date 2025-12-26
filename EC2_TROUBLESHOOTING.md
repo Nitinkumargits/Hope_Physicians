@@ -36,7 +36,7 @@ If you're getting `ERR_CONNECTION_TIMED_OUT` when accessing `http://52.66.236.15
 ## ✅ Step 2: Verify Deployment Workflow Ran
 
 1. **Check GitHub Actions**:
-   - Go to: https://github.com/Shubham96681/hope_physician/actions
+   - Go to: https://github.com/infofitsoftwaresolution/hope_physician/actions
    - Look for "Deploy to EC2" workflow
    - Check if it completed successfully
 
@@ -131,7 +131,7 @@ sudo systemctl status nginx
 If deployment didn't complete:
 
 1. **Trigger deployment manually**:
-   - Go to: https://github.com/Shubham96681/hope_physician/actions
+   - Go to: https://github.com/infofitsoftwaresolution/hope_physician/actions
    - Click "Deploy to EC2" workflow
    - Click "Run workflow" → "Run workflow"
 

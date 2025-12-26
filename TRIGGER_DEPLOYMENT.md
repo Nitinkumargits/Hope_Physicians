@@ -24,7 +24,7 @@ The "Deploy to EC2" workflow will automatically run.
 ## 🚀 Method 2: Manual Trigger (GitHub UI)
 
 1. **Go to Actions**:
-   - https://github.com/Shubham96681/hope_physician/actions
+   - https://github.com/infofitsoftwaresolution/hope_physician/actions
 
 2. **Click on "Deploy to EC2" workflow** (left sidebar)
 
@@ -50,7 +50,7 @@ git push new-origin master
 ## ✅ Verify Deployment is Running
 
 1. **Go to Actions Tab**:
-   - https://github.com/Shubham96681/hope_physician/actions
+   - https://github.com/infofitsoftwaresolution/hope_physician/actions
 
 2. **Look for "Deploy to EC2"**:
    - Should show as "running" (yellow) or "completed" (green/red)

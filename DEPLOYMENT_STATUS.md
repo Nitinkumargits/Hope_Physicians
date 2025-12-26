@@ -5,7 +5,7 @@
 ### Step 1: Check GitHub Actions
 
 1. **Go to Actions Tab**:
-   - https://github.com/Shubham96681/hope_physician/actions
+   - https://github.com/infofitsoftwaresolution/hope_physician/actions
 
 2. **Look for "Deploy to EC2" workflow**:
    - Should appear in the list
@@ -19,7 +19,7 @@
 ### Step 2: If Workflow Didn't Run
 
 **Option A: Trigger Manually**
-1. Go to: https://github.com/Shubham96681/hope_physician/actions/workflows/deploy-ec2.yml
+1. Go to: https://github.com/infofitsoftwaresolution/hope_physician/actions/workflows/deploy-ec2.yml
 2. Click "Run workflow" button (top right)
 3. Select branch: `master`
 4. Click "Run workflow"

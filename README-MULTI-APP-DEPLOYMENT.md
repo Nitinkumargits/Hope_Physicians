@@ -39,7 +39,7 @@ Edit `apps.config.json` to configure your applications:
     {
       "name": "hope-physicians",
       "displayName": "Hope Physicians",
-      "repo": "https://github.com/Shubham96681/hope_physician.git",
+      "repo": "https://github.com/infofitsoftwaresolution/hope_physician.git",
       "directory": "/home/ubuntu/hope-physicians",
       "backend": {
         "directory": "backend",
@@ -89,7 +89,7 @@ SSH into your EC2 instance and run:
 ```bash
 # Clone the setup script
 cd ~
-wget https://raw.githubusercontent.com/Shubham96681/hope_physician/master/setup-second-app.sh
+wget https://raw.githubusercontent.com/infofitsoftwaresolution/hope_physician/master/setup-second-app.sh
 chmod +x setup-second-app.sh
 
 # Setup second app

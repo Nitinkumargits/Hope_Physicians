@@ -54,7 +54,7 @@ Both **Hope Physicians** and **Ojoto Union** are deployed on the **same EC2 inst
 5. That's your `YOUR_EC2_IP`
 
 ### Option 2: GitHub Secrets
-1. Go to: https://github.com/Shubham96681/hope_physician/settings/secrets/actions
+1. Go to: https://github.com/infofitsoftwaresolution/hope_physician/settings/secrets/actions
 2. Check the `EC2_HOST` secret value
 3. That's your `YOUR_EC2_IP`
 
